@@ -4,3 +4,13 @@
 *.jar
 *.war
 *.ear
+
+# IDEA Files
+.idea/
+*.iml
+
+# Dolphin Directory Files
+.directory
+
+# Maven Target Files
+target/
