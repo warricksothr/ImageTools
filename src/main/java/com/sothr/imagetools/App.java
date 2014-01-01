@@ -66,8 +66,12 @@ public class App extends Application
         try {
             Parent root = FXMLLoader.load(cl.getResource(MAINGUI_FXML));
             primaryStage.setScene(new Scene(root));
+            //config main scene
             primaryStage.setTitle("Image Tools");
+            primaryStage.setMinHeight(600.0);
+            primaryStage.setMinWidth(800.0);
             primaryStage.setResizable(true);
+            //show main scene
             primaryStage.show();
         } catch (IOException ioe) {
             String message = String.format("Unable to load FXML file: %s", MAINGUI_FXML);
