@@ -51,11 +51,6 @@
       <artifactId>scala-library</artifactId>
       <version>${lib.scala-library.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.scalafx</groupId>
-      <artifactId>scalafx_2.10</artifactId>
-      <version>${lib.scalafx.version}</version>
-    </dependency>
   </dependencies>
 
   <build>

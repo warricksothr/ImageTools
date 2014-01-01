@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language javascript?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.sothr.imagetools.ui.controller.AppController">
+    <children>
+        <Button fx:id="printBtn" onAction="controller.print()" />
+        <fx:script>printBtn.text = 'Click Me ' + controller.print() + '!';</fx:script>
+    </children>
+</StackPane>
