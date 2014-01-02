@@ -4,7 +4,7 @@
 
   <groupId>com.sothr.imagetools</groupId>
   <artifactId>Image-Tools</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0-DEV</version>
   <packaging>jar</packaging>
 
   <name>Image-Tools</name>
@@ -13,6 +13,17 @@
   <organization>
     <name>Sothr Software</name>
   </organization>
+
+  <pluginRepositories>
+    <pluginRepository>      
+      <id>sonatype-releases</id>      
+      <url>http://oss.sonatype.org/content/repositories/releases</url>    
+    </pluginRepository>    
+    <pluginRepository>      
+      <id>clojars.org</id>      
+      <url>http://clojars.org/repo</url>    
+    </pluginRepository>
+  </pluginRepositories>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -79,6 +90,18 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>com.code54.mojo</groupId>
+        <artifactId>buildversion-plugin</artifactId>
+        <version>1.0.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>set-properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
