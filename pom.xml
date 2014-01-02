@@ -179,7 +179,7 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <phase>validate</phase>
+            <phase>initialize</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -205,11 +205,33 @@
                 <resource>
                   <directory>src/includes</directory>
                   <filtering>true</filtering>
+                  <excludes>
+                    <exclude>version.info</exclude>
+                    <exclude>name.info</exclude>
+                  </excludes>
                 </resource>
               </resources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>    
+        <artifactId>maven-antrun-plugin</artifactId>    
+        <version>1.4</version>    
+        <executions>      
+          <execution>        
+            <phase>process-resources</phase>        
+            <configuration>          
+              <tasks>             
+                <copy file="${project.build.directory}/version.info" toFile="${basedir}/version.info" overwrite="true" />          
+                <copy file="${project.build.directory}/name.info" toFile="${basedir}/name.info" overwrite="true" />          
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions> 
       </plugin>
     </plugins>
   </build>
