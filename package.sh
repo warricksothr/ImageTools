@@ -1,3 +1,4 @@
+#!/bin/bash
 #Getting variables that are produced by the script
 VERSION=$(head -1 ./version.info)
 NAME=$(head -1 ./name.info)
