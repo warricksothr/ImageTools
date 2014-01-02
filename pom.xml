@@ -122,6 +122,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.4</version>
         <configuration>
+          <outputDirectory>${project.build.directory}/build/</outputDirectory>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
@@ -143,7 +144,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/lib/</outputDirectory>
+              <outputDirectory>${project.build.directory}/build/lib</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -160,7 +161,23 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target</outputDirectory>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/includes</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-resources-package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/build</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/includes</directory>
