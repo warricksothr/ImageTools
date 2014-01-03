@@ -7,8 +7,13 @@ PACKAGETAR=$PACKAGENAME.tar.gz
 PACKAGEZIP=$PACKAGENAME.zip
 TARGET=$PWD/target
 
-cd target/build/
+#Packaging Jar Distributable
+cd target/jfx/app/
 echo "creating $PACKAGETAR in $TARGET"
 tar -zcvf $TARGET/$PACKAGETAR .
 echo "creating $PACKAGEZIP in $TARGET"
 zip -r $TARGET/$PACKAGEZIP ./*
+#Removing prebuilt jar in target
+rm $TARGET/*.jar
+#Copying Jar to target for archiving
+cp ./*.jar $TARGET
