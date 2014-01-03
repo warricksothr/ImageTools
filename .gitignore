@@ -14,3 +14,7 @@
 
 # Maven Target Files
 target/
+
+# Build Name and Version Files
+name.info
+version.info
