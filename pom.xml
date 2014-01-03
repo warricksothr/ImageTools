@@ -29,9 +29,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.version>1.7</jdk.version>
     <lib.junit.version>3.8.1</lib.junit.version>
+    <lib.scalatest.version>2.0</lib.scalatest.version>
     <lib.log4j.version>1.2.17</lib.log4j.version>
     <lib.slf4j.version>1.7.5</lib.slf4j.version>
-    <lib.scala-library.version>2.10.2</lib.scala-library.version>
+    <lib.scala-library.version>2.10.0</lib.scala-library.version>
     <lib.scalafx.version>8.0.0-M1</lib.scalafx.version>
   </properties>
 
@@ -40,6 +41,12 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${lib.junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest_2.10</artifactId>
+      <version>${lib.scalatest.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -90,6 +97,34 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <!-- disable surefire -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <!-- enable scalatest -->
+      <plugin>
+        <groupId>org.scalatest</groupId>
+        <artifactId>scalatest-maven-plugin</artifactId>
+        <version>1.0-RC2</version>
+        <configuration>
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <junitxml>.</junitxml>
+          <filereports>WDF TestSuite.txt</filereports>
+        </configuration>
+        <executions>
+          <execution>
+            <id>test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>com.code54.mojo</groupId>
         <artifactId>buildversion-plugin</artifactId>
