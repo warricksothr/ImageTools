@@ -97,16 +97,16 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <!-- disable surefire -->
+      <!-- enable surefire for java tests-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.7</version>
         <configuration>
-          <skipTests>true</skipTests>
+          <skipTests>false</skipTests>
         </configuration>
       </plugin>
-      <!-- enable scalatest -->
+      <!-- enable scalatest for scala tests-->
       <plugin>
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest-maven-plugin</artifactId>
@@ -114,7 +114,7 @@
         <configuration>
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <junitxml>.</junitxml>
-          <filereports>com.sothr.imagetools.AppTest.txt</filereports>
+          <filereports>WDF TestSuite.txt</filereports>
         </configuration>
         <executions>
           <execution>
