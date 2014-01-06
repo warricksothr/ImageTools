@@ -18,3 +18,7 @@ target/
 # Build Name and Version Files
 name.info
 version.info
+
+# Copied README.md and LICENSE files
+src/includes/README.md
+src/includes/LICENSE

@@ -3,11 +3,12 @@ package com.sothr.imagetools.image
 import scala.collection.Traversable
 import com.sothr.imagetools.dto.ImageHashDTO
 
-abstract class Image(val imagePath:String, val thumbnailPath:String) {
+abstract class Image(val imagePath:String, val thumbnailPath:String, protected var hashes:ImageHashDTO = null) {
 
   protected val imageType:ImageType = ImageType.SingleFrameImage
 
-  def getHashes():ImageHashDTO
+  def getHashes():ImageHashDTO = this.hashes
+  def setHashes(newHashes:ImageHashDTO) = { this.hashes = newHashes }
 
   def isSimilarTo(otherImage:Image):Boolean
 
