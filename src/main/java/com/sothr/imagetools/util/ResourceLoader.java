@@ -6,13 +6,13 @@ import java.net.URL;
 /**
  * Created by drew on 1/5/14.
  */
-public class FileLoader {
+public class ResourceLoader {
 
-    private static final FileLoader instance = new FileLoader();
+    private static final ResourceLoader instance = new ResourceLoader();
 
-    private FileLoader() {}
+    private ResourceLoader() {}
 
-    public static FileLoader get() {
+    public static ResourceLoader get() {
         return instance;
     }
 

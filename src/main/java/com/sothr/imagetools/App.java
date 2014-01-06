@@ -1,7 +1,7 @@
 package com.sothr.imagetools;
 
 import com.sothr.imagetools.errors.ImageToolsException;
-import com.sothr.imagetools.util.FileLoader;
+import com.sothr.imagetools.util.ResourceLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -71,9 +69,8 @@ public class App extends Application
     public void start(Stage primaryStage) throws Exception {
         logger.info("Image-Tools is starting");
         logger.info(String.format("Launching GUI with FXML file %s", MAINGUI_FXML));
-        ClassLoader cl = this.getClass().getClassLoader();
         try {
-            Parent root = FXMLLoader.load(cl.getResource(MAINGUI_FXML));
+            Parent root = FXMLLoader.load(ResourceLoader.get().getResource(MAINGUI_FXML));
             primaryStage.setScene(new Scene(root));
             //config main scene
             primaryStage.setTitle("Image Tools");

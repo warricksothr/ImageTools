@@ -10,7 +10,7 @@ import javafx.scene.Group
 import javafx.scene.text.Text
 import java.io.{IOException, File}
 import java.util.Scanner
-import com.sothr.imagetools.util.FileLoader
+import com.sothr.imagetools.util.ResourceLoader
 import java.net.URL
 
 /**
@@ -30,7 +30,7 @@ class AppController {
     logger.debug("Displaying about screen")
     var aboutMessage = "Simple About Message"
     try {
-      aboutMessage = new Scanner(FileLoader.get().getResourceStream("documents/about")).useDelimiter("\\A").next()
+      aboutMessage = new Scanner(ResourceLoader.get().getResourceStream("documents/about")).useDelimiter("\\A").next()
     } catch {
       case ioe:IOException =>
         logger.error("Unable to read about file")
