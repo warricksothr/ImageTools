@@ -9,8 +9,9 @@ import javafx.scene.Scene
 import javafx.scene.Group
 import javafx.scene.text.Text
 import java.io.{IOException, File}
-import java.net.URL
 import java.util.Scanner
+import com.sothr.imagetools.util.FileLoader
+import java.net.URL
 
 /**
  * Created by drew on 12/31/13.
@@ -29,10 +30,7 @@ class AppController {
     logger.debug("Displaying about screen")
     var aboutMessage = "Simple About Message"
     try {
-      val cl = this.getClass.getClassLoader
-      val url  = cl.getResource("documents/about")
-      val uri = url.toURI
-      aboutMessage = new Scanner(new File(uri)).useDelimiter("\\A").next()
+      aboutMessage = new Scanner(FileLoader.get().getResourceStream("documents/about")).useDelimiter("\\A").next()
     } catch {
       case ioe:IOException =>
         logger.error("Unable to read about file")

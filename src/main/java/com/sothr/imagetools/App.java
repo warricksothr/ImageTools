@@ -1,7 +1,7 @@
 package com.sothr.imagetools;
 
 import com.sothr.imagetools.errors.ImageToolsException;
-import com.sothr.imagetools.ui.controller.AppController;
+import com.sothr.imagetools.util.FileLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -22,16 +24,27 @@ import java.util.Properties;
 public class App extends Application
 {
 
-    private static Logger logger = LoggerFactory.getLogger(App.class);
+    private static Logger logger;
 
     private static final String MAINGUI_FXML = "fxml/mainapp/MainApp.fxml";
 
     public static void main( String[] args )
     {
+        configLogging("./log4j.properties");
+        try {
+            //try to run the UI
+            launch(args);
+        } catch (Exception ex) {
+            logger.error("A fatal error has occurred: ", ex);
+            //show popup about the error to the user then exit
+        }
+    }
+
+    private static void configLogging(String propertiesLocation) {
         //Logging Config
-        File file = new File("log4j.properties");
+        File file = new File(propertiesLocation);
         if (file.exists()) {
-            PropertyConfigurator.configure("log4j.properties");
+            PropertyConfigurator.configure(propertiesLocation);
         } else {
             //Simple error logging configuration
             Properties defaultProps = new Properties();
@@ -45,22 +58,18 @@ public class App extends Application
             defaultProps.setProperty("log4j.appender.A1.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
             PropertyConfigurator.configure(defaultProps);
         }
+        logger = LoggerFactory.getLogger(App.class);
+    }
 
-        logger.info("Image-Tools is starting");
-
-        try {
-            //try to run the UI
-            launch(args);
-        } catch (Exception ex) {
-            logger.error("A fatal error has occurred: ", ex);
-            //show popup about the error to the user then exit
-        }
-
-        logger.info("Image-Tools is shutting down");
+    @Override
+    public void init() throws Exception{
+        configLogging("./log4j.properties");
+        super.init();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        logger.info("Image-Tools is starting");
         logger.info(String.format("Launching GUI with FXML file %s", MAINGUI_FXML));
         ClassLoader cl = this.getClass().getClassLoader();
         try {
@@ -84,5 +93,11 @@ public class App extends Application
             logger.error(message, ex);
             throw ite;
         }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        logger.info("Image-Tools is shutting down");
+        super.stop();
     }
 }
