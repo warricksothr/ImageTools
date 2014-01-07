@@ -9,6 +9,11 @@
 .idea/
 *.iml
 
+# Eclipse Files
+.classpath
+.project
+.settings/
+
 # Dolphin Directory Files
 .directory
 
