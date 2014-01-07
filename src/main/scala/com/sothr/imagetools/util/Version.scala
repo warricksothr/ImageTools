@@ -11,6 +11,10 @@ class Version(val versionString:String) {
     (splitVersion(0),splitVersion(1),splitType(0),splitType(1))
   }
 
+  def difference(otherVersion:Version):Integer = {
+    return -1
+  }
+
   override def toString():String = {
     return s"$major.$minor.$revision-$buildType"
   }
