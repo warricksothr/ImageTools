@@ -38,6 +38,7 @@ public class App extends Application
     @Override
     public void init() throws Exception{
         AppConfig.configLogging();
+        AppConfig.loadProperties();
         logger = LoggerFactory.getLogger(this.getClass());
         logger.info("Initializing Image Tools");
         List<String> parameters = this.getParameters().getRaw();
@@ -75,6 +76,7 @@ public class App extends Application
     @Override
     public void stop() throws Exception {
         logger.info("Image-Tools is shutting down");
+        AppConfig.saveProperties();
         super.stop();
     }
 }

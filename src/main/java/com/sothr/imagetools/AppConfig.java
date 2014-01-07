@@ -1,5 +1,6 @@
 package com.sothr.imagetools;
 
+import com.sothr.imagetools.util.PropertiesService;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,15 +12,22 @@ class AppConfig {
 
     private static Logger logger;
 
+    //Logging defaults
     private static final String LOGSETTINGSFILE = "./log4j.properties";
+    private static Boolean configuredLogging = false;
 
-    public static void configLogging() {
+    //Properties defaults
+    private static final String DEFAULTPROPERTIESFILE = "default.properties";
+    private static final String USERPROPERTIESFILE = "./config.xml";
+    private static Boolean loadedProperties = false;
+
+    public static void configLogging(String location) {
         //Logging Config
-        File file = new File(LOGSETTINGSFILE);
+        File file = new File(location);
         Boolean fromFile = false;
         if (file.exists()) {
             fromFile = true;
-            PropertyConfigurator.configure(LOGSETTINGSFILE);
+            PropertyConfigurator.configure(location);
         } else {
             //Simple error logging configuration
             Properties defaultProps = new Properties();
@@ -36,6 +44,30 @@ class AppConfig {
         logger = LoggerFactory.getLogger(AppConfig.class);
         String message = fromFile ? "From File" : "From Defaults";
         logger.info(String.format("Configured Logger %s", message));
+    }
+
+    //Only configure logging from the default file once
+    public static void configLogging() {
+        if (!configuredLogging) {
+            configLogging(LOGSETTINGSFILE);
+            configuredLogging = true;
+        }
+    }
+
+    public static void loadProperties() {
+        if (!loadedProperties) {
+            File file = new File(USERPROPERTIESFILE);
+            if (file.exists()) {
+                PropertiesService.loadProperties(DEFAULTPROPERTIESFILE, USERPROPERTIESFILE);
+            } else {
+                PropertiesService.loadProperties(DEFAULTPROPERTIESFILE, null);
+            }
+            loadedProperties = true;
+        }
+    }
+
+    public static void saveProperties() {
+        PropertiesService.saveXMLProperties(USERPROPERTIESFILE);
     }
 
 }
