@@ -21,7 +21,7 @@ class Version(val versionString:String) {
   * 3 = this.revision > that.revision
   * 4 = this.buildType != that.buildType
   */
-  def difference(that:Version):Integer = {
+  def compare(that:Version):Integer = {
     if (this.hashCode == that.hashCode) return 0
     if (this.major > that.major) {
       return 1
