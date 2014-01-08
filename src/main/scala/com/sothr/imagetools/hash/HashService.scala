@@ -1,12 +1,20 @@
 package com.sothr.imagetools.hash
 
+import grizzled.slf4j.Logging
 import com.sothr.imagetools.dto.ImageHashDTO
-import com.sothr.imagetools.image.Image
 import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
 
-object HashService {
+/**
+ * A service that exposes the ability to construct perceptive hashes from an
+ * image which can be used to find a perceptual difference between two or more
+ * images
+ */
+object HashService extends Logging {
 
-  def getImageHashes(image:Image):ImageHashDTO = {
+  def getImageHashes(imagePath:String):ImageHashDTO = {
+    
+    debug(s"Creating hashes for $imagePath")
+    
     var ahash:Long = 0L
     var dhash:Long = 0L
     var phash:Long = 0L
@@ -23,7 +31,11 @@ object HashService {
     if (PropertiesService.get(PropertiesEnum.UseAhash.toString) == "true") {
       phash = getPhash(imageData)
     }
-    return new ImageHashDTO(ahash, dhash, phash)
+    
+    val hashes = new ImageHashDTO(ahash, dhash, phash)
+    debug(s"Generated hashes: $hashes")
+    
+    return hashes
   }
 
   def getAhash(imageData:Array[Array[Int]]):Long = {
