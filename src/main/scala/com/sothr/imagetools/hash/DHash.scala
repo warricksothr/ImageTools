@@ -13,7 +13,6 @@ object DHash extends PerceptualHasher with Logging {
     debug(s"Image data size: ${width}x${height}")
     var hash = 0L
     for (row <- 0 until width) {
-      //println(f"Row: $row%d")
       var previousPixel = imageData(row)(0)
       var previousLocation = (row, 0)
       
@@ -26,7 +25,7 @@ object DHash extends PerceptualHasher with Logging {
         //binary or the current bit based on whether the value
         //of the current pixel is greater or equal to the previous pixel
         if (pixel >= previousPixel) hash |= 1 else hash |= 0
-        debug(s"hash: hash")
+        //debug(s"hash: $hash")
         previousPixel = pixel
         previousLocation = (row, col)
       }

@@ -2,7 +2,7 @@ package com.sothr.imagetools.hash
 
 import grizzled.slf4j.Logging
 import com.sothr.imagetools.dto.ImageHashDTO
-import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
+import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService, Hamming}
 import com.sothr.imagetools.ImageService
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
@@ -64,6 +64,27 @@ object HashService extends Logging {
     val resizedImage = ImageService.resize(grayImage, PropertiesService.get(PropertiesEnum.PhashPrecision.toString).toInt, true)
     val imageData = ImageService.getImageData(resizedImage)
     PHash.getHash(imageData)
+  }
+  
+  def areAhashSimilar(ahash1:Long, ahash2:Long):Boolean = {
+      val tolerence = PropertiesService.get(PropertiesEnum.AhashTolerence.toString).toInt
+      val distance = Hamming.getDistance(ahash1, ahash2)
+      debug(s"hash1: $ahash1 hash2: $ahash2 tolerence: $tolerence hamming distance: $distance")
+      if (distance <= tolerence) true else false
+  }
+  
+  def areDhashSimilar(dhash1:Long, dhash2:Long):Boolean = {
+      val tolerence = PropertiesService.get(PropertiesEnum.DhashTolerence.toString).toInt
+      val distance = Hamming.getDistance(dhash1, dhash2)
+      debug(s"hash1: $dhash1 hash2: $dhash2 tolerence: $tolerence hamming distance: $distance")
+      if (distance <= tolerence) true else false
+  }
+  
+  def arePhashSimilar(phash1:Long, phash2:Long):Boolean = {
+      val tolerence = PropertiesService.get(PropertiesEnum.PhashTolerence.toString).toInt
+      val distance = Hamming.getDistance(phash1, phash2)
+      debug(s"hash1: $phash1 hash2: $phash2 tolerence: $tolerence hamming distance: $distance")
+      if (distance <= tolerence) true else false
   }
 
 }

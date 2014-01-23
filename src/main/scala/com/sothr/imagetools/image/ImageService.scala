@@ -70,9 +70,9 @@ object ImageService extends Logging {
       var col = 0
       debug(s"Processing pixels 0 until $numPixels by $pixelLength")
       for (pixel <- 0 until numPixels by pixelLength) {
-        debug(s"Processing pixel: $pixel/${numPixels - 1}")
+        //debug(s"Processing pixel: $pixel/${numPixels - 1}")
         val argb:Int = pixels(pixel).toInt //singleChannel
-        debug(s"Pixel data: $argb")
+        //debug(s"Pixel data: $argb")
         result(row)(col) = argb
         col += 1
         if (col == width) {
@@ -88,7 +88,7 @@ object ImageService extends Logging {
       var col = 0
       debug(s"Processing pixels 0 until $numPixels by $pixelLength")
       for (pixel <- 0 until numPixels by pixelLength) {
-        debug(s"Processing pixel: $pixel/${numPixels - 1}")
+        //debug(s"Processing pixel: $pixel/${numPixels - 1}")
         var argb:Int = 0
         argb += pixels(pixel).toInt << 24 //alpha
         argb += pixels(pixel + 1).toInt //blue
@@ -108,7 +108,7 @@ object ImageService extends Logging {
       var col = 0
       debug(s"Processing pixels 0 until $numPixels by $pixelLength")
       for (pixel <- 0 until numPixels by pixelLength) {
-        debug(s"Processing pixel: $pixel/${numPixels - 1}")
+        //debug(s"Processing pixel: $pixel/${numPixels - 1}")
         var argb:Int = 0
         argb += -16777216; // 255 alpha
         argb += pixels(pixel).toInt //blue
