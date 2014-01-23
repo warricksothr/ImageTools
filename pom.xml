@@ -272,8 +272,8 @@
               <tasks>             
                 <copy file="${project.build.directory}/version.info" toFile="${basedir}/version.info" overwrite="true" />          
                 <copy file="${project.build.directory}/name.info" toFile="${basedir}/name.info" overwrite="true" />          
-                <copy file="${basedir}/LICENSE" toFile="${basedir}/src/includes/LICENSE" overwrite="true" />          
-                <copy file="${basedir}/README.md" toFile="${basedir}/src/includes/README.md" overwrite="true" />          
+                <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE" overwrite="true" />          
+                <copy file="${project.build.directory}/README.md" toFile="${basedir}/README.md" overwrite="true" />          
               </tasks>
             </configuration>
             <goals>

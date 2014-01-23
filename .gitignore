@@ -28,9 +28,5 @@ target/
 name.info
 version.info
 
-# Copied README.md and LICENSE files
-src/includes/README.md
-src/includes/LICENSE
-
 # Image Tools Log Files
 *.err
