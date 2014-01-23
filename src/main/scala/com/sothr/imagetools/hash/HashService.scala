@@ -43,7 +43,7 @@ object HashService extends Logging {
   }
 
   def getAhash(image:BufferedImage):Long = {
-    debug("Generating an AHash")
+    debug("Started generating an AHash")
     val grayImage = ImageService.convertToGray(image)
     val resizedImage = ImageService.resize(grayImage, PropertiesService.get(PropertiesEnum.AhashPrecision.toString).toInt, true)
     val imageData = ImageService.getImageData(resizedImage)
@@ -51,7 +51,7 @@ object HashService extends Logging {
   }
 
   def getDhash(image:BufferedImage):Long = {
-    debug("Generating an DHash")
+    debug("Started generating an DHash")
     val grayImage = ImageService.convertToGray(image)
     val resizedImage = ImageService.resize(grayImage, PropertiesService.get(PropertiesEnum.DhashPrecision.toString).toInt, true)
     val imageData = ImageService.getImageData(resizedImage)
@@ -59,7 +59,7 @@ object HashService extends Logging {
   }
 
   def getPhash(image:BufferedImage):Long = {
-    debug("Generating an PHash")
+    debug("Started generating an PHash")
     val grayImage = ImageService.convertToGray(image)
     val resizedImage = ImageService.resize(grayImage, PropertiesService.get(PropertiesEnum.PhashPrecision.toString).toInt, true)
     val imageData = ImageService.getImageData(resizedImage)

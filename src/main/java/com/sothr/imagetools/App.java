@@ -25,7 +25,7 @@ public class App extends Application
 
     public static void main( String[] args )
     {
-        AppConfig.configLogging();
+        AppConfig.configureApp();
         try {
             //try to run the UI
             launch(args);
@@ -37,8 +37,7 @@ public class App extends Application
 
     @Override
     public void init() throws Exception{
-        AppConfig.configLogging();
-        AppConfig.loadProperties();
+        AppConfig.configureApp();
         logger = LoggerFactory.getLogger(this.getClass());
         logger.info("Initializing Image Tools");
         List<String> parameters = this.getParameters().getRaw();

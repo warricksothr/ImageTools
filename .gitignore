@@ -29,4 +29,6 @@ name.info
 version.info
 
 # Image Tools Log Files
+*.debug
+*.info
 *.err

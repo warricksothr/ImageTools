@@ -1,7 +1,9 @@
 package com.sothr.imagetools;
 
 import com.sothr.imagetools.util.PropertiesService;
+import com.sothr.imagetools.util.PropertiesEnum;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +23,20 @@ class AppConfig {
     private static final String USERPROPERTIESFILE = "./config.xml";
     private static Boolean loadedProperties = false;
 
+    public static void configureApp() {
+        //configSimpleLogging();
+        loadProperties();
+        configLogging();
+    }
+
+    public static void configSimpleLogging() {
+        BasicConfigurator.configure();
+    }
+
     public static void configLogging(String location) {
         //Logging Config
+        //remove previous configuration if it exists
+        //BasicConfigurator.resetConfiguration();
         File file = new File(location);
         Boolean fromFile = false;
         if (file.exists()) {
@@ -31,14 +45,41 @@ class AppConfig {
         } else {
             //Simple error logging configuration
             Properties defaultProps = new Properties();
-            defaultProps.setProperty("log4j.rootLogger","ERROR, A1");
-            //Rolling Error logger
-            defaultProps.setProperty("log4j.appender.A1","org.apache.log4j.RollingFileAppender");
-            defaultProps.setProperty("log4j.appender.A1.File","Image-Tools.err");
-            defaultProps.setProperty("log4j.appender.A1.MaxFileSize","100KB");
-            defaultProps.setProperty("log4j.appender.A1.MaxBackupIndex","1");
-            defaultProps.setProperty("log4j.appender.A1.layout","org.apache.log4j.EnhancedPatternLayout");
-            defaultProps.setProperty("log4j.appender.A1.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
+            String rootLogger = "DEBUG";
+            if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogDebug().toString()))) {
+                //Rolling Debug logger
+                rootLogger += ", DL";
+                defaultProps.setProperty("log4j.appender.DL","org.apache.log4j.RollingFileAppender");
+                defaultProps.setProperty("log4j.appender.DL.Threshold","DEBUG");
+                defaultProps.setProperty("log4j.appender.DL.File","Image-Tools.debug");
+                defaultProps.setProperty("log4j.appender.DL.MaxFileSize","500KB");
+                defaultProps.setProperty("log4j.appender.DL.MaxBackupIndex","1");
+                defaultProps.setProperty("log4j.appender.DL.layout","org.apache.log4j.EnhancedPatternLayout");
+                defaultProps.setProperty("log4j.appender.DL.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
+            }
+            if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogInfo().toString()))) {
+                //Rolling Info logger
+                rootLogger += ", IL";
+                defaultProps.setProperty("log4j.appender.IL","org.apache.log4j.RollingFileAppender");
+                defaultProps.setProperty("log4j.appender.IL.Threshold","INFO");
+                defaultProps.setProperty("log4j.appender.IL.File","Image-Tools.info");
+                defaultProps.setProperty("log4j.appender.IL.MaxFileSize","100KB");
+                defaultProps.setProperty("log4j.appender.IL.MaxBackupIndex","1");
+                defaultProps.setProperty("log4j.appender.IL.layout","org.apache.log4j.EnhancedPatternLayout");
+                defaultProps.setProperty("log4j.appender.IL.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
+            }
+            if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogError().toString()))) {
+                //Rolling Error logger
+                rootLogger += ", EL";
+                defaultProps.setProperty("log4j.appender.EL","org.apache.log4j.RollingFileAppender");
+                defaultProps.setProperty("log4j.appender.EL.Threshold","ERROR");
+                defaultProps.setProperty("log4j.appender.EL.File","Image-Tools.err");
+                defaultProps.setProperty("log4j.appender.EL.MaxFileSize","100KB");
+                defaultProps.setProperty("log4j.appender.EL.MaxBackupIndex","1");
+                defaultProps.setProperty("log4j.appender.EL.layout","org.apache.log4j.EnhancedPatternLayout");
+                defaultProps.setProperty("log4j.appender.EL.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
+            }
+            defaultProps.setProperty("log4j.rootLogger",rootLogger);
             PropertyConfigurator.configure(defaultProps);
         }
         logger = LoggerFactory.getLogger(AppConfig.class);

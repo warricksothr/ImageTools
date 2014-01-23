@@ -34,6 +34,13 @@ object PropertiesService extends Logging {
     }
     version = new Version(properties.getProperty("version"));
     info(s"Detected Version: $version")
+    
+    //load special properties
+    DebugLogEnabled = get(PropertiesEnum.LogDebug.toString).toBoolean
+    InfoLogEnabled = get(PropertiesEnum.LogInfo.toString).toBoolean
+    ErrorLogEnabled = get(PropertiesEnum.LogError.toString).toBoolean
+    TimingEnabled = get(PropertiesEnum.Timed.toString).toBoolean
+    info("Loaded Special Properties")
   }
 
   /**
@@ -66,5 +73,11 @@ object PropertiesService extends Logging {
   def set(key:String, value:String) = {
     properties.setProperty(key, value)
   }
+  
+  //specific highly used properties
+  var DebugLogEnabled:Boolean = false
+  var InfoLogEnabled:Boolean = false
+  var ErrorLogEnabled:Boolean = false
+  var TimingEnabled:Boolean = false
 
 }

@@ -3,6 +3,11 @@ package com.sothr.imagetools.util
 object PropertiesEnum extends Enumeration {
   type PropertiesEnum = Value
   val Version = Value("version")
+  //default app settings
+  val LogDebug = Value("app.log.debug")
+  val LogInfo = Value("app.log.info")
+  val LogError = Value("app.log.error")
+  val Timed = Value("app.timed")
   //default image settings
   val ImageDifferenceThreshold = Value("image.differenceThreshold")
   val HashPrecision = Value("image.hash.precision")

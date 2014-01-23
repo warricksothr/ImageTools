@@ -1,7 +1,7 @@
 package com.sothr.imagetools
 
 import grizzled.slf4j.Logging
-import java.awt.image.{DataBufferByte, BufferedImage}
+import java.awt.image.{DataBufferByte, BufferedImage, ColorConvertOp}
 import net.coobird.thumbnailator.Thumbnails
 
 object ImageService extends Logging {
@@ -20,14 +20,25 @@ object ImageService extends Logging {
    * @return
    */
   def convertToGray(image:BufferedImage):BufferedImage = {
+    debug("Converting an image to grayscale")
     val grayImage = new BufferedImage(image.getWidth, image.getHeight, BufferedImage.TYPE_BYTE_GRAY)
-    val g = image.getGraphics
-    g.drawImage(image,0,0,null)
-    g.dispose()
-    grayImage
+    
+    //create a color conversion operation
+    val op = new ColorConvertOp(
+      image.getColorModel.getColorSpace,
+      grayImage.getColorModel.getColorSpace, null)
+
+    //convert the image to grey
+    val result = op.filter(image, grayImage)
+    
+    //val g = image.getGraphics
+    //g.drawImage(image,0,0,null)
+    //g.dispose()
+    result
   }
 
   def resize(image:BufferedImage, size:Int, forced:Boolean=false):BufferedImage = {
+    debug(s"Resizing an image to size: ${size}x${size} forced: $forced")
     if (forced) {
       Thumbnails.of(image).forceSize(size,size).asBufferedImage
     } else {
@@ -44,21 +55,45 @@ object ImageService extends Logging {
   private def convertTo2DWithoutUsingGetRGB(image:BufferedImage):Array[Array[Int]] = {
 
     val pixels = image.getRaster.getDataBuffer.asInstanceOf[DataBufferByte].getData
+    val numPixels = pixels.length
     val width = image.getWidth
     val height = image.getHeight
+    val isSingleChannel = if(numPixels == (width * height)) true else false
     val hasAlphaChannel = image.getAlphaRaster != null
+    debug(s"Converting image to 2d. width:$width height:$height")
 
     val result = Array.ofDim[Int](height,width)
-    if (hasAlphaChannel) {
+    if (isSingleChannel) {
+      debug(s"Processing Single Channel Image")
+      val pixelLength = 1
+      var row = 0
+      var col = 0
+      debug(s"Processing pixels 0 until $numPixels by $pixelLength")
+      for (pixel <- 0 until numPixels by pixelLength) {
+        debug(s"Processing pixel: $pixel/${numPixels - 1}")
+        val argb:Int = pixels(pixel).toInt //singleChannel
+        debug(s"Pixel data: $argb")
+        result(row)(col) = argb
+        col += 1
+        if (col == width) {
+          col = 0
+          row += 1
+        }
+      }
+    }
+    else if (hasAlphaChannel) {
+      debug(s"Processing Four Channel Image")
       val pixelLength = 4
       var row = 0
       var col = 0
-      for (pixel <- 0 until pixels.length by pixelLength) {
+      debug(s"Processing pixels 0 until $numPixels by $pixelLength")
+      for (pixel <- 0 until numPixels by pixelLength) {
+        debug(s"Processing pixel: $pixel/${numPixels - 1}")
         var argb:Int = 0
-        argb += (pixels(pixel) & 0xff) << 24 //alpha
-        argb += (pixels(pixel + 1) & 0xff) //blue
-        argb += (pixels(pixel + 2) & 0xff) << 8 //green
-        argb += (pixels(pixel + 3) & 0xff) << 16 //red
+        argb += pixels(pixel).toInt << 24 //alpha
+        argb += pixels(pixel + 1).toInt //blue
+        argb += pixels(pixel + 2).toInt << 8 //green
+        argb += pixels(pixel + 3).toInt << 16 //red
         result(row)(col) = argb
         col += 1
         if (col == width) {
@@ -67,15 +102,18 @@ object ImageService extends Logging {
         }
       }
     } else {
+      debug(s"Processing Three Channel Image")
       val pixelLength = 3
       var row = 0
       var col = 0
-      for (pixel <- 0 until pixels.length by pixelLength) {
+      debug(s"Processing pixels 0 until $numPixels by $pixelLength")
+      for (pixel <- 0 until numPixels by pixelLength) {
+        debug(s"Processing pixel: $pixel/${numPixels - 1}")
         var argb:Int = 0
         argb += -16777216; // 255 alpha
-        argb += (pixels(pixel) & 0xff) //blue
-        argb += (pixels(pixel + 1) & 0xff) << 8 //green
-        argb += (pixels(pixel + 2) & 0xff) << 16 //red
+        argb += pixels(pixel).toInt //blue
+        argb += pixels(pixel + 1).toInt << 8 //green
+        argb += pixels(pixel + 2).toInt << 16 //red
         result(row)(col) = argb
         col += 1
         if (col == width) {
