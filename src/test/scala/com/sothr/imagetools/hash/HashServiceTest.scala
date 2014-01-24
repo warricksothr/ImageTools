@@ -51,8 +51,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getDhash(image)
-    debug(s"Testing that $hash = -5198308484644955238L")
-    assert(hash == -5198308484644955238L)
+    debug(s"Testing that $hash = -1689609389L")
+    assert(hash == -1689609389L)
   }
   
   test("Calculate DHash Medium Sample Image 1") {
@@ -62,8 +62,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getDhash(image)
-    debug(s"Testing that $hash = -5198308484644955238L")
-    assert(hash == -5198308484644955238L)
+    debug(s"Testing that $hash = -1689609389L")
+    assert(hash == -1689609389L)
   }
   
   test("Calculate DHash Small Sample Image 1") {
@@ -73,8 +73,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getDhash(image)
-    debug(s"Testing that $hash = -5198299688551933030L")
-    assert(hash == -5198299688551933030L)
+    debug(s"Testing that $hash = -1689609389L")
+    assert(hash == -1689609389L)
   }
   
   test("DHash Of Large, Medium, And Small Sample 1 Must Be Similar") {
