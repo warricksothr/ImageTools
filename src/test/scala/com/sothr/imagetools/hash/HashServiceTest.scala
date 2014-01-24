@@ -44,6 +44,21 @@ class HashServiceTest extends BaseTest {
       assert(true)
   }
 
+  test("Confirm Largest DHash Output ") {
+    val testData:Array[Array[Int]] = Array(
+      Array(1,2,3,4,5,6,7,8),
+      Array(16,15,14,13,12,11,10,9),
+      Array(17,18,19,20,21,22,23,24),
+      Array(32,31,30,29,28,27,26,25),
+      Array(33,34,35,36,37,38,39,40),
+      Array(48,47,46,45,44,43,42,41),
+      Array(49,50,51,52,53,54,55,56),
+      Array(64,63,62,61,60,59,58,57))
+    val hash = DHash.getHash(testData)
+    debug(s"Hash of test array: $hash")
+    assert(hash == (Long.MaxValue))
+  }
+
   test("Calculate DHash Large Sample Image 1") {
     debug("Starting 'Calculate DHash Large Sample Image 1' test")
     val sample = new File(TestParams.LargeSampleImage1)
@@ -51,8 +66,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getDhash(image)
-    debug(s"Testing that $hash = -1689609389L")
-    assert(hash == -1689609389L)
+    debug(s"Testing that $hash = 4004374827879799635L")
+    assert(hash == 4004374827879799635L)
   }
   
   test("Calculate DHash Medium Sample Image 1") {
@@ -62,8 +77,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getDhash(image)
-    debug(s"Testing that $hash = -1689609389L")
-    assert(hash == -1689609389L)
+    debug(s"Testing that $hash = 4004374827879799635L")
+    assert(hash == 4004374827879799635L)
   }
   
   test("Calculate DHash Small Sample Image 1") {
@@ -73,8 +88,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getDhash(image)
-    debug(s"Testing that $hash = -1689609389L")
-    assert(hash == -1689609389L)
+    debug(s"Testing that $hash = 4004383623972821843L")
+    assert(hash == 4004383623972821843L)
   }
   
   test("DHash Of Large, Medium, And Small Sample 1 Must Be Similar") {

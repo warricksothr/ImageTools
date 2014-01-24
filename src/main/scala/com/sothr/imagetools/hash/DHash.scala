@@ -13,7 +13,7 @@ object DHash extends PerceptualHasher with Logging {
     debug(s"Image data size: ${width}x${height}")
     
     //calculate dhash
-    var hash = 0
+    var hash = 0L
     var previousPixel = imageData(height-1)(width-1)
     var previousLocation = (height-1, width-1)
     if (height % 2 == 0) {
@@ -27,10 +27,10 @@ object DHash extends PerceptualHasher with Logging {
         hash <<= 1
         val pixel = imageData(row)(col)
         //debug(s"previousPixel: $previousPixel currentPixel: $pixel previousLocation: $previousLocation currentLocation: (${row},${col})")
-        //binary or the current bit based on whether the value
+        //binary of the current bit based on whether the value
         //of the current pixel is greater or equal to the previous pixel
         if (pixel >= previousPixel) hash |= 1 else hash |= 0
-        //debug(s"hash: $hash")
+        //debug(s"(${row},${col})=$pixel hash=${hash.toBinaryString}")
         previousPixel = pixel
         previousLocation = (row, col)
       }
@@ -42,16 +42,14 @@ object DHash extends PerceptualHasher with Logging {
             hash <<= 1
             val pixel = imageData(nextRow)(col)
             //debug(s"previousPixel: $previousPixel currentPixel: $pixel previousLocation: $previousLocation currentLocation: (${nextRow},${col})")
-            //binary or the current bit based on whether the value
-            //of the current pixel is greater or equal to the previous pixel
             if (pixel >= previousPixel) hash |= 1 else hash |= 0
-            //debug(s"hash: $hash")
+            //debug(s"(${row},${col})=$pixel hash=${hash.toBinaryString}")
             previousPixel = pixel
             previousLocation = (nextRow, col)
           }
       }
     }
-    debug(s"Computed Hash: $hash from ${width * height} pixels")
+    debug(s"Computed DHash: $hash from ${width * height} pixels")
     hash
   }
 }
