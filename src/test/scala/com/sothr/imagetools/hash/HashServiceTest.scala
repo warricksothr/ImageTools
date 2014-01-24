@@ -3,6 +3,7 @@ package com.sothr.imagetools.hash
 import com.sothr.imagetools.{BaseTest, TestParams}
 import javax.imageio.ImageIO
 import java.io.File
+import com.sothr.imagetools.dto.ImageHashDTO
 
 /**
  * Created by dev on 1/23/14.
@@ -253,6 +254,69 @@ class HashServiceTest extends BaseTest {
     assert(HashService.arePhashSimilar(largeHash,mediumHash))
     assert(HashService.arePhashSimilar(largeHash,smallHash))
     assert(HashService.arePhashSimilar(mediumHash,smallHash))
+  }
+
+  def imageHashTestCase(filePath:String):ImageHashDTO = {
+    HashService.getImageHashes(filePath)
+  }
+
+  test("Benchmark getImageHashes") {
+    info("Benchmarking getImageHashes")
+    info("getImageHashes Large Image 3684x2736")
+    val largeTime1 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
+    val largeTime2 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
+    val largeTime3 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
+    val largeTime4 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
+    val largeTime5 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
+    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
+    info(s"The mean time of 5 tests for large was: $largeMean ms")
+    info("getImageHashes Medium Image 1824x1368")
+    val mediumTime1 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
+    val mediumTime2 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
+    val mediumTime3 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
+    val mediumTime4 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
+    val mediumTime5 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
+    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
+    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
+    info("getImageHashes Small Image 912x684")
+    val smallTime1 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
+    val smallTime2 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
+    val smallTime3 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
+    val smallTime4 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
+    val smallTime5 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
+    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
+    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    assert(true)
+  }
+
+  test("ImageHash Of Large, Medium, And Small Sample 1 Must Be Similar") {
+    val largeHash = imageHashTestCase(TestParams.LargeSampleImage1)
+    val mediumHash = imageHashTestCase(TestParams.MediumSampleImage1)
+    val smallHash = imageHashTestCase(TestParams.SmallSampleImage1)
+    assert(HashService.areImageHashesSimilar(largeHash,mediumHash))
+    assert(HashService.areImageHashesSimilar(largeHash,smallHash))
+    assert(HashService.areImageHashesSimilar(mediumHash,smallHash))
+  }
+
+  test("Calculate ImageHash Large Sample Image 1") {
+    debug("Starting 'Calculate ImageHash Large Sample Image 1' test")
+    val hash = HashService.getImageHashes(TestParams.LargeSampleImage1)
+    debug(s"Testing that ${hash.hashCode} = -812836666")
+    assert(hash.hashCode == -812836666)
+  }
+
+  test("Calculate ImageHash Medium Sample Image 1") {
+    debug("Starting 'Calculate ImageHash Medium Sample Image 1' test")
+    val hash = HashService.getImageHashes(TestParams.MediumSampleImage1)
+    debug(s"Testing that ${hash.hashCode} = -812836666")
+    assert(hash.hashCode == -812836666)
+  }
+
+  test("Calculate ImageHash Small Sample Image 1") {
+    debug("Starting 'Calculate ImageHash Small Sample Image 1' test")
+    val hash = HashService.getImageHashes(TestParams.SmallSampleImage1)
+    debug(s"Testing that ${hash.hashCode} = -812840762")
+    assert(hash.hashCode == -812840762)
   }
 
 }
