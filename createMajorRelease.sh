@@ -9,19 +9,19 @@ IFS='.' read -a arr <<< "$VERSION"
 #results in [0,1,0-DEV-27-060aec7]
 IFS='-' read -a arr2 <<< "${arr[2]}"
 #results in [0,DEV,27,060aec7]
-let patch=${arr2[0]}+1
-#echo $patch
-VERSION="${arr[0]}.${arr[1]}.$patch-${arr2[1]}"
+let major=${arr[0]}+1
+#echo $major
+VERSION="$major.0.0-${arr2[1]}"
 #echo $VERSION
 
 #update the POM
 mvn versions:set -DnewVersion=$VERSION
 
 #commit the new patch version
-git commit -a . -m "Creating patch version $VERSION"
+git commit -a . -m "Creating major version $VERSION"
 
 #tag the build
-git tag -a v$VERSION -m "Patch Release Version $VERSION"
+git tag -a v$VERSION -m "Major Release Version $VERSION"
 
 #push the build and tag
 git push --follow-tags
