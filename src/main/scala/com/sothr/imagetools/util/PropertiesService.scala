@@ -60,7 +60,7 @@ object PropertiesService extends Logging {
     val out:OutputStream = new FileOutputStream(location, false)
     val cleanProperties = getCleanProperties
     //insert special keys here
-    cleanProperties.setProperty("version.previous", version.toString())
+    cleanProperties.setProperty("version.previous", version.parsableToString())
     cleanProperties.storeToXML(out, "User Properties")
     out.flush()
     out.close()

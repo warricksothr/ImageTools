@@ -52,8 +52,12 @@ class Version(val versionString:String) {
     }
   }
 
+  def parsableToString():String = {
+    s"$major.$minor.$patch-$buildTag-$buildNumber-$buildHash"
+  }
+
   override def toString():String = {
-    return s"$major.$minor.$patch-$buildTag build:$buildNumber code:$buildHash"
+    s"$major.$minor.$patch-$buildTag build:$buildNumber code:$buildHash"
   }
   
   override def hashCode(): Int = {
