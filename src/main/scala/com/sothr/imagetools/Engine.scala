@@ -1,6 +1,6 @@
 package com.sothr.imagetools
 
-import com.sothr.imagetools.image.{ImageFilter, Image}
+import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
 import scala.collection.immutable
 import scala.collection.mutable
 import java.io.File
@@ -26,6 +26,10 @@ class Engine extends Logging{
       error(s"Provided path: $directoryPath is not a directory")
     }
     images.toList
+  }
+
+  def getSimilarImagesForDirectory(directoryPath:String):List[SimilarImages] = {
+    null
   }
 
 }

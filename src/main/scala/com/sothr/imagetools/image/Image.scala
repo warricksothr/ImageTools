@@ -1,10 +1,9 @@
 package com.sothr.imagetools.image
 
-import scala.collection.Traversable
 import com.sothr.imagetools.dto.ImageHashDTO
 import com.sothr.imagetools.hash.HashService
 
-class Image(val imagePath:String, val thumbnailPath:String, var hashes:ImageHashDTO = null) {
+class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2[Int,Int], var hashes:ImageHashDTO = null) {
 
   var imageType:ImageType = ImageType.SingleFrameImage
 
@@ -20,16 +19,8 @@ class Image(val imagePath:String, val thumbnailPath:String, var hashes:ImageHash
 
   }*/
 
-  def getPath:String = {
-    this.imagePath
-  }
-
-  def getThumbnailPath:String = {
-    this.thumbnailPath
-  }
-
   override def toString:String = {
-    s"Image: $imagePath Thumbnail: $thumbnailPath Hashes: $hashes"
+    s"Image: $imagePath Thumbnail: $thumbnailPath Image Size: ${imageSize._1}x${imageSize._2} Hashes: $hashes"
   }
   
 }

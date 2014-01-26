@@ -6,13 +6,16 @@ import net.coobird.thumbnailator.Thumbnails
 import java.io.File
 import com.sothr.imagetools.image.Image
 import com.sothr.imagetools.hash.HashService
+import javax.imageio.ImageIO
 
 object ImageService extends Logging {
 
   def getImage(file:File):Image = {
     val thumbnailPath = getThumbnailPath(file)
-    val hashes = HashService.getImageHashes(file.getAbsolutePath)
-    val image = new Image(file.getAbsolutePath, thumbnailPath, hashes)
+    val bufferedImage = ImageIO.read(file)
+    val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
+    val imageSize = { (bufferedImage.getWidth, bufferedImage.getHeight) }
+    val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
     debug(s"Created image: $image")
     image
   }

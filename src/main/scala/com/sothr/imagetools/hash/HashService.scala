@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.{FileInputStream, File}
 import org.apache.commons.codec.digest.DigestUtils
+import com.sothr.imagetools.image.Image
 
 /**
  * A service that exposes the ability to construct perceptive hashes from an
@@ -17,8 +18,12 @@ import org.apache.commons.codec.digest.DigestUtils
 object HashService extends Logging {
 
   def getImageHashes(imagePath:String):ImageHashDTO = {
-    
     debug(s"Creating hashes for $imagePath")
+    getImageHashes(ImageIO.read(new File(imagePath)), imagePath)
+  }
+
+  def getImageHashes(image:BufferedImage, imagePath:String):ImageHashDTO = {
+    debug(s"Creating hashes for image")
 
     var ahash:Long = 0L
     var dhash:Long = 0L
@@ -26,7 +31,7 @@ object HashService extends Logging {
     val md5:String = getMD5(imagePath)
 
     //Get Image Data
-    val grayImage = ImageService.convertToGray(ImageIO.read(new File(imagePath)))
+    val grayImage = ImageService.convertToGray(image)
 
     if (PropertiesService.get(PropertiesEnum.UseAhash.toString) == "true") {
       ahash = getAhash(grayImage, true)
@@ -37,11 +42,11 @@ object HashService extends Logging {
     if (PropertiesService.get(PropertiesEnum.UseAhash.toString) == "true") {
       phash = getPhash(grayImage, true)
     }
-    
+
     val hashes = new ImageHashDTO(ahash, dhash, phash, md5)
     debug(s"Generated hashes: $hashes")
-    
-    return hashes
+
+    hashes
   }
 
   def getAhash(image:BufferedImage, alreadyGray:Boolean = false):Long = {
