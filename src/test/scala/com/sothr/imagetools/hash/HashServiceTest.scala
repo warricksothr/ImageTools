@@ -256,6 +256,60 @@ class HashServiceTest extends BaseTest {
     assert(HashService.arePhashSimilar(mediumHash,smallHash))
   }
 
+  def md5TestCase(filePath:String):String = {
+    HashService.getMD5(filePath)
+  }
+
+  test("Benchmark MD5") {
+    info("Benchmarking MD5")
+    info("PHash Large Image 3684x2736")
+    val largeTime1 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
+    val largeTime2 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
+    val largeTime3 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
+    val largeTime4 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
+    val largeTime5 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
+    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
+    info(s"The mean time of 5 tests for large was: $largeMean ms")
+    info("PHash Medium Image 1824x1368")
+    val mediumTime1 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
+    val mediumTime2 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
+    val mediumTime3 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
+    val mediumTime4 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
+    val mediumTime5 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
+    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
+    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
+    info("PHash Small Image 912x684")
+    val smallTime1 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
+    val smallTime2 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
+    val smallTime3 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
+    val smallTime4 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
+    val smallTime5 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
+    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
+    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    assert(true)
+  }
+
+  test("Calculate MD5 Large Sample Image 1") {
+    debug("Starting 'Calculate MD5 Large Sample Image 1' test")
+    val hash = HashService.getMD5(TestParams.LargeSampleImage1)
+    debug(s"Testing that $hash = 3fbccfd5faf3f991435b827ee5961862")
+    assert(hash == "3fbccfd5faf3f991435b827ee5961862")
+  }
+
+  test("Calculate MD5 Medium Sample Image 1") {
+    debug("Starting 'Calculate MD5 Medium Sample Image 1' test")
+    val hash = HashService.getMD5(TestParams.MediumSampleImage1)
+    debug(s"Testing that $hash = a95e2cc4610307eb957e9c812429c53e")
+    assert(hash == "a95e2cc4610307eb957e9c812429c53e")
+  }
+
+  test("Calculate MD5 Small Sample Image 1") {
+    debug("Starting 'Calculate MD5 Small Sample Image 1' test")
+    val hash = HashService.getMD5(TestParams.SmallSampleImage1)
+    debug(s"Testing that $hash = b137131bd55896c747286e4d247b845e")
+    assert(hash == "b137131bd55896c747286e4d247b845e")
+  }
+
   def imageHashTestCase(filePath:String):ImageHashDTO = {
     HashService.getImageHashes(filePath)
   }

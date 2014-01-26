@@ -2,11 +2,7 @@ package com.sothr.imagetools.dto
 
 import grizzled.slf4j.Logging
 
-class ImageHashDTO(val ahash:Long, val dhash:Long, val phash:Long) extends Logging {
-
-  def getAhash():Long = this.ahash
-  def getDhash():Long = this.dhash
-  def getPhash():Long = this.phash
+class ImageHashDTO(val ahash:Long, val dhash:Long, val phash:Long, val md5:String) extends Logging {
 
   override def hashCode():Int = {
     var result = 365
@@ -16,8 +12,9 @@ class ImageHashDTO(val ahash:Long, val dhash:Long, val phash:Long) extends Loggi
     result
   }
 
-  override def toString():String = {
-    s"""ahash: $ahash
+  override def toString:String = {
+    s"""MD5: $md5
+    ahash: $ahash
     dhash: $dhash
     phash: $phash""".stripMargin
   }

@@ -2,26 +2,34 @@ package com.sothr.imagetools.image
 
 import scala.collection.Traversable
 import com.sothr.imagetools.dto.ImageHashDTO
+import com.sothr.imagetools.hash.HashService
 
-abstract class Image(val imagePath:String, val thumbnailPath:String, protected var hashes:ImageHashDTO = null) {
+class Image(val imagePath:String, val thumbnailPath:String, var hashes:ImageHashDTO = null) {
 
-  protected val imageType:ImageType = ImageType.SingleFrameImage
+  var imageType:ImageType = ImageType.SingleFrameImage
 
-  def getHashes():ImageHashDTO = this.hashes
-  def setHashes(newHashes:ImageHashDTO) = { this.hashes = newHashes }
-
-  def isSimilarTo(otherImage:Image):Boolean
-
-  def getSimilarity(otherImage:Image)
-
-  def getSimilar(otherImages:Traversable[Image]):Traversable[Image]
-
-  def getPath():String = {
-    return this.imagePath
+  def isSimilarTo(otherImage:Image):Boolean = {
+    HashService.areImageHashesSimilar(this.hashes,otherImage.hashes)
   }
 
-  def getThumbnailPath():String = {
-    return this.thumbnailPath
+  def getSimilarity(otherImage:Image):Float = {
+    HashService.getWeightedHashSimilarity(this.hashes, otherImage.hashes)
+  }
+
+  /*def getSimilar(otherImages:Traversable[Image]):Traversable[Image] = {
+
+  }*/
+
+  def getPath:String = {
+    this.imagePath
+  }
+
+  def getThumbnailPath:String = {
+    this.thumbnailPath
+  }
+
+  override def toString:String = {
+    s"Image: $imagePath Thumbnail: $thumbnailPath Hashes: $hashes"
   }
   
 }

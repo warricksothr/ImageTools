@@ -3,9 +3,24 @@ package com.sothr.imagetools
 import grizzled.slf4j.Logging
 import java.awt.image.{DataBufferByte, BufferedImage, ColorConvertOp}
 import net.coobird.thumbnailator.Thumbnails
+import java.io.File
+import com.sothr.imagetools.image.Image
+import com.sothr.imagetools.hash.HashService
 
 object ImageService extends Logging {
-  
+
+  def getImage(file:File):Image = {
+    val thumbnailPath = getThumbnailPath(file)
+    val hashes = HashService.getImageHashes(file.getAbsolutePath)
+    val image = new Image(file.getAbsolutePath, thumbnailPath, hashes)
+    debug(s"Created image: $image")
+    image
+  }
+
+  def getThumbnailPath(file:File):String = {
+    "."
+  }
+
   /**
    * Get the raw data for an image
    */

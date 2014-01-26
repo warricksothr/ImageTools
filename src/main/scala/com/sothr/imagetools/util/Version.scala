@@ -1,15 +1,25 @@
 package com.sothr.imagetools.util
 
+import grizzled.slf4j.Logging
+import java.lang.NumberFormatException
+
 /**
  * Created by drew on 1/6/14.
  */
-class Version(val versionString:String) {
+class Version(val versionString:String) extends Logging{
   //parse version into parts
   //typical version string i.e. 0.1.0-DEV-27-060aec7
   val (major,minor,patch,buildTag,buildNumber,buildHash) = {
-    val splitVersion = versionString.split("""\.""")
-    val splitType = splitVersion(splitVersion.length-1).split("""-""")
-    (splitVersion(0).toInt,splitVersion(1).toInt,splitType(0).toInt,splitType(1),splitType(2),splitType(3))
+    var version:Tuple6[Int,Int,Int,String,Int,String] = (0,0,0,"DEV",0,"asdfzxcv")
+    try {
+      val splitVersion = versionString.split("""\.""")
+      val splitType = splitVersion(splitVersion.length-1).split("""-""")
+      version = (splitVersion(0).toInt,splitVersion(1).toInt,splitType(0).toInt,splitType(1),splitType(2).toInt,splitType(3))
+    } catch {
+      case nfe:NumberFormatException => error(s"Error parsing number from version string '$versionString'", nfe)
+      case e:Exception => error(s"Unexpected error parsing version string '$versionString'", e)
+    }
+    version
   }
 
   /*

@@ -6,7 +6,8 @@ import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService, Hamming}
 import com.sothr.imagetools.ImageService
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
-import java.io.File
+import java.io.{FileInputStream, File}
+import org.apache.commons.codec.digest.DigestUtils
 
 /**
  * A service that exposes the ability to construct perceptive hashes from an
@@ -18,10 +19,11 @@ object HashService extends Logging {
   def getImageHashes(imagePath:String):ImageHashDTO = {
     
     debug(s"Creating hashes for $imagePath")
-    
+
     var ahash:Long = 0L
     var dhash:Long = 0L
     var phash:Long = 0L
+    val md5:String = getMD5(imagePath)
 
     //Get Image Data
     val grayImage = ImageService.convertToGray(ImageIO.read(new File(imagePath)))
@@ -36,7 +38,7 @@ object HashService extends Logging {
       phash = getPhash(grayImage, true)
     }
     
-    val hashes = new ImageHashDTO(ahash, dhash, phash)
+    val hashes = new ImageHashDTO(ahash, dhash, phash, md5)
     debug(s"Generated hashes: $hashes")
     
     return hashes
@@ -80,6 +82,10 @@ object HashService extends Logging {
     val imageData = ImageService.getImageData(resizedImage)
     PHash.getHash(imageData)
   }
+
+  def getMD5(filePath:String):String = {
+    DigestUtils.md5Hex(new FileInputStream(filePath))
+  }
   
   def areAhashSimilar(ahash1:Long, ahash2:Long):Boolean = {
     val tolerence = PropertiesService.get(PropertiesEnum.AhashTolerance.toString).toInt
@@ -102,7 +108,7 @@ object HashService extends Logging {
     if (distance <= tolerence) true else false
   }
 
-  def areImageHashesSimilar(imageHash1:ImageHashDTO, imageHash2:ImageHashDTO):Boolean = {
+  def getWeightedHashSimilarity(imageHash1:ImageHashDTO, imageHash2:ImageHashDTO):Float = {
     //ahash
     val aHashTolerance = PropertiesService.get(PropertiesEnum.AhashTolerance.toString).toInt
     val aHashWeight = PropertiesService.get(PropertiesEnum.AhashWeight.toString).toFloat
@@ -118,37 +124,78 @@ object HashService extends Logging {
 
     //calculate weighted values
     var weightedHammingTotal:Float = 0
+    var methodsTotal = 0
+
+    if (useAhash)
+    {
+      val hamming = Hamming.getDistance(imageHash1.ahash, imageHash2.ahash)
+      weightedHammingTotal += hamming * aHashWeight
+      debug(s"hash1: ${imageHash1.ahash} hash2: ${imageHash1.ahash} tolerence: $aHashTolerance hamming distance: $hamming weight: $aHashWeight")
+      methodsTotal+=1
+    }
+    if (useDhash)
+    {
+      val hamming = Hamming.getDistance(imageHash1.dhash, imageHash2.dhash)
+      weightedHammingTotal += hamming * dHashWeight
+      debug(s"hash1: ${imageHash1.dhash} hash2: ${imageHash1.dhash} tolerence: $dHashTolerance hamming distance: $hamming weight: $dHashWeight")
+      methodsTotal+=1
+    }
+    if (usePhash)
+    {
+      val hamming = Hamming.getDistance(imageHash1.phash, imageHash2.phash)
+      weightedHammingTotal += hamming * pHashWeight
+      debug(s"hash1: ${imageHash1.phash} hash2: ${imageHash1.phash} tolerence: $pHashTolerance hamming distance: $hamming weight: $pHashWeight")
+      methodsTotal+=1
+    }
+    val weightedHammingMean = weightedHammingTotal / methodsTotal
+    debug(s"Calculated Weighted Hamming Mean: $weightedHammingMean")
+    weightedHammingMean
+  }
+
+  def getWeightedHashTolerence:Float = {
+    //ahash
+    val aHashTolerance = PropertiesService.get(PropertiesEnum.AhashTolerance.toString).toInt
+    val aHashWeight = PropertiesService.get(PropertiesEnum.AhashWeight.toString).toFloat
+    val useAhash = PropertiesService.get(PropertiesEnum.UseAhash.toString).toBoolean
+    //dhash
+    val dHashTolerance = PropertiesService.get(PropertiesEnum.DhashTolerance.toString).toInt
+    val dHashWeight = PropertiesService.get(PropertiesEnum.DhashWeight.toString).toFloat
+    val useDhash = PropertiesService.get(PropertiesEnum.UseDhash.toString).toBoolean
+    //phash
+    val pHashTolerance = PropertiesService.get(PropertiesEnum.PhashTolerance.toString).toInt
+    val pHashWeight = PropertiesService.get(PropertiesEnum.PhashWeight.toString).toFloat
+    val usePhash = PropertiesService.get(PropertiesEnum.UsePhash.toString).toBoolean
+
+    //calculate weighted values
     var weightedToleranceTotal:Float = 0
     var methodsTotal = 0
 
     if (useAhash)
     {
-      val hamming = Hamming.getDistance(imageHash1.getAhash(), imageHash2.getAhash())
-      weightedHammingTotal += hamming * aHashWeight
       weightedToleranceTotal += aHashTolerance * aHashWeight
-      debug(s"hash1: ${imageHash1.getAhash()} hash2: ${imageHash1.getAhash()} tolerence: $aHashTolerance hamming distance: $hamming weight: $aHashWeight")
+      debug(s"Ahash Tolerance: $aHashTolerance Current Weighted Tolerance: $weightedToleranceTotal")
       methodsTotal+=1
     }
     if (useDhash)
     {
-      val hamming = Hamming.getDistance(imageHash1.getDhash(), imageHash2.getDhash())
-      weightedHammingTotal += hamming * dHashWeight
       weightedToleranceTotal += dHashTolerance * dHashWeight
-      debug(s"hash1: ${imageHash1.getDhash()} hash2: ${imageHash1.getDhash()} tolerence: $dHashTolerance hamming distance: $hamming weight: $dHashWeight")
+      debug(s"Dhash Tolerance: $dHashTolerance Current Weighted Tolerance: $weightedToleranceTotal")
       methodsTotal+=1
     }
     if (usePhash)
     {
-      val hamming = Hamming.getDistance(imageHash1.getPhash(), imageHash2.getPhash())
-      weightedHammingTotal += hamming * pHashWeight
       weightedToleranceTotal += pHashTolerance * pHashWeight
-      debug(s"hash1: ${imageHash1.getPhash()} hash2: ${imageHash1.getPhash()} tolerence: $pHashTolerance hamming distance: $hamming weight: $pHashWeight")
+      debug(s"Phash Tolerance: $pHashTolerance Current Weighted Tolerance: $weightedToleranceTotal")
       methodsTotal+=1
     }
-    val weightedHammingMean = weightedHammingTotal / methodsTotal
-    val weightedToleranceMean = weightedToleranceTotal /methodsTotal
-    debug(s"Weighted Values Are: Hamming: $weightedHammingMean Tolerance: $weightedToleranceMean")
+    val weightedTolerance = weightedToleranceTotal / methodsTotal
+    debug(s"Calculated Weighted Tolerance: $weightedTolerance")
+    weightedTolerance
+  }
 
+  def areImageHashesSimilar(imageHash1:ImageHashDTO, imageHash2:ImageHashDTO):Boolean = {
+    val weightedHammingMean = getWeightedHashSimilarity(imageHash1, imageHash2)
+    val weightedToleranceMean = getWeightedHashTolerence
     if (weightedHammingMean <= weightedToleranceMean) true else false
   }
 
