@@ -26,6 +26,9 @@
   </pluginRepositories>
 
   <properties>
+    <project.version.major>0</project.version.major>
+    <project.version.minor>1</project.version.minor>
+    <project.version.tag>DEV</project.version.tag>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.version>1.7</jdk.version>
     <lib.junit.version>3.8.1</lib.junit.version>

@@ -32,3 +32,6 @@ version.info
 *.debug*
 *.info*
 *.err*
+
+#POM versions backup
+*.versionsBackup

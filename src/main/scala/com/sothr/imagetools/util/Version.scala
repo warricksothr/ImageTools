@@ -5,21 +5,22 @@ package com.sothr.imagetools.util
  */
 class Version(val versionString:String) {
   //parse version into parts
-  val (major,minor,revision,buildType) = {
+  //typical version string i.e. 0.1.0-DEV-27-060aec7
+  val (major,minor,patch,buildTag,buildNumber,buildHash) = {
     val splitVersion = versionString.split("""\.""")
     val splitType = splitVersion(splitVersion.length-1).split("""-""")
-    (splitVersion(0).toInt,splitVersion(1).toInt,splitType(0).toInt,splitType(1))
+    (splitVersion(0).toInt,splitVersion(1).toInt,splitType(0).toInt,splitType(1),splitType(2),splitType(3))
   }
 
   /*
-  * -3 = this.revision < that.revision
+  * -3 = this.patch < that.patch
   * -2 = this.minor < that.minor
   * -1 = this.major < that.major
   * 0 = Identical Versions
   * 1 = this.major > that.major
   * 2 = this.minor > that.minor
-  * 3 = this.revision > that.revision
-  * 4 = this.buildType != that.buildType
+  * 3 = this.patch > that.patch
+  * 4 = this.buildTag != that.buildTag
   */
   def compare(that:Version):Integer = {
     if (this.hashCode == that.hashCode) return 0
@@ -35,13 +36,13 @@ class Version(val versionString:String) {
         return -2
       //major.minor are the same
       } else {
-        if (this.revision > that.revision) {
+        if (this.patch > that.patch) {
           return 3
-        } else if (this.revision < that.revision) {
+        } else if (this.patch < that.patch) {
           return -3
-        //major.minor.revision are all the same
+        //major.minor.patch are all the same
         } else {
-          if (this.buildType != that.buildType) {
+          if (this.buildTag != that.buildTag) {
             return 4
           }
           //should be caught by the first if, but incase not
@@ -52,7 +53,7 @@ class Version(val versionString:String) {
   }
 
   override def toString():String = {
-    return s"$major.$minor.$revision-$buildType"
+    return s"$major.$minor.$patch-$buildTag build:$buildNumber code:$buildHash"
   }
   
   override def hashCode(): Int = {
@@ -60,8 +61,8 @@ class Version(val versionString:String) {
     val result:Int = 255
     var hash:Int = major
     hash += minor
-    hash += revision
-    hash += buildType.hashCode
+    hash += patch
+    hash += buildTag.hashCode
     return prime * result + hash
   }
 }

@@ -25,7 +25,13 @@ class AppConfig {
 
     public static void configureApp() {
         //configSimpleLogging();
-        loadProperties();
+        if (!configuredLogging) {
+            BasicConfigurator.configure();
+            loadProperties();
+            BasicConfigurator.resetConfiguration();
+        } else {
+            loadProperties();
+        }
         configLogging();
     }
 
