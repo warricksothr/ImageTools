@@ -22,5 +22,12 @@ class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2
   override def toString:String = {
     s"Image: $imagePath Thumbnail: $thumbnailPath Image Size: ${imageSize._1}x${imageSize._2} Hashes: $hashes"
   }
+
+  override def hashCode:Int = {
+    var result = 365
+    result = 37 * result + imagePath.hashCode
+    result = 41 * result + hashes.hashCode()
+    result
+  }
   
 }
