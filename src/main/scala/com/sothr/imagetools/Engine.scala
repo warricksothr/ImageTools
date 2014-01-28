@@ -1,6 +1,6 @@
 package com.sothr.imagetools
 
-import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
+import com.sothr.imagetools.image.{ImageCache, SimilarImages, ImageFilter, Image}
 import scala.collection.immutable
 import scala.collection.mutable
 import java.io.File
@@ -9,7 +9,7 @@ import grizzled.slf4j.Logging
 /**
  * Created by drew on 1/26/14.
  */
-class Engine extends Logging{
+class Engine(var imageCache:ImageCache = new ImageCache()) extends Logging{
 
   val imageFilter:ImageFilter = new ImageFilter()
 
@@ -21,7 +21,11 @@ class Engine extends Logging{
       val files = directory.listFiles(imageFilter)
       debug(s"Found ${files.length} files that are images in directory: $directoryPath")
       for (file <- files) {
-        images += ImageService.getImage(file)
+        if (imageCache.contains(file.getAbsolutePath)) {
+          images += imageCache.get(file.getAbsolutePath)
+        } else {
+          images += ImageService.getImage(file)
+        }
       }
     } else {
       error(s"Provided path: $directoryPath is not a directory")
@@ -32,10 +36,13 @@ class Engine extends Logging{
   def getSimilarImagesForDirectory(directoryPath:String):List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
     val images = getImagesForDirectory(directoryPath)
+    info(s"Searching ${images.length} images for similarities")
     val ignoreSet = new mutable.HashSet[Image]()
     val allSimilarImages = new mutable.MutableList[SimilarImages]()
+    var processedCount = 0
     for (rootImage <- images) {
       if (!ignoreSet.contains(rootImage)) {
+        info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
         debug(s"Looking for images similar to: ${rootImage.imagePath}")
         ignoreSet += rootImage
         val similarImages = new mutable.MutableList[Image]()
@@ -53,9 +60,9 @@ class Engine extends Logging{
           debug(s"Found similar images: ${similar.toString}")
           allSimilarImages += similar
         }
+        processedCount += 1
       }
     }
     allSimilarImages.toList
   }
-
 }

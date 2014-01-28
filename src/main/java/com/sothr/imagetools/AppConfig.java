@@ -33,6 +33,7 @@ class AppConfig {
             loadProperties();
         }
         configLogging();
+        logger.info("Detected Version: %s of Image Tools".format(PropertiesService.getVersion().toString()));
     }
 
     public static void configSimpleLogging() {

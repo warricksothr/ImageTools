@@ -12,6 +12,7 @@ object PropertiesService extends Logging {
 
   private val properties:Properties = new Properties()
   private var version:Version = null
+  def getVersion:Version = this.version
   private val propertiesToClean:Array[String] = Array("version")
 
   /*
