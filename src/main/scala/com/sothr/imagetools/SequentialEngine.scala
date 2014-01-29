@@ -48,7 +48,9 @@ class SequentialEngine extends Engine with Logging {
     var similarCount = 0
     for (rootImage <- images) {
       if (!ignoreSet.contains(rootImage)) {
-        info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
+        if (processedCount % 25 == 0) {
+            info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
+        }
         debug(s"Looking for images similar to: ${rootImage.imagePath}")
         ignoreSet += rootImage
         val similarImages = new mutable.MutableList[Image]()

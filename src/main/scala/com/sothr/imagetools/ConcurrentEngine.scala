@@ -2,7 +2,7 @@ package com.sothr.imagetools
 
 import java.io.File
 import akka.actor.{Actor, ActorSystem, Props, ActorLogging}
-import akka.routing.{Broadcast, RoundRobinRouter}
+import akka.routing.{Broadcast, SmallestMailboxRouter}
 import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
@@ -51,7 +51,8 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
             case false => 
               debug("Still Processing")
               //sleep thread
-              val future = Future { blocking(Thread.sleep(5000L)); "done" }
+              Thread.sleep(5000L)
+              //val future = Future { blocking(Thread.sleep(5000L)); "done" }
           }
       }
       val f = engineController ? EngineGetProcessingResults
@@ -74,7 +75,9 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     var similarCount = 0
     for (rootImage <- images) {
       if (!ignoreSet.contains(rootImage)) {
-        info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
+        if (processedCount % 25 == 0) {
+            info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
+        }
         debug(s"Looking for images similar to: ${rootImage.imagePath}")
         ignoreSet += rootImage
         val similarImages = new MutableList[Image]()
@@ -104,7 +107,7 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
 class ConcurrentEngineController extends Actor with ActorLogging {
     val imageCache = AppConfig.cacheManager.getCache("images")
     val numOfRouters = 10
-    val router = context.actorOf(Props[ConcurrentEngineActor].withRouter(RoundRobinRouter(nrOfInstances = numOfRouters)))
+    val router = context.actorOf(Props[ConcurrentEngineActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
     
     var images:MutableList[Image] = new MutableList[Image]()
     var toProcess = 0
@@ -146,9 +149,6 @@ class ConcurrentEngineController extends Actor with ActorLogging {
         }
     }
     
-    /*
-     * 
-     */
     def requestWrapup() = {
         router ! Broadcast(EngineNoMoreFiles)
     }
@@ -197,7 +197,7 @@ class ConcurrentEngineActor extends Actor with ActorLogging {
         case command:EngineProcessFile => processFile(command)
         case EngineNoMoreFiles => finishedProcessingFiles()
         case EngineActorReactivate => ignoreMessages = false
-        case _      => log.info("received unknown message")
+        case _ => log.info("received unknown message")
     }
     
     def processFile(command:EngineProcessFile) = {
