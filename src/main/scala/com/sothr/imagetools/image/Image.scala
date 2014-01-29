@@ -2,8 +2,9 @@ package com.sothr.imagetools.image
 
 import com.sothr.imagetools.dto.ImageHashDTO
 import com.sothr.imagetools.hash.HashService
+import grizzled.slf4j.Logging
 
-class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2[Int,Int], var hashes:ImageHashDTO = null) {
+class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2[Int,Int], var hashes:ImageHashDTO = null) extends Serializable with Logging{
 
   var imageType:ImageType = ImageType.SingleFrameImage
 

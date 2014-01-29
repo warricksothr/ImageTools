@@ -18,16 +18,21 @@ class Engine() extends Logging{
     debug(s"Looking for images in directory: $directoryPath")
     val images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
     val directory:File = new File(directoryPath)
+    var count = 0
     if (directory.isDirectory) {
       val files = directory.listFiles(imageFilter)
-      debug(s"Found ${files.length} files that are images in directory: $directoryPath")
+      info(s"Found ${files.length} files that are images in directory: $directoryPath")
       for (file <- files) {
+        count += 1
+        if (count % 25 == 0) info(s"Processed ${count}/${files.size}")
         if (imageCache.isKeyInCache(file.getAbsolutePath)) {
           images += imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
         } else {
           val image = ImageService.getImage(file)
-          imageCache.put(new Element(file.getAbsolutePath, image))
-          images += image
+          if (image != null) {
+            imageCache.put(new Element(file.getAbsolutePath, image))
+            images += image
+          }
         }
       }
     } else {

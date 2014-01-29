@@ -27,7 +27,7 @@ class AppCLI {
       CommandLine cmd = parser.parse(options, args);
       process(cmd);
     }  catch (Exception ex) {
-      logger.error("Unhandled exception in AppCLI", ex);
+      logger.error("Unhandled exception in AppCLI",ex);
     }
   }
 
