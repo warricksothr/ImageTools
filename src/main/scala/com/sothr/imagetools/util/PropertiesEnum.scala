@@ -8,6 +8,9 @@ object PropertiesEnum extends Enumeration {
   val LogInfo = Value("app.log.info")
   val LogError = Value("app.log.error")
   val Timed = Value("app.timed")
+  //default engine concurrency settings
+  val ConcurrentSimiliartyLimit = Value("app.engine.concurrent.similarity.limit")
+  val ConcurrentProcessingLimit = Value("app.engine.concurrent.processing.limit")
   //default image settings
   val ImageDifferenceThreshold = Value("image.differenceThreshold")
   val HashPrecision = Value("image.hash.precision")

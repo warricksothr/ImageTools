@@ -9,6 +9,7 @@ import akka.util.Timeout
 import java.util.concurrent.TimeUnit
 import scala.collection.mutable.{MutableList, HashSet}
 import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
+import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
 import scala.concurrent.{Await, blocking, Future}
 import java.lang.Thread
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -114,7 +115,7 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
 
 class ConcurrentEngineController extends Actor with ActorLogging {
     val imageCache = AppConfig.cacheManager.getCache("images")
-    val numOfRouters = 10
+    val numOfRouters = PropertiesService.get(PropertiesEnum.ConcurrentProcessingLimit.toString).toInt
     val router = context.actorOf(Props[ConcurrentEngineActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
     
     var images:MutableList[Image] = new MutableList[Image]()
