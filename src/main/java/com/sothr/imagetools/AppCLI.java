@@ -1,6 +1,5 @@
 package com.sothr.imagetools;
 
-import com.sothr.imagetools.image.ImageCache;
 import com.sothr.imagetools.image.SimilarImages;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -10,8 +9,6 @@ import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.immutable.List;
-
-import java.text.ParseException;
 
 /**
  * CLI interface for Image Tools
@@ -42,7 +39,7 @@ class AppCLI {
 
   private static void process(CommandLine cmd) {
     //scan a comma separated list of paths to search for image similarities
-    Engine engine = new Engine(new ImageCache());
+    Engine engine = new Engine();
     if (cmd.hasOption('s')) {
       String scanList = cmd.getOptionValue('s');
       String[] paths = scanList.split(",");

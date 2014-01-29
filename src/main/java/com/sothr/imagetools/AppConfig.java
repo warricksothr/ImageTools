@@ -41,14 +41,6 @@ public class AppConfig {
       configCache();
     }
 
-    public static void configCache() {
-      if (!configuredCache) {
-        cacheManager = CacheManager.newInstance();
-        configuredCache = true;
-        logger.info("Configured EHCache");
-      }
-    }
-
     public static void configLogging(String location) {
       //Logging Config
       //remove previous configuration if it exists
@@ -109,6 +101,7 @@ public class AppConfig {
     if (!configuredLogging) {
       configLogging(LOGSETTINGSFILE);
       configuredLogging = true;
+      logger.info("Configured logging");
     }
   }
 
@@ -121,11 +114,21 @@ public class AppConfig {
         PropertiesService.loadProperties(DEFAULTPROPERTIESFILE, null);
       }
       loadedProperties = true;
+      logger.info("Loaded properties");
+    }
+  }
+
+  public static void configCache() {
+    if (!configuredCache) {
+      cacheManager = CacheManager.newInstance();
+      configuredCache = true;
+      logger.info("Configured EHCache");
     }
   }
 
   public static void saveProperties() {
     PropertiesService.saveXMLProperties(USERPROPERTIESFILE);
+    logger.debug("Saved properties");
   }
 
 }

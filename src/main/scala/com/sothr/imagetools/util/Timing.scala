@@ -17,15 +17,19 @@ trait Timing extends Logging{
     val result = block    // call-by-name
     val t1 = System.currentTimeMillis
     info("Elapsed time: " + (t1 - t0) + "ms")
-    (t1 - t0)
+    t1 - t0
   }
-  
+
   def getMean(times:Long*):Long = {
-      var ag = 0L
-      for (i <- times.indices) {
-          ag += times(i)
-      }
-      (ag / times.length)
+    getMean(times.toArray[Long])
+  }
+
+  def getMean(times:Array[Long]):Long = {
+    var ag = 0L
+    for (i <- times.indices) {
+      ag += times(i)
+    }
+    ag / times.length
   }
     
 }

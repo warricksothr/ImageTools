@@ -5,11 +5,15 @@ import javax.imageio.ImageIO
 import java.io.File
 import com.sothr.imagetools.dto.ImageHashDTO
 import net.sf.ehcache.{Cache, Element}
+import scala.collection.mutable
 
 /**
  * Created by dev on 1/23/14.
  */
 class HashServiceTest extends BaseTest {
+
+  // Define the number of runs the benchmarking tests should use
+  val benchmarkRuns = 10
 
   def dhashTestCase(filePath:String):Long = {
       val sample = new File(filePath)
@@ -18,32 +22,30 @@ class HashServiceTest extends BaseTest {
   }
 
   test("Benchmark DHash") {
-      info("Benchmarking DHash")
-      info("DHash Large Image 3684x2736")
-      val largeTime1 = getTime { dhashTestCase(TestParams.LargeSampleImage1) }
-      val largeTime2 = getTime { dhashTestCase(TestParams.LargeSampleImage1) }
-      val largeTime3 = getTime { dhashTestCase(TestParams.LargeSampleImage1) }
-      val largeTime4 = getTime { dhashTestCase(TestParams.LargeSampleImage1) }
-      val largeTime5 = getTime { dhashTestCase(TestParams.LargeSampleImage1) }
-      val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
-      info(s"The mean time of 5 tests for large was: $largeMean ms")
-      info("DHash Medium Image 1824x1368")
-      val mediumTime1 = getTime { dhashTestCase(TestParams.MediumSampleImage1) }
-      val mediumTime2 = getTime { dhashTestCase(TestParams.MediumSampleImage1) }
-      val mediumTime3 = getTime { dhashTestCase(TestParams.MediumSampleImage1) }
-      val mediumTime4 = getTime { dhashTestCase(TestParams.MediumSampleImage1) }
-      val mediumTime5 = getTime { dhashTestCase(TestParams.MediumSampleImage1) }
-      val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
-      info(s"The mean time of 5 tests for medium was: $mediumMean ms")
-      info("DHash Small Image 912x684")
-      val smallTime1 = getTime { dhashTestCase(TestParams.SmallSampleImage1) }
-      val smallTime2 = getTime { dhashTestCase(TestParams.SmallSampleImage1) }
-      val smallTime3 = getTime { dhashTestCase(TestParams.SmallSampleImage1) }
-      val smallTime4 = getTime { dhashTestCase(TestParams.SmallSampleImage1) }
-      val smallTime5 = getTime { dhashTestCase(TestParams.SmallSampleImage1) }
-      val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
-      info(s"The mean time of 5 tests for small was: $smallMean ms")
-      assert(true)
+    info("Benchmarking DHash")
+    info("DHash Large Image 3684x2736")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { dhashTestCase(TestParams.LargeSampleImage1) }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
+    info("DHash Medium Image 1824x1368")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { dhashTestCase(TestParams.MediumSampleImage1) }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
+    info("DHash Small Image 912x684")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { dhashTestCase(TestParams.SmallSampleImage1) }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
+    assert(true)
   }
 
   test("Confirm Largest DHash Output ") {
@@ -112,29 +114,27 @@ class HashServiceTest extends BaseTest {
   test("Benchmark AHash") {
     info("Benchmarking AHash")
     info("AHash Large Image 3684x2736")
-    val largeTime1 = getTime { ahashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime2 = getTime { ahashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime3 = getTime { ahashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime4 = getTime { ahashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime5 = getTime { ahashTestCase(TestParams.LargeSampleImage1) }
-    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
-    info(s"The mean time of 5 tests for large was: $largeMean ms")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { ahashTestCase(TestParams.LargeSampleImage1) }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
     info("AHash Medium Image 1824x1368")
-    val mediumTime1 = getTime { ahashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime2 = getTime { ahashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime3 = getTime { ahashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime4 = getTime { ahashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime5 = getTime { ahashTestCase(TestParams.MediumSampleImage1) }
-    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
-    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { ahashTestCase(TestParams.MediumSampleImage1) }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
     info("AHash Small Image 912x684")
-    val smallTime1 = getTime { ahashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime2 = getTime { ahashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime3 = getTime { ahashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime4 = getTime { ahashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime5 = getTime { ahashTestCase(TestParams.SmallSampleImage1) }
-    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
-    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { ahashTestCase(TestParams.SmallSampleImage1) }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
     assert(true)
   }
 
@@ -189,29 +189,27 @@ class HashServiceTest extends BaseTest {
   test("Benchmark PHash") {
     info("Benchmarking PHash")
     info("PHash Large Image 3684x2736")
-    val largeTime1 = getTime { phashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime2 = getTime { phashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime3 = getTime { phashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime4 = getTime { phashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime5 = getTime { phashTestCase(TestParams.LargeSampleImage1) }
-    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
-    info(s"The mean time of 5 tests for large was: $largeMean ms")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { phashTestCase(TestParams.LargeSampleImage1) }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
     info("PHash Medium Image 1824x1368")
-    val mediumTime1 = getTime { phashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime2 = getTime { phashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime3 = getTime { phashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime4 = getTime { phashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime5 = getTime { phashTestCase(TestParams.MediumSampleImage1) }
-    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
-    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { phashTestCase(TestParams.MediumSampleImage1) }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
     info("PHash Small Image 912x684")
-    val smallTime1 = getTime { phashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime2 = getTime { phashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime3 = getTime { phashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime4 = getTime { phashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime5 = getTime { phashTestCase(TestParams.SmallSampleImage1) }
-    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
-    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { phashTestCase(TestParams.SmallSampleImage1) }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
     assert(true)
   }
 
@@ -263,30 +261,28 @@ class HashServiceTest extends BaseTest {
 
   test("Benchmark MD5") {
     info("Benchmarking MD5")
-    info("PHash Large Image 3684x2736")
-    val largeTime1 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
-    val largeTime2 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
-    val largeTime3 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
-    val largeTime4 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
-    val largeTime5 = getTime { md5TestCase(TestParams.LargeSampleImage1) }
-    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
-    info(s"The mean time of 5 tests for large was: $largeMean ms")
-    info("PHash Medium Image 1824x1368")
-    val mediumTime1 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
-    val mediumTime2 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
-    val mediumTime3 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
-    val mediumTime4 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
-    val mediumTime5 = getTime { md5TestCase(TestParams.MediumSampleImage1) }
-    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
-    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
-    info("PHash Small Image 912x684")
-    val smallTime1 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
-    val smallTime2 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
-    val smallTime3 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
-    val smallTime4 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
-    val smallTime5 = getTime { md5TestCase(TestParams.SmallSampleImage1) }
-    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
-    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    info("MD5 Large Image 3684x2736")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { md5TestCase(TestParams.LargeSampleImage1) }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
+    info("MD5 Medium Image 1824x1368")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { md5TestCase(TestParams.MediumSampleImage1) }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
+    info("MD5 Small Image 912x684")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { md5TestCase(TestParams.SmallSampleImage1) }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
     assert(true)
   }
 
@@ -329,59 +325,55 @@ class HashServiceTest extends BaseTest {
 
   test("Benchmark getImageHashes with cache") {
     info("Benchmarking getImageHashes with cache")
-    info("getImageHashes Large Image 3684x2736")
-    val largeTime1 = getTime { imageHashTestWithCacheCase(TestParams.LargeSampleImage1) }
-    val largeTime2 = getTime { imageHashTestWithCacheCase(TestParams.LargeSampleImage1) }
-    val largeTime3 = getTime { imageHashTestWithCacheCase(TestParams.LargeSampleImage1) }
-    val largeTime4 = getTime { imageHashTestWithCacheCase(TestParams.LargeSampleImage1) }
-    val largeTime5 = getTime { imageHashTestWithCacheCase(TestParams.LargeSampleImage1) }
-    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
-    info(s"The mean time of 5 tests for large was: $largeMean ms")
-    info("getImageHashes Medium Image 1824x1368")
-    val mediumTime1 = getTime { imageHashTestWithCacheCase(TestParams.MediumSampleImage1) }
-    val mediumTime2 = getTime { imageHashTestWithCacheCase(TestParams.MediumSampleImage1) }
-    val mediumTime3 = getTime { imageHashTestWithCacheCase(TestParams.MediumSampleImage1) }
-    val mediumTime4 = getTime { imageHashTestWithCacheCase(TestParams.MediumSampleImage1) }
-    val mediumTime5 = getTime { imageHashTestWithCacheCase(TestParams.MediumSampleImage1) }
-    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
-    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
-    info("getImageHashes Small Image 912x684")
-    val smallTime1 = getTime { imageHashTestWithCacheCase(TestParams.SmallSampleImage1) }
-    val smallTime2 = getTime { imageHashTestWithCacheCase(TestParams.SmallSampleImage1) }
-    val smallTime3 = getTime { imageHashTestWithCacheCase(TestParams.SmallSampleImage1) }
-    val smallTime4 = getTime { imageHashTestWithCacheCase(TestParams.SmallSampleImage1) }
-    val smallTime5 = getTime { imageHashTestWithCacheCase(TestParams.SmallSampleImage1) }
-    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
-    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    info("getImageHashes with cache Large Image 3684x2736")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { imageHashTestWithCacheCase(TestParams.LargeSampleImage1) }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
+    info("getImageHashes with cache Medium Image 1824x1368")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { imageHashTestWithCacheCase(TestParams.MediumSampleImage1) }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
+    info("getImageHashes with cache Small Image 912x684")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { imageHashTestWithCacheCase(TestParams.SmallSampleImage1) }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
     assert(true)
   }
 
   test("Benchmark getImageHashes") {
     info("Benchmarking getImageHashes")
     info("getImageHashes Large Image 3684x2736")
-    val largeTime1 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime2 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime3 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime4 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
-    val largeTime5 = getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
-    val largeMean = getMean(largeTime1, largeTime2, largeTime3, largeTime4, largeTime5)
-    info(s"The mean time of 5 tests for large was: $largeMean ms")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { imageHashTestCase(TestParams.LargeSampleImage1) }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
     info("getImageHashes Medium Image 1824x1368")
-    val mediumTime1 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime2 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime3 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime4 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
-    val mediumTime5 = getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
-    val mediumMean = getMean(mediumTime1, mediumTime2, mediumTime3, mediumTime4, mediumTime5)
-    info(s"The mean time of 5 tests for medium was: $mediumMean ms")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { imageHashTestCase(TestParams.MediumSampleImage1) }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
     info("getImageHashes Small Image 912x684")
-    val smallTime1 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime2 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime3 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime4 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
-    val smallTime5 = getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
-    val smallMean = getMean(smallTime1, smallTime2, smallTime3, smallTime4, smallTime5)
-    info(s"The mean time of 5 tests for small was: $smallMean ms")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime { imageHashTestCase(TestParams.SmallSampleImage1) }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
     assert(true)
   }
 

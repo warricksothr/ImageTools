@@ -1,17 +1,18 @@
 package com.sothr.imagetools
 
-import com.sothr.imagetools.image.{ImageCache, SimilarImages, ImageFilter, Image}
-import scala.collection.immutable
+import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
 import scala.collection.mutable
 import java.io.File
 import grizzled.slf4j.Logging
+import net.sf.ehcache.Element
 
 /**
  * Created by drew on 1/26/14.
  */
-class Engine(var imageCache:ImageCache = new ImageCache()) extends Logging{
+class Engine() extends Logging{
 
   val imageFilter:ImageFilter = new ImageFilter()
+  val imageCache = AppConfig.cacheManager.getCache("images")
 
   def getImagesForDirectory(directoryPath:String):List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
@@ -21,10 +22,12 @@ class Engine(var imageCache:ImageCache = new ImageCache()) extends Logging{
       val files = directory.listFiles(imageFilter)
       debug(s"Found ${files.length} files that are images in directory: $directoryPath")
       for (file <- files) {
-        if (imageCache.contains(file.getAbsolutePath)) {
-          images += imageCache.get(file.getAbsolutePath)
+        if (imageCache.isKeyInCache(file.getAbsolutePath)) {
+          images += imageCache.get(file.getAbsolutePath).asInstanceOf[Image]
         } else {
-          images += ImageService.getImage(file)
+          val image = ImageService.getImage(file)
+          imageCache.put(new Element(file.getAbsolutePath, image))
+          images += image
         }
       }
     } else {
@@ -40,6 +43,7 @@ class Engine(var imageCache:ImageCache = new ImageCache()) extends Logging{
     val ignoreSet = new mutable.HashSet[Image]()
     val allSimilarImages = new mutable.MutableList[SimilarImages]()
     var processedCount = 0
+    var similarCount = 0
     for (rootImage <- images) {
       if (!ignoreSet.contains(rootImage)) {
         info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
@@ -52,6 +56,7 @@ class Engine(var imageCache:ImageCache = new ImageCache()) extends Logging{
               debug(s"Image: ${image.imagePath} is similar")
               similarImages += image
               ignoreSet += image
+              similarCount += 1
             }
           }
         }
@@ -63,6 +68,7 @@ class Engine(var imageCache:ImageCache = new ImageCache()) extends Logging{
         processedCount += 1
       }
     }
+    info(s"Finished processing ${images.size} images. Found $similarCount similar images")
     allSimilarImages.toList
   }
 }
