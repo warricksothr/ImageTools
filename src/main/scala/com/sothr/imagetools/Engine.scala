@@ -23,7 +23,7 @@ class Engine() extends Logging{
       debug(s"Found ${files.length} files that are images in directory: $directoryPath")
       for (file <- files) {
         if (imageCache.isKeyInCache(file.getAbsolutePath)) {
-          images += imageCache.get(file.getAbsolutePath).asInstanceOf[Image]
+          images += imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
         } else {
           val image = ImageService.getImage(file)
           imageCache.put(new Element(file.getAbsolutePath, image))

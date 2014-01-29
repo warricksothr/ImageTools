@@ -13,47 +13,57 @@ import java.util.Properties;
 
 public class AppConfig {
 
-    private static Logger logger;
-    public static CacheManager cacheManager;
+  private static Logger logger;
+  public static CacheManager cacheManager;
 
-    //Logging defaults
-    private static final String LOGSETTINGSFILE = "./log4j.properties";
-    private static Boolean configuredLogging = false;
+  //Logging defaults
+  private static final String LOGSETTINGSFILE = "./log4j.properties";
+  private static Boolean configuredLogging = false;
 
-    //Properties defaults
-    private static final String DEFAULTPROPERTIESFILE = "default.properties";
-    private static final String USERPROPERTIESFILE = "./config.xml";
-    private static Boolean loadedProperties = false;
+  //Properties defaults
+  private static final String DEFAULTPROPERTIESFILE = "default.properties";
+  private static final String USERPROPERTIESFILE = "./config.xml";
+  private static Boolean loadedProperties = false;
 
-    //Cache defaults
-    private static Boolean configuredCache = false;
+  //Cache defaults
+  private static Boolean configuredCache = false;
 
-    public static void configureApp() {
-      //configSimpleLogging();
-      if (!configuredLogging) {
-        BasicConfigurator.configure();
-        loadProperties();
-        BasicConfigurator.resetConfiguration();
-      } else {
-        loadProperties();
-      }
-      configLogging();
-      configCache();
+  public static void configureApp() {
+    //configSimpleLogging();
+    if (!configuredLogging) {
+      configBasicLogging();
+      loadProperties();
+      resetBasicLogging();
+    } else {
+      loadProperties();
     }
+    configLogging();
+    configCache();
+  }
 
-    public static void configLogging(String location) {
-      //Logging Config
-      //remove previous configuration if it exists
-      //BasicConfigurator.resetConfiguration();
-      File file = new File(location);
-      Boolean fromFile = false;
-      if (file.exists()) {
-        fromFile = true;
-        PropertyConfigurator.configure(location);
-      } else {
-        //Simple error logging configuration
-        Properties defaultProps = new Properties();
-        String rootLogger = "DEBUG";
+  public static void configBasicLogging() {
+    BasicConfigurator.configure();
+    logger = LoggerFactory.getLogger(AppConfig.class);
+  }
+
+  public static void resetBasicLogging() {
+    logger = null;
+    BasicConfigurator.resetConfiguration();
+  }
+
+  public static void configLogging(String location) {
+    //Logging Config
+    //remove previous configuration if it exists
+    //BasicConfigurator.resetConfiguration();
+    File file = new File(location);
+    Boolean fromFile = false;
+    if (file.exists()) {
+      fromFile = true;
+      PropertyConfigurator.configure(location);
+    } else {
+      //Simple error logging configuration
+      Properties defaultProps = new Properties();
+      String rootLogger = "DEBUG";
       if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogDebug().toString()))) {
         //Rolling Debug logger
         rootLogger += ", DL";
@@ -114,7 +124,7 @@ public class AppConfig {
         PropertiesService.loadProperties(DEFAULTPROPERTIESFILE, null);
       }
       loadedProperties = true;
-      logger.info("Loaded properties");
+      logger.info("Loaded Properties");
     }
   }
 
