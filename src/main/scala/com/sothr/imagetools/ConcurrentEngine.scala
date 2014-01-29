@@ -13,15 +13,23 @@ import scala.concurrent.{Await, blocking, Future}
 import java.lang.Thread
 import scala.concurrent.ExecutionContext.Implicits.global
 
-//exeternal cases
+// exeternal cases //
+// processing files into images
 case class EngineProcessFile(file:File)
 case object EngineNoMoreFiles
 case object EngineIsProcessingFinished
 case object EngineGetProcessingResults
+//finding similarities between images
+case class EngineFindSimilarities(images:List[Image])
+case object EngineIsSimilarityFinished
+case object EngineGetSimilarityResults
 
 //internal cases
 case class EngineFileProcessed(image:Image)
 case object EngineActorProcessingFinished
+case class EngineCompareImages(image1:Image,image2:Image)
+case object EngineActorCompareImagesRoundFinished
+case object EngineActorCompareImagesFinished
 case object EngineActorReactivate
 
 class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
