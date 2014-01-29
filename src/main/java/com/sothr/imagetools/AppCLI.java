@@ -40,7 +40,7 @@ class AppCLI {
 
   private static void process(CommandLine cmd) {
     //scan a comma separated list of paths to search for image similarities
-    Engine engine = new Engine();
+    Engine engine = new ConcurrentEngine();
     if (cmd.hasOption('s')) {
       String scanList = cmd.getOptionValue('s');
       String[] paths = scanList.split(",");
