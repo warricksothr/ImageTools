@@ -188,6 +188,7 @@
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <junitxml>.</junitxml>
           <filereports>WDF TestSuite.txt</filereports>
+          <argLine>-Xmx384m</argLine>
         </configuration>
         <executions>
           <execution>
@@ -247,12 +248,12 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
+        <!--<configuration>
           <jvmArgs>
             <jvmArg>-Xms64m</jvmArg>
             <jvmArg>-Xmx1024m</jvmArg>
           </jvmArgs>
-        </configuration>
+        </configuration>-->
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
