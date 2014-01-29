@@ -5,6 +5,7 @@ import scala.collection.mutable
 import java.io.File
 import grizzled.slf4j.Logging
 import net.sf.ehcache.Element
+import akka.actor.{ActorSystem, Props}
 
 /**
  * Created by drew on 1/26/14.
@@ -13,6 +14,8 @@ class Engine() extends Logging{
 
   val imageFilter:ImageFilter = new ImageFilter()
   val imageCache = AppConfig.cacheManager.getCache("images")
+  val system = ActorSystem("EngineActorSystem")
+  val engineController = system.actorOf(Props[ConcurrentEngine], name = "EngineController")
 
   def getImagesForDirectory(directoryPath:String):List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
