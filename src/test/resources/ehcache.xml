@@ -1,4 +1,4 @@
-<ehcache maxBytesLocalHeap="32M" maxBytesLocalDisk="1g" >
+<ehcache maxBytesLocalHeap="32M">
   <cache name="images"
          timeToLiveSeconds="100">
   </cache>
