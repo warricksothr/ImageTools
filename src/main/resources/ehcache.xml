@@ -1,0 +1,8 @@
+<ehcache maxBytesLocalHeap="512M" maxBytesLocalDisk="5g" >
+  <cache name="images"
+         timeToLiveSeconds="100">
+  </cache>
+  <cache name="thumbnails"
+         timeToLiveSeconds="100">
+  </cache>
+</ehcache>

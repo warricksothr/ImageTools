@@ -4,7 +4,7 @@ command=""
 correct=false
 while true; do
 	read -p "Please enter and commandline arguments you would like to include: " args
-	command="-cp ${project.name}-${project.version}-jfx.jar:lib/* com.sothr.imagetools.AppCLI $args"
+	command="-Xmx1.5G -cp ${project.name}-${project.version}-jfx.jar:lib/* com.sothr.imagetools.AppCLI $args"
 	echo "Is \"$command\" accurate? (yes/no)"
 	select yn in "Yes" "No"; do
 		case $yn in

@@ -2,7 +2,7 @@ package com.sothr.imagetools.dto
 
 import grizzled.slf4j.Logging
 
-class ImageHashDTO(val ahash:Long, val dhash:Long, val phash:Long, val md5:String) extends Logging {
+class ImageHashDTO(val ahash:Long, val dhash:Long, val phash:Long, val md5:String) extends Serializable with Logging{
 
   override def hashCode():Int = {
     var result = 365
