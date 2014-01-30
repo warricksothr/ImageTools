@@ -36,8 +36,14 @@
     <lib.log4j.version>1.2.17</lib.log4j.version>
     <lib.slf4j.version>1.7.5</lib.slf4j.version>
     <lib.grizzled-slf4j.version>1.0.1</lib.grizzled-slf4j.version>
-    <lib.scala-library.version>2.10.0</lib.scala-library.version>
-    <lib.scalafx.version>8.0.0-M1</lib.scalafx.version>
+    <lib.scala-library.version>2.10.3</lib.scala-library.version>
+    <lib.scalafx.version>8.0.0-M3</lib.scalafx.version>
+    <lib.akka.version>2.2.3</lib.akka.version>
+    <lib.jta.version>1.1</lib.jta.version>
+    <lib.ehcache.version>2.8.0</lib.ehcache.version>
+    <lib.commons-cli.version>1.2</lib.commons-cli.version>
+    <lib.commons-codec.version>1.9</lib.commons-codec.version>
+    <lib.jtransforms.version>2.4.0</lib.jtransforms.version>
   </properties>
 
   <dependencies>
@@ -86,37 +92,37 @@
     <dependency>
       <groupId>net.sourceforge.jtransforms</groupId>
       <artifactId>jtransforms</artifactId>
-      <version>2.4.0</version>
+      <version>${lib.jtransforms.version}</version>
     </dependency>
     <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.2</version>
+        <version>${lib.commons-cli.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.9</version>
+      <version>${lib.commons-codec.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
-      <version>1.1</version>
+      <version>${lib.jta.version}</version>
     </dependency>
     <dependency>
 	    <groupId>net.sf.ehcache</groupId>
 	    <artifactId>ehcache</artifactId>
-	    <version>2.8.0</version>
+	    <version>${lib.ehcache.version}</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-actor_2.10</artifactId>
-      <version>2.1.1</version>
+      <version>${lib.akka.version}</version>
     </dependency>
     <dependency>
         <groupId>com.typesafe.akka</groupId>
         <artifactId>akka-slf4j_2.10</artifactId>
-        <version>2.1.1</version>
+        <version>${lib.akka.version}</version>
     </dependency>
   </dependencies>
 
@@ -126,6 +132,7 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
         <includes>
+          <include>**/*.conf</include>
           <include>**/*.properties</include>
           <include>**/*.info</include>
         </includes>
@@ -134,6 +141,7 @@
         <directory>src/main/resources</directory>
         <filtering>false</filtering>
         <excludes>
+          <exclude>**/*.conf</exclude>
           <exclude>**/*.properties</exclude>
           <exclude>**/*.info</exclude>
         </excludes>
@@ -144,6 +152,7 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
         <includes>
+          <include>**/*.conf</include>
           <include>**/*.properties</include>
           <include>**/*.info</include>
         </includes>
@@ -152,6 +161,7 @@
         <directory>src/test/resources</directory>
         <filtering>false</filtering>
         <excludes>
+          <exclude>**/*.conf</exclude>
           <exclude>**/*.properties</exclude>
           <exclude>**/*.info</exclude>
         </excludes>
