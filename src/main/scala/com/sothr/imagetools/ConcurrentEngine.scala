@@ -109,7 +109,13 @@ case object EngineActorReactivate
 
 class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     val imageCache = AppConfig.cacheManager.getCache("images")
-    val numOfRouters = PropertiesService.get(PropertiesEnum.ConcurrentProcessingLimit.toString).toInt
+    val numOfRouters = {
+      val max = PropertiesService.get(PropertiesEnum.ConcurrentProcessingLimit.toString).toInt
+      val processors = Runtime.getRuntime.availableProcessors()
+      var threads = 0
+      if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
+      threads
+    }
     val router = context.actorOf(Props[ConcurrentEngineProcessingActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
     
     var images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
@@ -228,7 +234,13 @@ case object EngineActorCompareImagesFinished
 
 class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   val imageCache = AppConfig.cacheManager.getCache("images")
-  val numOfRouters = PropertiesService.get(PropertiesEnum.ConcurrentSimiliartyLimit.toString).toInt
+  val numOfRouters = {
+    val max = PropertiesService.get(PropertiesEnum.ConcurrentSimiliartyLimit.toString).toInt
+    val processors = Runtime.getRuntime.availableProcessors()
+    var threads = 0
+    if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
+    threads
+  }
   val router = context.actorOf(Props[ConcurrentEngineSimilarityActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
 
   val allSimilarImages = new mutable.MutableList[SimilarImages]
