@@ -9,6 +9,7 @@ class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2
   var imageType:ImageType = ImageType.SingleFrameImage
 
   def isSimilarTo(otherImage:Image):Boolean = {
+    debug("Checking {} for similarities with {}",imagePath, otherImage.imagePath)
     HashService.areImageHashesSimilar(this.hashes,otherImage.hashes)
   }
 
@@ -20,8 +21,20 @@ class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2
 
   }*/
 
+  def cloneImage:Image = {
+      return new Image(imagePath,thumbnailPath,imageSize,hashes.cloneHashes)
+  }
+
   override def toString:String = {
     s"Image: $imagePath Thumbnail: $thumbnailPath Image Size: ${imageSize._1}x${imageSize._2} Hashes: $hashes"
+  }
+
+  override def equals(obj:Any) = {
+      obj match {
+          case that:Image =>
+            that.hashCode.equals(this.hashCode)
+          case _ => false
+      }
   }
 
   override def hashCode:Int = {

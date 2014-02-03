@@ -15,6 +15,15 @@ class SimilarImages(val rootImage:Image, val similarImages:List[Image]) extends 
     }
     sb.toString()
   }
+  
+  override def hashCode:Int = {
+      val prime = 7
+      var result = prime * 1 + rootImage.hashCode
+      for (similarImage <- similarImages) {
+          result = prime * result + similarImage.hashCode
+      }
+      result
+  }
 
   override def toString:String = {
     s"""RootImage: ${rootImage.imagePath}

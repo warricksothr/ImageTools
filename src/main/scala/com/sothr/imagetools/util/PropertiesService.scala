@@ -41,6 +41,22 @@ object PropertiesService extends Logging {
     InfoLogEnabled = get(PropertiesEnum.LogInfo.toString).toBoolean
     ErrorLogEnabled = get(PropertiesEnum.LogError.toString).toBoolean
     TimingEnabled = get(PropertiesEnum.Timed.toString).toBoolean
+    
+    //ahash
+    aHashPrecision = PropertiesService.get(PropertiesEnum.AhashPrecision.toString).toInt
+    aHashTolerance = PropertiesService.get(PropertiesEnum.AhashTolerance.toString).toInt
+    aHashWeight = PropertiesService.get(PropertiesEnum.AhashWeight.toString).toFloat
+    useAhash = PropertiesService.get(PropertiesEnum.UseAhash.toString).toBoolean
+    //dhash
+    dHashPrecision = PropertiesService.get(PropertiesEnum.DhashPrecision.toString).toInt
+    dHashTolerance = PropertiesService.get(PropertiesEnum.DhashTolerance.toString).toInt
+    dHashWeight = PropertiesService.get(PropertiesEnum.DhashWeight.toString).toFloat
+    useDhash = PropertiesService.get(PropertiesEnum.UseDhash.toString).toBoolean
+    //phash
+    pHashPrecision = PropertiesService.get(PropertiesEnum.PhashPrecision.toString).toInt
+    pHashTolerance = PropertiesService.get(PropertiesEnum.PhashTolerance.toString).toInt
+    pHashWeight = PropertiesService.get(PropertiesEnum.PhashWeight.toString).toFloat
+    usePhash = PropertiesService.get(PropertiesEnum.UsePhash.toString).toBoolean
     info("Loaded Special Properties")
   }
 
@@ -80,5 +96,21 @@ object PropertiesService extends Logging {
   var InfoLogEnabled:Boolean = false
   var ErrorLogEnabled:Boolean = false
   var TimingEnabled:Boolean = false
+  
+  //ahash
+  var aHashPrecision = 0
+  var aHashTolerance = 0
+  var aHashWeight = 0.0f
+  var useAhash = false
+  //dhash
+  var dHashPrecision = 0
+  var dHashTolerance = 0
+  var dHashWeight = 0.0f
+  var useDhash = false
+  //phash
+  var pHashPrecision = 0
+  var pHashTolerance = 0
+  var pHashWeight = 0.0f
+  var usePhash = false
 
 }
