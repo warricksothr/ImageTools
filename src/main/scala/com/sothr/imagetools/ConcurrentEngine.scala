@@ -7,6 +7,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import java.util.concurrent.TimeUnit
 import com.sothr.imagetools.image.{SimilarImages, Image}
+import com.sothr.imagetools.hash.HashService
 import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
 import scala.concurrent.Await
 import java.lang.Thread
@@ -54,7 +55,47 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     images.toList
   }
 
-  //needs to be rebuilt as a concurrent capable method
+  //copied from the sequential engine as the concurrent version has issues currently
+  def getSimilarImagesForDirectory(directoryPath:String):List[SimilarImages] = {
+    debug(s"Looking for similar images in directory: $directoryPath")
+    val images = getImagesForDirectory(directoryPath)
+    info(s"Searching ${images.length} images for similarities")
+    val ignoreSet = new mutable.HashSet[Image]()
+    val allSimilarImages = new mutable.MutableList[SimilarImages]()
+    var processedCount = 0
+    var similarCount = 0
+    for (rootImage <- images) {
+      if (!ignoreSet.contains(rootImage)) {
+        if (processedCount % 25 == 0) {
+            info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
+        }
+        debug(s"Looking for images similar to: ${rootImage.imagePath}")
+        ignoreSet += rootImage
+        val similarImages = new mutable.MutableList[Image]()
+        for (image <- images) {
+          if (!ignoreSet.contains(image)) {
+            if (rootImage.isSimilarTo(image)) {
+              debug(s"Image: ${image.imagePath} is similar")
+              similarImages += image
+              ignoreSet += image
+              similarCount += 1
+            }
+          }
+        }
+        if (similarImages.length > 1) {
+          val similar = new SimilarImages(rootImage, similarImages.toList)
+          debug(s"Found similar images: ${similar.toString}")
+          allSimilarImages += similar
+        }
+        processedCount += 1
+      }
+    }
+    info(s"Finished processing ${images.size} images. Found $similarCount similar images")
+    allSimilarImages.toList
+  }
+
+  /*
+  //needs to be rebuilt
   def getSimilarImagesForDirectory(directoryPath:String):List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
     val images = getImagesForDirectory(directoryPath)
@@ -92,8 +133,9 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
 
     info(s"Finished processing ${images.size} images. Found $similarCount similar images")
     allSimilarImages.toList
-  }
+  }*/
 }
+
 
 // exeternal cases //
 // processing files into images
@@ -337,7 +379,7 @@ class ConcurrentEngineSimilarityActor extends Actor with ActorLogging {
       val similarImages = new mutable.MutableList[Image]()
       for (image <- command.images) {
         if (!command.ignoreList.contains(image) && command.image1 != image) {
-          if (command.image1.isSimilarTo(image)) {
+          if (HashService.areImageHashesSimilar(command.image1.hashes, image.hashes)) {
             similarImages += image
   var ignoreMessages = false
           }
