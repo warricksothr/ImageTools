@@ -4,43 +4,32 @@ import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
 import scala.collection.mutable
 import java.io.File
 import grizzled.slf4j.Logging
-import net.sf.ehcache.Element
 
 /**
  * Created by drew on 1/26/14.
  */
 class SequentialEngine extends Engine with Logging {
 
-  def getImagesForDirectory(directoryPath:String):List[Image] = {
+  def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
     val images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
+    val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
     val directory:File = new File(directoryPath)
     var count = 0
-    if (directory.isDirectory) {
-      val files = directory.listFiles(imageFilter)
-      info(s"Found ${files.length} files that are images in directory: $directoryPath")
-      for (file <- files) {
-        count += 1
-        if (count % 25 == 0) info(s"Processed ${count}/${files.size}")
-        if (imageCache.isKeyInCache(file.getAbsolutePath)) {
-          images += imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
-        } else {
-          val image = ImageService.getImage(file)
-          if (image != null) {
-            imageCache.put(new Element(file.getAbsolutePath, image))
-            images += image
-          }
-        }
+    for (file <- imageFiles) {
+      count += 1
+      if (count % 25 == 0) info(s"Processed ${count}/${imageFiles.size}")
+      val image = ImageService.getImage(file)
+      if (image != null) {
+        images += image
       }
-    } else {
-      error(s"Provided path: $directoryPath is not a directory")
     }
     images.toList
   }
 
-  def getSimilarImagesForDirectory(directoryPath:String):List[SimilarImages] = {
+  def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
-    val images = getImagesForDirectory(directoryPath)
+    val images = getImagesForDirectory(directoryPath, recursive, recursiveDepth)
     info(s"Searching ${images.length} images for similarities")
     val ignoreSet = new mutable.HashSet[Image]()
     val allSimilarImages = new mutable.MutableList[SimilarImages]()

@@ -9,7 +9,7 @@ class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2
   var imageType:ImageType = ImageType.SingleFrameImage
 
   def isSimilarTo(otherImage:Image):Boolean = {
-    debug("Checking {} for similarities with {}",imagePath, otherImage.imagePath)
+    //debug(s"Checking $imagePath for similarities with ${otherImage.imagePath}")
     HashService.areImageHashesSimilar(this.hashes,otherImage.hashes)
   }
 

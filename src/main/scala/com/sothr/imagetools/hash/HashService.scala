@@ -18,7 +18,7 @@ import com.sothr.imagetools.image.Image
 object HashService extends Logging {
 
   def getImageHashes(imagePath:String):ImageHashDTO = {
-    debug(s"Creating hashes for $imagePath")
+    //debug(s"Creating hashes for $imagePath")
     getImageHashes(ImageIO.read(new File(imagePath)), imagePath)
   }
 

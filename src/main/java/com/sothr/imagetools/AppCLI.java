@@ -33,8 +33,11 @@ class AppCLI {
   }
 
   private static Options getOptions() {
+    //scan a list of directories
     Options options = new Options();
     options.addOption(new Option("s", true, "scan directories for a list of similar images"));
+    //scan directories in a recursive manner
+    options.addOption(new Option("r", false, "scan directories recursively"));
     return options;
   }
 
@@ -42,10 +45,15 @@ class AppCLI {
     //scan a comma separated list of paths to search for image similarities
     Engine engine = new ConcurrentEngine();
     if (cmd.hasOption('s')) {
+      Boolean recursive = false;
+      Integer recursiveDepth = 500;
+      if (cmd.hasOption('r')) {
+          recursive = true;
+      } 
       String scanList = cmd.getOptionValue('s');
       String[] paths = scanList.split(",");
       for (String path : paths) {
-        List<SimilarImages> similarImages = engine.getSimilarImagesForDirectory(path);
+        List<SimilarImages> similarImages = engine.getSimilarImagesForDirectory(path, recursive, recursiveDepth);
         for (int index = 0; index < similarImages.length(); index++) {
           SimilarImages similar = similarImages.apply(index);
           System.out.println(similar.toString());
