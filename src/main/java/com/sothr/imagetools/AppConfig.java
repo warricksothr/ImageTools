@@ -1,12 +1,17 @@
 package com.sothr.imagetools;
 
+import com.sothr.imagetools.util.ResourceLoader;
 import com.sothr.imagetools.util.PropertiesService;
 import com.sothr.imagetools.util.PropertiesEnum;
 import net.sf.ehcache.CacheManager;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 
 import java.io.File;
 import java.util.Properties;
@@ -17,7 +22,7 @@ public class AppConfig {
   public static CacheManager cacheManager;
 
   //Logging defaults
-  private static final String LOGSETTINGSFILE = "./log4j.properties";
+  private static final String LOGSETTINGSFILE = "./logback.xml";
   private static Boolean configuredLogging = false;
 
   //Properties defaults
@@ -29,78 +34,46 @@ public class AppConfig {
   private static Boolean configuredCache = false;
 
   public static void configureApp() {
-    //configSimpleLogging();
-    if (!configuredLogging) {
-      configBasicLogging();
-      loadProperties();
-      resetBasicLogging();
-    } else {
-      loadProperties();
-    }
+    logger = (Logger)LoggerFactory.getLogger(AppConfig.class);
+    loadProperties();
     configLogging();
     configCache();
-  }
-
-  public static void configBasicLogging() {
-    BasicConfigurator.configure();
-    logger = LoggerFactory.getLogger(AppConfig.class);
-  }
-
-  public static void resetBasicLogging() {
-    logger = null;
-    BasicConfigurator.resetConfiguration();
   }
 
   public static void configLogging(String location) {
     //Logging Config
     //remove previous configuration if it exists
-    //BasicConfigurator.resetConfiguration();
+    Logger rootLogger = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    LoggerContext context = rootLogger.getLoggerContext();
+    context.reset();
     File file = new File(location);
     Boolean fromFile = false;
     if (file.exists()) {
-      fromFile = true;
-      PropertyConfigurator.configure(location);
+        fromFile = true;
+        try {
+          JoranConfigurator configurator = new JoranConfigurator();
+          configurator.setContext(context);
+          // Call context.reset() to clear any previous configuration, e.g. default 
+          // configuration. For multi-step configuration, omit calling context.reset().
+          context.reset(); 
+          configurator.doConfigure(location);
+        } catch (JoranException je) {
+          // StatusPrinter will handle this
+        }
+        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
     } else {
-      //Simple error logging configuration
-      Properties defaultProps = new Properties();
-      String rootLogger = "DEBUG";
-      if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogDebug().toString()))) {
-        //Rolling Debug logger
-        rootLogger += ", DL";
-        defaultProps.setProperty("log4j.appender.DL","org.apache.log4j.RollingFileAppender");
-        defaultProps.setProperty("log4j.appender.DL.Threshold","DEBUG");
-        defaultProps.setProperty("log4j.appender.DL.File","Image-Tools.debug");
-        defaultProps.setProperty("log4j.appender.DL.MaxFileSize","500KB");
-        defaultProps.setProperty("log4j.appender.DL.MaxBackupIndex","1");
-        defaultProps.setProperty("log4j.appender.DL.layout","org.apache.log4j.EnhancedPatternLayout");
-        defaultProps.setProperty("log4j.appender.DL.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
-      }
-      if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogInfo().toString()))) {
-        //Rolling Info logger
-        rootLogger += ", IL";
-        defaultProps.setProperty("log4j.appender.IL","org.apache.log4j.RollingFileAppender");
-        defaultProps.setProperty("log4j.appender.IL.Threshold","INFO");
-        defaultProps.setProperty("log4j.appender.IL.File","Image-Tools.info");
-        defaultProps.setProperty("log4j.appender.IL.MaxFileSize","100KB");
-        defaultProps.setProperty("log4j.appender.IL.MaxBackupIndex","1");
-        defaultProps.setProperty("log4j.appender.IL.layout","org.apache.log4j.EnhancedPatternLayout");
-        defaultProps.setProperty("log4j.appender.IL.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
-      }
-      if (Boolean.valueOf(PropertiesService.get(PropertiesEnum.LogError().toString()))) {
-        //Rolling Error logger
-        rootLogger += ", EL";
-        defaultProps.setProperty("log4j.appender.EL","org.apache.log4j.RollingFileAppender");
-        defaultProps.setProperty("log4j.appender.EL.Threshold","ERROR");
-        defaultProps.setProperty("log4j.appender.EL.File","Image-Tools.err");
-        defaultProps.setProperty("log4j.appender.EL.MaxFileSize","100KB");
-        defaultProps.setProperty("log4j.appender.EL.MaxBackupIndex","1");
-        defaultProps.setProperty("log4j.appender.EL.layout","org.apache.log4j.EnhancedPatternLayout");
-        defaultProps.setProperty("log4j.appender.EL.layout.ConversionPattern","%d{yy-MM-dd HH:mm:ss} %-5p [%c{3.}] - %m%n");
-      }
-      defaultProps.setProperty("log4j.rootLogger",rootLogger);
-      PropertyConfigurator.configure(defaultProps);
+        try {
+          JoranConfigurator configurator = new JoranConfigurator();
+          configurator.setContext(context);
+          // Call context.reset() to clear any previous configuration, e.g. default 
+          // configuration. For multi-step configuration, omit calling context.reset().
+          context.reset();
+          configurator.doConfigure(ResourceLoader.get().getResource("logback-minimum-config.xml"));
+        } catch (JoranException je) {
+          // StatusPrinter will handle this
+        }
+        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
     }
-    logger = LoggerFactory.getLogger(AppConfig.class);
     String message = fromFile ? "From File" : "From Defaults";
     logger.info(String.format("Configured Logger %s", message));
     logger.info("Detected Version: %s of Image Tools".format(PropertiesService.getVersion().toString()));

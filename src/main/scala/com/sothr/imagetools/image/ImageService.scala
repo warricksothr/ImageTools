@@ -14,11 +14,27 @@ object ImageService extends Logging {
 
   val imageCache = AppConfig.cacheManager.getCache("images")
 
+  private def lookupImage(file:File):Image = {
+      var image:Image = null
+      //get from memory cache if possible
+      if (imageCache.isKeyInCache(file.getAbsolutePath)) image = imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
+      //get from datastore if possible
+      image
+  }
+  
+  private def saveImage(image:Image):Image = {
+      //save to cache
+      imageCache.put(new Element(image.imagePath, image))
+      //save to datastore
+      image
+  }
+
   def getImage(file:File):Image = {
     try {
-      if (imageCache.isKeyInCache(file.getAbsolutePath)) {
+      val image = lookupImage(file)
+      if (image != null) {
         debug(s"${file.getAbsolutePath} was already processed")
-        return imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
+        return image
       } else {
         val bufferedImage = ImageIO.read(file)
         val thumbnailPath = getThumbnailPath(bufferedImage, file)
@@ -26,8 +42,7 @@ object ImageService extends Logging {
         val imageSize = { (bufferedImage.getWidth, bufferedImage.getHeight) }
         val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
         debug(s"Created image: $image")
-        imageCache.put(new Element(file.getAbsolutePath, image))
-        return image
+        return saveImage(image)
       }
     } catch {
       case ioe:IOException => error(s"Error processing ${file.getAbsolutePath}", ioe)

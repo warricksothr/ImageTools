@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="C" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+	  <!-- Sorry Windows Users -->
+	  <withJansi>false</withJansi>
+      <pattern>[%-5level [%c{16}] - %message%n</pattern>
+	</encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+  </appender>
+  <appender name="DL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>ImageTools.debug</File>
+    <encoder>
+	  <withJansi>false</withJansi>
+      <pattern>[%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
+	</encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <maxIndex>1</maxIndex>
+      <FileNamePattern>ImageTools.debug.%i</FileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>5MB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+  <appender name="IL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>ImageTools.info</File>
+    <encoder>
+	  <withJansi>false</withJansi>
+      <pattern>[%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
+	</encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <maxIndex>1</maxIndex>
+      <FileNamePattern>ImageTools.info.%i</FileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>500KB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+  <appender name="EL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>ImageTools.err</File>
+    <encoder>
+	  <withJansi>false</withJansi>
+      <pattern>[%.16thread] [%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
+	</encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ERROR</level>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <maxIndex>1</maxIndex>
+      <FileNamePattern>ImageTools.err.%i</FileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>500KB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+  <root level="DEBUG">
+    <appender-ref ref="C"/>
+    <appender-ref ref="DL"/>
+    <appender-ref ref="IL"/>
+    <appender-ref ref="EL"/>
+  </root>
+</configuration>

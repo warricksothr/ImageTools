@@ -33,7 +33,7 @@
     <jdk.version>1.7</jdk.version>
     <lib.junit.version>3.8.1</lib.junit.version>
     <lib.scalatest.version>2.0</lib.scalatest.version>
-    <lib.log4j.version>1.2.17</lib.log4j.version>
+    <lib.logback.version>1.0.13</lib.logback.version>
     <lib.slf4j.version>1.7.5</lib.slf4j.version>
     <lib.grizzled-slf4j.version>1.0.1</lib.grizzled-slf4j.version>
     <lib.scala-library.version>2.10.3</lib.scala-library.version>
@@ -60,18 +60,23 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${lib.log4j.version}</version>
+	  <groupId>ch.qos.logback</groupId>
+	  <artifactId>logback-core</artifactId>
+	  <version>${lib.logback.version}</version>
+    </dependency>
+    <dependency>
+	  <groupId>ch.qos.logback</groupId>
+	  <artifactId>logback-classic</artifactId>
+	  <version>${lib.logback.version}</version>
+    </dependency>
+    <dependency>
+	  <groupId>ch.qos.logback</groupId>
+	  <artifactId>logback-access</artifactId>
+	  <version>${lib.logback.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${lib.slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
       <version>${lib.slf4j.version}</version>
     </dependency>
     <dependency>
