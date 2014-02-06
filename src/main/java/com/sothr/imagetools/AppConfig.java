@@ -26,8 +26,8 @@ public class AppConfig {
   private static Boolean configuredLogging = false;
 
   //Properties defaults
-  private static final String DEFAULTPROPERTIESFILE = "default.properties";
-  private static final String USERPROPERTIESFILE = "./config.xml";
+  private static final String DEFAULTPROPERTIESFILE = "application.conf";
+  private static final String USERPROPERTIESFILE = "user.conf";
   private static Boolean loadedProperties = false;
 
   //Cache defaults
@@ -110,7 +110,7 @@ public class AppConfig {
   }
 
   public static void saveProperties() {
-    PropertiesService.saveXMLProperties(USERPROPERTIESFILE);
+    PropertiesService.saveConf(USERPROPERTIESFILE);
     logger.debug("Saved properties");
   }
 

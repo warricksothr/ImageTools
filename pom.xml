@@ -44,6 +44,8 @@
     <lib.commons-cli.version>1.2</lib.commons-cli.version>
     <lib.commons-codec.version>1.9</lib.commons-codec.version>
     <lib.jtransforms.version>2.4.0</lib.jtransforms.version>
+    <lib.typesafe-config.version>1.2.0</lib.typesafe-config.version>
+    <lib.thumbnailator.version>[0.4, 0.5)</lib.thumbnailator.version>
   </properties>
 
   <dependencies>
@@ -92,7 +94,12 @@
     <dependency>
       <groupId>net.coobird</groupId>
       <artifactId>thumbnailator</artifactId>
-      <version>[0.4, 0.5)</version>
+      <version>${lib.thumbnailator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe</groupId>
+      <artifactId>config</artifactId>
+      <version>${lib.typesafe-config.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.jtransforms</groupId>

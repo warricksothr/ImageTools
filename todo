@@ -1,18 +1,9 @@
-Move over to Logback for the backend
-    -Convert the configuration file
-    -Convert the AppConfig to configure basic logging
-Profile and improve performance for the ConcurrentEngine when looking for similarities.
-    -SynchronousEngine is about 2.5x faster currently for finding similarities
-    -ConcurrentEngine actors for finding similarities are not CPU constrained and need to be
-Convert app configuration format from a java properties to a typesafehub:config
-    -Rewrite properties in new format (JSON)
-    -Rewrite PropertiesLoader to use the new format
 Add functionality to both engines
-    -Recursive directory scanning
-        -Determine how to handle similarites there... All images or just per folder
     -Move files to new locations
         -Rename new files based on their MD5
 Add functionality to ImageService
     -Cache thumbnails
     -Generate thumbnails
-    -Move caching of images into the ImageService
+Improve functionality of the PropertiesService
+    -Getters and Setters for sepcific values with proper cascading and type awareness
+    -Nicer debugging?
