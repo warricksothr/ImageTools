@@ -14,7 +14,6 @@ import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
 object ImageService extends Logging {
 
   val imageCache = AppConfig.cacheManager.getCache("images")
-  val thumbnailCache = AppConfig.cacheManager.getCache("thumbnails")
 
   private def lookupImage(file:File):Image = {
       var image:Image = null
@@ -45,7 +44,7 @@ object ImageService extends Logging {
         val bufferedImage = ImageIO.read(file)
         val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
         var thumbnailPath = lookupThumbnailPath(hashes.md5)
-        if (thumbnailPath == null) thumbnailPath = saveThumbnail(hashes.md5, getThumbnail(bufferedImage, hashes.md5))
+        if (thumbnailPath == null) thumbnailPath = getThumbnail(bufferedImage, hashes.md5)
         val imageSize = { (bufferedImage.getWidth, bufferedImage.getHeight) }
         val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
         debug(s"Created image: $image")
@@ -61,8 +60,9 @@ object ImageService extends Logging {
   def calculateThumbPath(md5:String):String = {
     //break the path down into 4 char parts
     val split:List[String] = md5.grouped(4).toList
-    var path:String = PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString) + PropertiesService.get(PropertiesEnum.ThumbnailSize.toString) + "/"
-    for (seg <- split) path += seg + "/"
+    var dirPath = ""
+    for (seg <- split) dirPath += seg + "/"
+    var path:String = s"${PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertiesEnum.ThumbnailSize.toString)}/$dirPath"
     try {
       val dir = new File(path)
       if (!dir.exists()) dir.mkdirs()
@@ -76,13 +76,6 @@ object ImageService extends Logging {
   def lookupThumbnailPath(md5:String):String = {
     var thumbPath:String = null
     if (md5 != null) {
-      //get from memory cache if possible
-      try {
-        if (thumbnailCache.isKeyInCache(md5)) thumbPath = thumbnailCache.get(md5).getObjectValue.asInstanceOf[String]
-      } catch {
-        case npe:NullPointerException => error(s"Error grabbing \'$md5\' from cache. thumbPath: \'$thumbPath\'", npe)
-      }
-      //get from datastore if possible
       //check for the actual file
       val checkPath = calculateThumbPath(md5)
       if (new File(checkPath).exists) thumbPath = checkPath
@@ -106,14 +99,6 @@ object ImageService extends Logging {
     }
     // return path
     path
-  }
-
-  def saveThumbnail(md5:String, thumbnailPath:String):String = {
-    if (md5 == null || thumbnailPath == null) error(s"Error trying to save a md5: $md5 path: $thumbnailPath")
-    //save to cache
-    thumbnailCache.put(new Element(md5, thumbnailPath))
-    //save to datastore
-    thumbnailPath
   }
 
   /**

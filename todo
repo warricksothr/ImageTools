@@ -7,3 +7,10 @@ Add functionality to ImageService
 Improve functionality of the PropertiesService
     -Getters and Setters for sepcific values with proper cascading and type awareness
     -Nicer debugging?
+Hibernate - H2 intergration
+    - setup hibernate
+    - setup h2
+    - setup C3P0 connection pool
+    - transfer configuration files
+    - autoload configuration files?
+    - map DTO's
