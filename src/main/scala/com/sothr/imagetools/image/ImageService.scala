@@ -9,10 +9,12 @@ import com.sothr.imagetools.hash.HashService
 import javax.imageio.ImageIO
 import java.io.IOException
 import net.sf.ehcache.Element
+import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
 
 object ImageService extends Logging {
 
   val imageCache = AppConfig.cacheManager.getCache("images")
+  val thumbnailCache = AppConfig.cacheManager.getCache("thumbnails")
 
   private def lookupImage(file:File):Image = {
       var image:Image = null
@@ -37,8 +39,9 @@ object ImageService extends Logging {
         return image
       } else {
         val bufferedImage = ImageIO.read(file)
-        val thumbnailPath = getThumbnailPath(bufferedImage, file)
         val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
+        var thumbnailPath = lookupThumbnailPath(hashes.md5)
+        if (thumbnailPath == null) thumbnailPath = saveThumbnail(hashes.md5, getThumbnail(bufferedImage, hashes.md5))
         val imageSize = { (bufferedImage.getWidth, bufferedImage.getHeight) }
         val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
         debug(s"Created image: $image")
@@ -51,15 +54,60 @@ object ImageService extends Logging {
     null
   }
 
-  def getThumbnailPath(image:BufferedImage, file:File):String = {
-    "."
+  def calculateThumbPath(md5:String):String = {
+    //break the path down into 4 char parts
+    val split:List[String] = md5.grouped(4).toList
+    var path:String = PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString) + "/" + PropertiesService.get(PropertiesEnum.ThumbnailSize.toString) + "/"
+    for (seg <- split) path += seg + "/"
+    try {
+      val dir = new File(path)
+      if (!dir.exists()) dir.mkdirs()
+    } catch {
+      case ioe:IOException => error(s"Unable to create dirs for path: \'$path\'", ioe)
+    }
+    path += md5 + ".jpg"
+    path
+  }
+
+  def lookupThumbnailPath(md5:String):String = {
+    var thumbPath:String = null
+    //get from memory cache if possible
+    if (thumbnailCache.isKeyInCache(md5)) thumbPath = imageCache.get(md5).getObjectValue.asInstanceOf[String]
+    //get from datastore if possible
+    //check for the actual file
+    val checkPath = calculateThumbPath(md5)
+    if (new File(checkPath).exists) thumbPath = checkPath
+    thumbPath
+  }
+
+  def getThumbnail(image:BufferedImage, md5:String):String = {
+    //create thumbnail
+    val thumb = resize(image, PropertiesService.get(PropertiesEnum.ThumbnailSize.toString).toInt, forced=false)
+    //calculate path
+    val path = calculateThumbPath(md5)
+    // save thumbnail to path
+    try {
+      ImageIO.write(thumb, "jpg", new File(path))
+      debug(s"Wrote thumbnail to $path")
+    } catch {
+        case ioe:IOException => error(s"Unable to save thumbnail to $path", ioe)
+    }
+    // return path
+    path
+  }
+
+  def saveThumbnail(md5:String, thumbnailPath:String):String = {
+    //save to cache
+    thumbnailCache.put(new Element(md5, thumbnailPath))
+    //save to datastore
+    thumbnailPath
   }
 
   /**
    * Get the raw data for an image
    */
   def getImageData(image:BufferedImage):Array[Array[Int]] = {
-    return convertTo2DWithoutUsingGetRGB(image)
+    convertTo2DWithoutUsingGetRGB(image)
   }
 
   /**

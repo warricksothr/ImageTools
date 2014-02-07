@@ -35,3 +35,6 @@ version.info
 
 #POM versions backup
 *.versionsBackup
+
+#Cache directory
+.cache/
