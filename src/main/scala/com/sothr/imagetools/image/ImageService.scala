@@ -19,7 +19,11 @@ object ImageService extends Logging {
   private def lookupImage(file:File):Image = {
       var image:Image = null
       //get from memory cache if possible
-      if (imageCache.isKeyInCache(file.getAbsolutePath)) image = imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
+      try {
+        if (imageCache.isKeyInCache(file.getAbsolutePath)) image = imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
+      } catch {
+        case npe:NullPointerException => error(s"Error grabbing \'${file.getAbsolutePath}\' from cache", npe)
+      }
       //get from datastore if possible
       image
   }
@@ -57,7 +61,7 @@ object ImageService extends Logging {
   def calculateThumbPath(md5:String):String = {
     //break the path down into 4 char parts
     val split:List[String] = md5.grouped(4).toList
-    var path:String = PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString) + "/" + PropertiesService.get(PropertiesEnum.ThumbnailSize.toString) + "/"
+    var path:String = PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString) + PropertiesService.get(PropertiesEnum.ThumbnailSize.toString) + "/"
     for (seg <- split) path += seg + "/"
     try {
       val dir = new File(path)
@@ -71,12 +75,20 @@ object ImageService extends Logging {
 
   def lookupThumbnailPath(md5:String):String = {
     var thumbPath:String = null
-    //get from memory cache if possible
-    if (thumbnailCache.isKeyInCache(md5)) thumbPath = imageCache.get(md5).getObjectValue.asInstanceOf[String]
-    //get from datastore if possible
-    //check for the actual file
-    val checkPath = calculateThumbPath(md5)
-    if (new File(checkPath).exists) thumbPath = checkPath
+    if (md5 != null) {
+      //get from memory cache if possible
+      try {
+        if (thumbnailCache.isKeyInCache(md5)) thumbPath = thumbnailCache.get(md5).getObjectValue.asInstanceOf[String]
+      } catch {
+        case npe:NullPointerException => error(s"Error grabbing \'$md5\' from cache. thumbPath: \'$thumbPath\'", npe)
+      }
+      //get from datastore if possible
+      //check for the actual file
+      val checkPath = calculateThumbPath(md5)
+      if (new File(checkPath).exists) thumbPath = checkPath
+    } else {
+      error("Null md5 passed in")
+    }
     thumbPath
   }
 
@@ -97,6 +109,7 @@ object ImageService extends Logging {
   }
 
   def saveThumbnail(md5:String, thumbnailPath:String):String = {
+    if (md5 == null || thumbnailPath == null) error(s"Error trying to save a md5: $md5 path: $thumbnailPath")
     //save to cache
     thumbnailCache.put(new Element(md5, thumbnailPath))
     //save to datastore
