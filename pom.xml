@@ -121,9 +121,9 @@
       <version>${lib.jta.version}</version>
     </dependency>
     <dependency>
-	    <groupId>net.sf.ehcache</groupId>
-	    <artifactId>ehcache</artifactId>
-	    <version>${lib.ehcache.version}</version>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>${lib.ehcache.version}</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
@@ -351,6 +351,7 @@
             <phase>process-resources</phase>        
             <configuration>          
               <tasks>
+                <!-- Copy hibernate configuration files -->
                 <copy todir="${basedir}/src/test/resources/hibernate">
                   <fileset dir="${basedir}/src/main/resources/hibernate" includes="**/*" />
                 </copy>

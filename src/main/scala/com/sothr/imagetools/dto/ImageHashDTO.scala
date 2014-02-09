@@ -1,11 +1,31 @@
 package com.sothr.imagetools.dto
 
 import grizzled.slf4j.Logging
+import javax.persistence._
 
-class ImageHashDTO(val ahash:Long, val dhash:Long, val phash:Long, val md5:String) extends Serializable with Logging{
+@Entity
+@Table(name = "ImageHash")
+class ImageHashDTO(var ahash:Long, var dhash:Long, var phash:Long, var md5:String) extends Serializable with Logging {
+
+  def this() = this (0l, 0l, 0l, "")
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  var id:Int = _
+  def getId:Int = id
+  def setId(newId:Int) = { id = newId }
+
+  def getAhash:Long = ahash
+  def setAhash(hash:Long) = { ahash = hash}
+  def getDhash:Long = dhash
+  def setDhash(hash:Long) = { dhash = hash}
+  def getPhash:Long = phash
+  def setPhash(hash:Long) = { phash = hash}
+  def getMd5:String = md5
+  def setMd5(hash:String) = { md5 = hash}
 
   def cloneHashes:ImageHashDTO = {
-      return new ImageHashDTO(ahash,dhash,phash,md5)
+      new ImageHashDTO(ahash,dhash,phash,md5)
   }
 
   override def hashCode():Int = {

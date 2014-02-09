@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="com.sothr.imagetools.image.Image" table="Image">
+    <meta attribute="class-description">
+      This class contains the image hashes and meta data
+    </meta>
+    <id name="imagePath" type="string" column="path"/>
+    <property name="thumbnailPath" column="thumbnail_path" type="string"/>
+    <property name="width" column="width" type="int"/>
+    <property name="height" column="height" type="int"/>
+    <one-to-one name="hashes"  class="com.sothr.imagetools.dto.ImageHashDTO"/>
+  </class>
+</hibernate-mapping>

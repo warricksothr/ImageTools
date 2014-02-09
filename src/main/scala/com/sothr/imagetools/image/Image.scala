@@ -3,8 +3,33 @@ package com.sothr.imagetools.image
 import com.sothr.imagetools.dto.ImageHashDTO
 import com.sothr.imagetools.hash.HashService
 import grizzled.slf4j.Logging
+import javax.persistence._
 
-class Image(val imagePath:String, val thumbnailPath:String, val imageSize:Tuple2[Int,Int], var hashes:ImageHashDTO = null) extends Serializable with Logging{
+@Entity
+@Table(name = "Image")
+class Image(val image:String, val thumbnail:String, val size:Tuple2[Int,Int], val imageHashes:ImageHashDTO = null) extends Serializable with Logging {
+
+  def this() = this ("", "", (0,0), null)
+
+  @Id
+  var imagePath:String = image
+  def getImagePath:String = imagePath
+  def setImagePath(path:String) = { imagePath = path}
+  var thumbnailPath:String = thumbnail
+  def getThumbnailPath:String = thumbnailPath
+  def setThumbnailPath(path:String) = { thumbnailPath = path}
+  var width:Int = size._1
+  def getWidth:Int = width
+  def setWidth(size:Int) = { width = size}
+  var height:Int = size._2
+  def getHeight:Int = height
+  def setHeight(size:Int) = { height = size}
+  var hashes:ImageHashDTO = imageHashes
+  def getHashes:ImageHashDTO = hashes
+  def setHashes(newHashes:ImageHashDTO) = { hashes = newHashes}
+
+  @transient
+  var imageSize:Tuple2[Int,Int] = { new Tuple2(width, height) }
 
   var imageType:ImageType = ImageType.SingleFrameImage
 

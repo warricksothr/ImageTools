@@ -10,28 +10,47 @@ import javax.imageio.ImageIO
 import java.io.IOException
 import net.sf.ehcache.Element
 import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
+import com.sothr.imagetools.dao.ImageDAO
 
 object ImageService extends Logging {
 
   val imageCache = AppConfig.cacheManager.getCache("images")
+  private val imageDAO = new ImageDAO()
 
   private def lookupImage(file:File):Image = {
-      var image:Image = null
-      //get from memory cache if possible
-      try {
-        if (imageCache.isKeyInCache(file.getAbsolutePath)) image = imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
-      } catch {
-        case npe:NullPointerException => error(s"Error grabbing \'${file.getAbsolutePath}\' from cache", npe)
+    var image:Image = null
+    var found = false
+    //get from memory cache if possible
+    try {
+      if (imageCache.isKeyInCache(file.getAbsolutePath)) {
+        found = true
+        image = imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
       }
-      //get from datastore if possible
-      image
+    } catch {
+      case npe:NullPointerException => error(s"Error grabbing \'${file.getAbsolutePath}\' from cache", npe)
+    }
+    //get from datastore if possible
+    if (!found) {
+      try {
+        val tempImage = imageDAO.find(file.getAbsolutePath)
+        if (tempImage != null) image = tempImage
+      } catch {
+        case ex:Exception => error(s"Error looking up \'${file.getAbsolutePath}\' from database", ex)
+      }
+    }
+    image
   }
   
   private def saveImage(image:Image):Image = {
-      //save to cache
-      imageCache.put(new Element(image.imagePath, image))
-      //save to datastore
-      image
+    //save to cache
+    imageCache.put(new Element(image.imagePath, image))
+    //save to datastore
+    try {
+      imageDAO.save(image)
+    } catch {
+      case ex:Exception => error(s"Error saving up \'${image.imagePath}\' to database", ex)
+    }
+    image
   }
 
   def getImage(file:File):Image = {

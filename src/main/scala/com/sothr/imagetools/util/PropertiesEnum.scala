@@ -27,4 +27,6 @@ object PropertiesEnum extends Enumeration {
   //Default Thumbnail Settings
   val ThumbnailDirectory = Value("app.thumbnail.directory")
   val ThumbnailSize = Value("app.thumbnail.size")
+  //Default Database Settings
+  val DatabaseConnectionURL = Value("app.database.connectionURL")
 }

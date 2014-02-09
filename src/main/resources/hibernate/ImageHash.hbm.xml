@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="com.sothr.imagetools.dto.ImageHashDTO" table="ImageHash">
+    <meta attribute="class-description">
+      This class contains the image hashes
+    </meta>
+    <id name="id" type="int" column="id">
+      <generator class="native"/>
+    </id>
+    <property name="ahash" column="ahash" type="long"/>
+    <property name="dhash" column="dhash" type="long"/>
+    <property name="phash" column="phash" type="long"/>
+    <property name="md5" column="md5" type="string"/>
+  </class>
+</hibernate-mapping>
