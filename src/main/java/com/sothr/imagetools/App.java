@@ -75,7 +75,7 @@ public class App extends Application
     @Override
     public void stop() throws Exception {
         logger.info("Image-Tools is shutting down");
-        AppConfig.saveProperties();
+        AppConfig.shutdown();
         super.stop();
     }
 }

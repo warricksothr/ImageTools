@@ -26,7 +26,7 @@ class AppCLI {
       CommandLineParser parser = new BasicParser();
       CommandLine cmd = parser.parse(options, args);
       process(cmd);
-      AppConfig.saveProperties();
+      AppConfig.shutdown();
       System.exit(0);
     }  catch (Exception ex) {
       logger.error("Unhandled exception in AppCLI",ex);

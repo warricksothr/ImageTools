@@ -1,5 +1,6 @@
 package com.sothr.imagetools;
 
+import com.sothr.imagetools.dao.HibernateUtil;
 import com.sothr.imagetools.util.ResourceLoader;
 import com.sothr.imagetools.util.PropertiesService;
 import com.sothr.imagetools.util.PropertiesEnum;
@@ -107,6 +108,11 @@ public class AppConfig {
       configuredCache = true;
       logger.info("Configured EHCache");
     }
+  }
+
+  public static void shutdown() {
+    saveProperties();
+    HibernateUtil.getSessionFactory().close();
   }
 
   public static void saveProperties() {

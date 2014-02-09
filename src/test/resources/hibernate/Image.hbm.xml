@@ -11,6 +11,6 @@
     <property name="thumbnailPath" column="thumbnail_path" type="string"/>
     <property name="width" column="width" type="int"/>
     <property name="height" column="height" type="int"/>
-    <one-to-one name="hashes"  class="com.sothr.imagetools.dto.ImageHashDTO"/>
+    <one-to-one name="hashes" class="com.sothr.imagetools.dto.ImageHashDTO" cascade="save-update, delete"/>
   </class>
 </hibernate-mapping>
