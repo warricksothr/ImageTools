@@ -79,9 +79,9 @@ object ImageService extends Logging {
 
   def calculateThumbPath(md5:String):String = {
     //break the path down into 4 char parts
-    val split:List[String] = md5.grouped(4).toList
+    val split:List[String] = md5.grouped(3).toList
     var dirPath = ""
-    for (seg <- split) dirPath += seg + "/"
+    for (index <- 0 until (split.length-1)) dirPath += split(index) + "/"
     var path:String = s"${PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertiesEnum.ThumbnailSize.toString)}/$dirPath"
     try {
       val dir = new File(path)
