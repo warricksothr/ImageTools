@@ -23,7 +23,7 @@ object HashService extends Logging {
   }
 
   def getImageHashes(image:BufferedImage, imagePath:String):ImageHashDTO = {
-    debug("Creating hashes for an image")
+    //debug("Creating hashes for an image")
 
     var ahash:Long = 0L
     var dhash:Long = 0L
@@ -50,7 +50,7 @@ object HashService extends Logging {
   }
 
   def getAhash(image:BufferedImage, alreadyGray:Boolean = false):Long = {
-    debug("Started generating an AHash")
+    //debug("Started generating an AHash")
     var grayImage:BufferedImage = null
     if (alreadyGray) {
       grayImage = image
@@ -63,7 +63,7 @@ object HashService extends Logging {
   }
 
   def getDhash(image:BufferedImage, alreadyGray:Boolean = false):Long = {
-    debug("Started generating an DHash")
+    //debug("Started generating an DHash")
     var grayImage:BufferedImage = null
     if (alreadyGray) {
       grayImage = image
@@ -76,7 +76,7 @@ object HashService extends Logging {
   }
 
   def getPhash(image:BufferedImage, alreadyGray:Boolean = false):Long = {
-    debug("Started generating an PHash")
+    //debug("Started generating an PHash")
     var grayImage:BufferedImage = null
     if (alreadyGray) {
       grayImage = image

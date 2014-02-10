@@ -150,6 +150,11 @@
       <artifactId>hibernate-ehcache</artifactId>
       <version>${lib.hibernate.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-c3p0</artifactId>
+      <version>${lib.hibernate.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

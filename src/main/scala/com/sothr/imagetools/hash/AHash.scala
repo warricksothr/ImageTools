@@ -7,10 +7,10 @@ import grizzled.slf4j.Logging
   */
 object AHash extends PerceptualHasher with Logging {
    def getHash(imageData: Array[Array[Int]]): Long = {
-     debug("Generating AHash")
+     //debug("Generating AHash")
      val width = imageData.length
      val height = imageData(0).length
-     debug(s"Image data size: ${width}x${height}")
+     //debug(s"Image data size: ${width}x${height}")
 
      //calculate average pixel
      var total = 0

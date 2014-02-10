@@ -7,10 +7,10 @@ import grizzled.slf4j.Logging
  */
 object DHash extends PerceptualHasher with Logging {
   def getHash(imageData: Array[Array[Int]]): Long = {
-    debug("Generating DHash")
+    //debug("Generating DHash")
     val width = imageData.length
     val height = imageData(0).length
-    debug(s"Image data size: ${width}x${height}")
+    //debug(s"Image data size: ${width}x${height}")
     
     //calculate dhash
     var hash = 0L

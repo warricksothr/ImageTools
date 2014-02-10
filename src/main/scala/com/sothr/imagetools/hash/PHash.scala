@@ -11,7 +11,7 @@ object PHash extends PerceptualHasher with Logging {
      //convert the imageData into a FloatArray
      val width = imageData.length
      val height = imageData(0).length
-     debug(s"Starting with image of ${height}x${width} for PHash")
+     //debug(s"Starting with image of ${height}x${width} for PHash")
 
      val imageDataFloat:Array[Array[Float]] = Array.ofDim[Float](height, width)
      for (row <- 0 until height) {
@@ -19,13 +19,13 @@ object PHash extends PerceptualHasher with Logging {
          imageDataFloat(row)(col) = imageData(row)(col).toFloat
        }
      }
-     debug("Copied image data to float array for transform")
+     //debug("Copied image data to float array for transform")
      //debug(s"\n${imageDataFloat.deep.mkString("\n")}")
 
      //perform transform on the data
      val dct:FloatDCT_2D = new FloatDCT_2D(height,width)
      dct.forward(imageDataFloat, true)
-     debug("Converted image data into DCT")
+     //debug("Converted image data into DCT")
      //debug(s"\n${imageDataFloat.deep.mkString("\n")}")
 
      //extract the DCT data
@@ -40,7 +40,7 @@ object PHash extends PerceptualHasher with Logging {
        }
      }
      val mean = total / (dctDataHeight * dctDataWidth)
-     debug(s"Calculated mean as $mean from ${total}/${dctDataHeight * dctDataWidth}")
+     //debug(s"Calculated mean as $mean from ${total}/${dctDataHeight * dctDataWidth}")
 
      //calculate the hash
      var hash = 0L

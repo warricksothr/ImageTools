@@ -1,16 +1,13 @@
 Add functionality to both engines
-    -Move files to new locations
-        -Rename new files based on their MD5
-Add functionality to ImageService
-    -Cache thumbnails
-    -Generate thumbnails
+  -Move files to new locations
+    -Rename new files based on their MD5 - abandoned as bad idea
 Improve functionality of the PropertiesService
-    -Getters and Setters for sepcific values with proper cascading and type awareness
-    -Nicer debugging?
+  -Getters and Setters for sepcific values with proper cascading and type awareness
+  -Nicer debugging?
 Hibernate - H2 intergration
-    - setup hibernate
-    - setup h2
-    - setup C3P0 connection pool
-    - transfer configuration files
-    - autoload configuration files?
-    - map DTO's
+  - autoload configuration files?
+Database - How to handle directories to reduce database storage?
+  - recursive database construction
+    -Factory to handle generating directory information
+    -Directory1 -> Directory2 -> Directory3
+      -result = Directory/Directory2/Directory3
