@@ -42,7 +42,7 @@ object AHash extends PerceptualHasher with Logging {
          }
        }
      }
-     debug(s"Computed AHash: $hash from ${width * height} pixels")
+     //debug(s"Computed AHash: $hash from ${width * height} pixels")
      hash
    }
  }

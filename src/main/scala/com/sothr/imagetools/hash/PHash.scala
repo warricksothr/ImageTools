@@ -63,7 +63,7 @@ object PHash extends PerceptualHasher with Logging {
          }
        }
      }
-     debug(s"Computed PHash: $hash from ${dctDataWidth * dctDataHeight} pixels")
+     //debug(s"Computed PHash: $hash from ${dctDataWidth * dctDataHeight} pixels")
      hash
    }
  }
