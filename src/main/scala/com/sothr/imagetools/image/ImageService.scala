@@ -48,7 +48,7 @@ object ImageService extends Logging {
     try {
       imageDAO.save(image)
     } catch {
-      case ex:Exception => error(s"Error saving up \'${image.imagePath}\' to database", ex)
+      case ex:Exception => error(s"Error saving \'${image.imagePath}\' to database", ex)
     }
     image
   }

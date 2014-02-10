@@ -9,31 +9,26 @@ import com.sothr.imagetools.image.Image
 class ImageDAO {
 
   private val sessionFactory:SessionFactory = HibernateUtil.getSessionFactory()
-  private val example:Image = new Image()
 
   def find(path:String):Image = {
     val session:Session = sessionFactory.getCurrentSession
-    session.beginTransaction
-    val result = session.get(example.getClass, path).asInstanceOf[Image]
+    session.getTransaction.begin()
+    val result = session.get(classOf[Image], path).asInstanceOf[Image]
     session.getTransaction.commit()
     result
   }
 
   def save(image:Image) = {
     val session:Session = sessionFactory.getCurrentSession
-    session.beginTransaction
-
+    session.getTransaction.begin()
     session.saveOrUpdate(image)
-
     session.getTransaction.commit()
   }
 
   def save(images:List[Image]) = {
     val session:Session = sessionFactory.getCurrentSession
-    session.beginTransaction
-
+    session.getTransaction.begin()
     for (image <- images) session.saveOrUpdate(image)
-
     session.getTransaction.commit()
   }
 

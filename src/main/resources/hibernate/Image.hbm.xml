@@ -8,9 +8,9 @@
       This class contains the image hashes and meta data
     </meta>
     <id name="imagePath" type="string" column="path"/>
-    <property name="thumbnailPath" column="thumbnail_path" type="string"/>
-    <property name="width" column="width" type="int"/>
-    <property name="height" column="height" type="int"/>
-    <one-to-one name="hashes" class="com.sothr.imagetools.dto.ImageHashDTO" cascade="save-update, delete"/>
+    <property name="thumbnailPath" column="thumbnail_path" type="string" not-null="true"/>
+    <property name="width" column="width" type="int" not-null="true"/>
+    <property name="height" column="height" type="int" not-null="true"/>
+    <many-to-one name="hashes" column="hashes" unique="true" class="com.sothr.imagetools.dto.ImageHashDTO" cascade="save-update, delete" not-null="true" lazy="false"/>
   </class>
 </hibernate-mapping>
