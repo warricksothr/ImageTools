@@ -45,6 +45,7 @@
     <lib.thumbnailator.version>[0.4, 0.5)</lib.thumbnailator.version>
     <lib.h2database.version>1.3.175</lib.h2database.version>
     <lib.hibernate.version>4.3.0.Final</lib.hibernate.version>
+    <lib.hibernate.ehcache.version>2.6.6</lib.hibernate.ehcache.version>
   </properties>
 
   <dependencies>
@@ -149,6 +150,11 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-ehcache</artifactId>
       <version>${lib.hibernate.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>net.sf.ehcache</groupId>
+    	<artifactId>ehcache-core</artifactId>
+    	<version>${lib.hibernate.ehcache.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
