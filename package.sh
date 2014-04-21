@@ -8,7 +8,7 @@ PACKAGEZIP=$PACKAGENAME.zip
 TARGET=$PWD/target
 
 #Packaging Jar Distributable
-cd target/jfx/app/
+cd target/release/
 echo "creating $PACKAGETAR in $TARGET"
 tar -zcvf $TARGET/$PACKAGETAR .
 echo "creating $PACKAGEZIP in $TARGET"

@@ -27,14 +27,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.version>1.7</jdk.version>
+    <jdk.version>1.8</jdk.version>
     <lib.junit.version>3.8.1</lib.junit.version>
     <lib.scalatest.version>2.0</lib.scalatest.version>
     <lib.logback.version>1.0.13</lib.logback.version>
     <lib.slf4j.version>1.7.5</lib.slf4j.version>
     <lib.grizzled-slf4j.version>1.0.1</lib.grizzled-slf4j.version>
     <lib.scala-library.version>2.10.3</lib.scala-library.version>
-    <lib.scalafx.version>8.0.0-M3</lib.scalafx.version>
     <lib.akka.version>2.2.3</lib.akka.version>
     <lib.jta.version>1.1</lib.jta.version>
     <lib.ehcache.version>2.8.0</lib.ehcache.version>
@@ -205,24 +204,16 @@
       </testResource>
     </testResources>
     <pluginManagement>
-      <plugins>	
-        <plugin>
-	        <groupId>com.zenjava</groupId>
-	        <artifactId>javafx-maven-plugin</artifactId>
-	        <version>2.0</version>
-	        <configuration>
-	          <mainClass>com.sothr.imagetools.App</mainClass>
-	        </configuration>
-        </plugin>
+      <plugins>
         <plugin>
           <groupId>net.alchim31.maven</groupId>
           <artifactId>scala-maven-plugin</artifactId>
           <version>3.1.6</version>
         </plugin>
         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>2.6</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.6</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -256,6 +247,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Version Management -->
       <plugin>
         <groupId>com.code54.mojo</groupId>
         <artifactId>buildversion-plugin</artifactId>
@@ -268,6 +260,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Override Compilation Settings -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -285,6 +278,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Handle Polygot Scala -->
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
@@ -312,7 +306,30 @@
           </jvmArgs>
         </configuration>-->
       </plugin>
+      <!-- Build Management -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputDirectory>
+                ${project.build.directory}/release/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Resource Management -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.6</version>
         <executions>
@@ -339,7 +356,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/jfx/app</outputDirectory>
+              <outputDirectory>${project.build.directory}/release</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/includes</directory>
@@ -354,6 +371,34 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Packaging Configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <classpathPrefix>lib/</classpathPrefix>
+                  <mainClass>com.sothr.imagetools.App</mainClass>
+                </manifest>
+              </archive>
+              <outputDirectory>
+                ${project.build.directory}/release
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- General Ant Tasks
+           Mostly Moving Files -->
       <plugin>    
         <artifactId>maven-antrun-plugin</artifactId>    
         <version>1.4</version>    

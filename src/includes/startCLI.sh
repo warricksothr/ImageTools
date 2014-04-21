@@ -5,7 +5,7 @@ while (( "$#" )); do
   args="$args $1" 
   shift 
 done
-command="-Xmx1500m -cp ${project.name}-${project.version}-jfx.jar:lib/* com.sothr.imagetools.AppCLI"
+command="-Xmx1500m -cp ${project.name}-${project.version}.jar:lib/* com.sothr.imagetools.AppCLI"
 correct=false
 #Check for existing commands and use them instead of asking if possible
 if [[ -z "$args" ]]

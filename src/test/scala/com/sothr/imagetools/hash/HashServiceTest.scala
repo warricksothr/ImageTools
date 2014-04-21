@@ -220,8 +220,8 @@ class HashServiceTest extends BaseTest {
     val image = ImageIO.read(sample)
     debug(s"Image: width: ${image.getWidth} height: ${image.getHeight}")
     val hash = HashService.getPhash(image)
-    debug(s"Testing that $hash = -9154589787976242949L")
-    assert(hash == -9154589787976242949L)
+    debug(s"Testing that $hash = -9154554603604154117L")
+    assert(hash == -9154554603604154117L)
   }
 
   test("Calculate PHash Medium Sample Image 1") {
@@ -389,8 +389,8 @@ class HashServiceTest extends BaseTest {
   test("Calculate ImageHash Large Sample Image 1") {
     debug("Starting 'Calculate ImageHash Large Sample Image 1' test")
     val hash = HashService.getImageHashes(TestParams.LargeSampleImage1)
-    debug(s"Testing that ${hash.hashCode} = -812836666")
-    assert(hash.hashCode == -812836666)
+    debug(s"Testing that ${hash.hashCode} = -812844858")
+    assert(hash.hashCode == -812844858)
   }
 
   test("Calculate ImageHash Medium Sample Image 1") {
