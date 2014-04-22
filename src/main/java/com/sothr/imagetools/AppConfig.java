@@ -69,7 +69,7 @@ public class AppConfig {
           // Call context.reset() to clear any previous configuration, e.g. default 
           // configuration. For multi-step configuration, omit calling context.reset().
           context.reset();
-          configurator.doConfigure(ResourceLoader.get().getResource("logback-minimum-config.xml"));
+          configurator.doConfigure(ResourceLoader.get().getResourceStream("logback-minimum-config.xml"));
         } catch (JoranException je) {
           // StatusPrinter will handle this
         }

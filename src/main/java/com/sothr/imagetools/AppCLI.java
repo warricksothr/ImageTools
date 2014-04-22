@@ -1,11 +1,7 @@
 package com.sothr.imagetools;
 
 import com.sothr.imagetools.image.SimilarImages;
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.immutable.List;
@@ -17,16 +13,24 @@ class AppCLI {
 
   private static Logger logger;
 
+  private static final String HEADER = "Process images and search for duplicates and similar images heuristically";
+  private static final String FOOTER = "Please report issues to...";
+
   public static void main(String[] args) {
-    AppConfig.configureApp();
-    logger = LoggerFactory.getLogger(AppCLI.class);
-    logger.info("Started Image Tools CLI");
     try {
       Options options = getOptions();
       CommandLineParser parser = new BasicParser();
       CommandLine cmd = parser.parse(options, args);
-      process(cmd);
-      AppConfig.shutdown();
+      if (cmd.hasOption('h') || cmd.getOptions().length < 1 || cmd.getArgs().length > 0) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("Image-Tools CLI", HEADER, options, FOOTER, true);
+      } else {
+        AppConfig.configureApp();
+        logger = LoggerFactory.getLogger(AppCLI.class);
+        logger.info("Started Image Tools CLI");
+        process(cmd);
+        AppConfig.shutdown();
+      }
       System.exit(0);
     }  catch (Exception ex) {
       logger.error("Unhandled exception in AppCLI",ex);
