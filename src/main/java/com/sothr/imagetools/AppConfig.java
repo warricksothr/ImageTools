@@ -5,6 +5,7 @@ import com.sothr.imagetools.dao.HibernateUtil;
 import com.sothr.imagetools.util.ResourceLoader;
 import com.sothr.imagetools.util.PropertiesService;
 import com.sothr.imagetools.util.PropertiesEnum;
+import javafx.stage.Stage;
 import net.sf.ehcache.CacheManager;
 
 import org.slf4j.LoggerFactory;
@@ -23,20 +24,25 @@ public class AppConfig {
   private static Logger logger;
   public static CacheManager cacheManager;
 
-  //Logging defaults
+  // Logging defaults
   private static final String LOGSETTINGSFILE = "./logback.xml";
   private static Boolean configuredLogging = false;
 
-  //Properties defaults
+  // Properties defaults
   private static final String DEFAULTPROPERTIESFILE = "application.conf";
   private static final String USERPROPERTIESFILE = "user.conf";
   private static Boolean loadedProperties = false;
 
-  //Cache defaults
+  // Cache defaults
   private static Boolean configuredCache = false;
 
   // General Akka Actor System
   private static ActorSystem appSystem = ActorSystem.create("ITActorSystem");
+
+  // The Main App
+  private static Stage primaryStage = null;
+  public static Stage getPrimaryStage() { return primaryStage; }
+  public static void setPrimaryStage(Stage newPrimaryStage) { primaryStage = newPrimaryStage; }
 
   public static ActorSystem getAppActorSystem() {
     return appSystem;

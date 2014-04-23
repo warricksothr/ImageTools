@@ -10,7 +10,7 @@ import akka.actor.{ActorRef, ActorSystem, ActorLogging, Actor}
 /**
  * Created by drew on 1/26/14.
  */
-abstract class Engine extends Logging{
+abstract class Engine extends Logging {
   val system = ActorSystem("EngineActorSystem")
   val imageFilter:ImageFilter = new ImageFilter()
   val imageCache = AppConfig.cacheManager.getCache("images")

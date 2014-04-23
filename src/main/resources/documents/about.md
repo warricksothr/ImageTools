@@ -1,4 +1,4 @@
-Image Tools Version: ${project.version}
+**Image Tools Version: ${project.version}**
 
 This is a simple about script. It demonstrates loading the about text from a file.
 

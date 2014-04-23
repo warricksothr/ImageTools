@@ -4,24 +4,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sothr.imagetools.ui.controller.AppController">
-<children><MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="29.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns:fx="http://javafx.com/fxml">
-  <menus>
-    <Menu mnemonicParsing="false" text="File">
-      <items>
-        <MenuItem fx:id="" mnemonicParsing="false" onAction="#closeAction" text="Close" />
-      </items>
-    </Menu>
-    <Menu mnemonicParsing="false" text="Edit">
-      <items>
-        <MenuItem mnemonicParsing="false" text="Delete" />
-      </items>
-    </Menu>
-    <Menu mnemonicParsing="false" text="Help">
-      <items>
-        <MenuItem mnemonicParsing="false" onAction="#aboutAction" text="About" />
-      </items>
-    </Menu>
-  </menus>
-</MenuBar>
-</children></AnchorPane>
+<AnchorPane minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.sothr.imagetools.ui.controller.AppController">
+  <children>
+    <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="29.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#closeAction" text="Close" fx:id="" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Delete" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#aboutAction" text="About" />
+            <MenuItem mnemonicParsing="false" onAction="#helpAction" text="Help Site" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+  </children>
+</AnchorPane>
