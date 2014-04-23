@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.sothr.imagetools.ui.controller.AppController">
   <children>
@@ -15,7 +17,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Delete" />
+            <MenuItem mnemonicParsing="false" text="Settings" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -28,34 +30,87 @@
     </MenuBar>
     <VBox id="VBox" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
       <children>
-        <SplitPane dividerPositions="0.24755381604696672" focusTraversable="true" prefHeight="569.0" prefWidth="1024.0" visible="true" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.2181996086105675" focusTraversable="true" prefHeight="569.0" prefWidth="1024.0" visible="true" VBox.vgrow="ALWAYS">
           <items>
-            <TabPane minHeight="0.0" minWidth="250.0" prefHeight="567.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane minHeight="0.0" minWidth="220.0" prefHeight="567.0" prefWidth="220.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Untitled Tab 1">
+                <Tab closable="false" text="Folders">
                   <content>
-                    <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+                    <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                      <children>
+                        <Label layoutX="14.0" layoutY="14.0" text="Selected Folder:" />
+                        <Label layoutX="14.0" layoutY="30.0" text="&lt;SELECTED&gt;">
+                          <font>
+                            <Font name="System Bold" size="12.0" />
+                          </font>
+                        </Label>
+                        <Button layoutX="14.0" layoutY="66.0" mnemonicParsing="false" text="Browse" />
+                        <Button layoutX="14.0" layoutY="102.0" mnemonicParsing="false" text="Show Similar Images" />
+                        <Button layoutX="14.0" layoutY="138.0" mnemonicParsing="false" text="Show All Images" />
+                      </children>
+                    </AnchorPane>
                   </content>
                 </Tab>
-                <Tab text="Untitled Tab 2">
+                <Tab text="Tags">
                   <content>
-                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                      <children>
+                        <AnchorPane id="AnchorPane" maxHeight="50.0" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                          <children>
+                            <TextField layoutY="0.0" prefWidth="200.0" text="" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                            <Button layoutY="27.0" mnemonicParsing="false" prefWidth="192.0" text="Filter" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                          </children>
+                        </AnchorPane>
+                        <ScrollPane id="ScrollPane" prefViewportHeight="387.0" prefViewportWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
+                          <content>
+                            <ListView prefHeight="385.0" prefWidth="198.0" />
+                          </content>
+                        </ScrollPane>
+                        <AnchorPane id="AnchorPane" prefWidth="192.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                          <children>
+                            <Button layoutY="2.0" mnemonicParsing="false" prefWidth="192.0" text="View All Images In Tags" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                            <Button layoutY="28.0" mnemonicParsing="false" prefWidth="192.0" text="Search For Similarities In Tags" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                          </children>
+                        </AnchorPane>
+                      </children>
+                    </AnchorPane>
                   </content>
                 </Tab>
               </tabs>
             </TabPane>
-            <ScrollPane id="ScrollPane" minWidth="600.0" prefViewportHeight="567.0" prefViewportWidth="766.0">
-              <content>
-                <TilePane minWidth="-1.0" prefHeight="200.0" prefWidth="200.0" />
-              </content>
-            </ScrollPane>
+            <VBox id="VBox" alignment="CENTER" minWidth="600.0" prefWidth="600.0" spacing="5.0">
+              <children>
+                <ToolBar maxHeight="30.0" minHeight="30.0" prefHeight="30.0" VBox.vgrow="ALWAYS">
+                  <items>
+                    <Label text="Currect Directory:" />
+                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                    <Label text="&lt;CURRENT DIRECTORY&gt;" />
+                  </items>
+                  <VBox.margin>
+                    <Insets bottom="-5.0" />
+                  </VBox.margin>
+                </ToolBar>
+                <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" minWidth="600.0" pannable="false" prefViewportHeight="567.0" prefViewportWidth="766.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                  <content>
+                    <TilePane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefColumns="6" prefHeight="-1.0" prefRows="6" prefTileHeight="128.0" prefTileWidth="128.0" prefWidth="-1.0" tileAlignment="TOP_LEFT" />
+                  </content>
+                  <VBox.margin>
+                    <Insets />
+                  </VBox.margin>
+                </ScrollPane>
+              </children>
+            </VBox>
           </items>
         </SplitPane>
       </children>
     </VBox>
     <ToolBar maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" orientation="HORIZONTAL" prefHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <items>
-        <Label text="Toolbar" />
+        <Label text="Progress:" />
+        <Separator orientation="VERTICAL" prefHeight="200.0" />
+        <ProgressBar prefWidth="200.0" progress="0.0" />
+        <Separator orientation="VERTICAL" prefHeight="200.0" />
+        <Label text="&lt;PROGRESS INFORMATION&gt;" />
       </items>
     </ToolBar>
   </children>
