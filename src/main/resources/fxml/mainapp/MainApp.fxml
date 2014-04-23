@@ -4,9 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.sothr.imagetools.ui.controller.AppController">
+<AnchorPane minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.sothr.imagetools.ui.controller.AppController">
   <children>
-    <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="29.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="30.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -26,5 +26,37 @@
         </Menu>
       </menus>
     </MenuBar>
+    <VBox id="VBox" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+      <children>
+        <SplitPane dividerPositions="0.24755381604696672" focusTraversable="true" prefHeight="569.0" prefWidth="1024.0" visible="true" VBox.vgrow="ALWAYS">
+          <items>
+            <TabPane minHeight="0.0" minWidth="250.0" prefHeight="567.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Untitled Tab 1">
+                  <content>
+                    <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+                  </content>
+                </Tab>
+                <Tab text="Untitled Tab 2">
+                  <content>
+                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+            <ScrollPane id="ScrollPane" minWidth="600.0" prefViewportHeight="567.0" prefViewportWidth="766.0">
+              <content>
+                <TilePane minWidth="-1.0" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </ScrollPane>
+          </items>
+        </SplitPane>
+      </children>
+    </VBox>
+    <ToolBar maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" orientation="HORIZONTAL" prefHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <items>
+        <Label text="Toolbar" />
+      </items>
+    </ToolBar>
   </children>
 </AnchorPane>
