@@ -4,11 +4,25 @@ import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
 import scala.collection.mutable
 import java.io.File
 import grizzled.slf4j.Logging
+import akka.actor.{ActorRef, Props}
 
 /**
  * Created by drew on 1/26/14.
  */
 class SequentialEngine extends Engine with Logging {
+
+  var processedListener = system.actorOf(Props[DefaultLoggingEngineListener],
+    name = "ProcessedEngineListener")
+  var similarityListener = system.actorOf(Props[DefaultLoggingEngineListener],
+    name = "SimilarityEngineListener")
+
+  override def setProcessedListener(listenerRef: ActorRef) = {
+    this.processedListener = listenerRef
+  }
+
+  override def setSimilarityListener(listenerRef: ActorRef) = {
+    this.similarityListener = listenerRef
+  }
 
   def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
@@ -18,7 +32,10 @@ class SequentialEngine extends Engine with Logging {
     var count = 0
     for (file <- imageFiles) {
       count += 1
-      if (count % 25 == 0) info(s"Processed ${count}/${imageFiles.size}")
+      if (count % 25 == 0) {
+        //info(s"Processed ${count}/${imageFiles.size}")
+        processedListener ! ScannedFileCount(count,imageFiles.size)
+      }
       val image = ImageService.getImage(file)
       if (image != null) {
         images += image
@@ -38,7 +55,9 @@ class SequentialEngine extends Engine with Logging {
     for (rootImage <- images) {
       if (!ignoreSet.contains(rootImage)) {
         if (processedCount % 25 == 0) {
-            info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length - processedCount} images to go")
+            //info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length -
+            //    processedCount} images to go")
+            similarityListener ! ScannedFileCount(processedCount,images.length-ignoreSet.size)
         }
         debug(s"Looking for images similar to: ${rootImage.imagePath}")
         ignoreSet += rootImage

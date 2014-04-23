@@ -5,14 +5,18 @@ import com.sothr.imagetools.util.DirectoryFilter
 import scala.collection.mutable
 import java.io.File
 import grizzled.slf4j.Logging
+import akka.actor.{ActorRef, ActorSystem, ActorLogging, Actor}
 
 /**
  * Created by drew on 1/26/14.
  */
 abstract class Engine extends Logging{
-
+  val system = ActorSystem("EngineActorSystem")
   val imageFilter:ImageFilter = new ImageFilter()
   val imageCache = AppConfig.cacheManager.getCache("images")
+
+  def setProcessedListener(listenerType: ActorRef)
+  def setSimilarityListener(listenerType: ActorRef)
 
   def getAllImageFiles(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[File] = {
     val fileList = new mutable.MutableList[File]()
@@ -46,4 +50,66 @@ abstract class Engine extends Logging{
    * Get all similar images for a directory with hashes
    */
   def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages];
+}
+
+case class SubmitMessage(message:String)
+case class ScannedFileCount(count:Integer, total:Integer, message:String=null)
+case class ComparedFileCount(count:Integer,total:Integer, message:String=null)
+abstract class EngineListener extends Actor with ActorLogging {
+  override def receive: Actor.Receive = {
+    case command:SubmitMessage => handleMessage(command)
+    case command:ScannedFileCount => handleScannedFileCount(command)
+    case command:ComparedFileCount => handleComparedFileCount(command)
+    case _ => log.info("received unknown message")
+  }
+
+  def handleMessage(command:SubmitMessage)
+  def handleScannedFileCount(command:ScannedFileCount)
+  def handleComparedFileCount(command:ComparedFileCount)
+}
+
+/**
+ * Actor for logging output information
+ */
+class DefaultLoggingEngineListener extends EngineListener with ActorLogging {
+  override def handleComparedFileCount(command: ComparedFileCount): Unit = {
+    if (command.message != null) {
+      log.info(command.message)
+    }
+    log.info("Processed {}/{}",command.count,command.total)
+  }
+
+  override def handleScannedFileCount(command: ScannedFileCount): Unit = {
+    if (command.message != null) {
+      log.info(command.message)
+    }
+    log.info("Scanned {}/{} For Similarities",command.count,command.total)
+  }
+
+  override def handleMessage(command: SubmitMessage): Unit = {
+    log.info(command.message)
+  }
+}
+
+/**
+ * Actor for writing progress out to the commandline
+ */
+class CLIEngineListener extends EngineListener with ActorLogging {
+  override def handleComparedFileCount(command: ComparedFileCount): Unit = {
+    if (command.message != null) {
+      System.out.println(command.message)
+    }
+    System.out.println(s"Processed ${command.count}/${command.total}")
+  }
+
+  override def handleScannedFileCount(command: ScannedFileCount): Unit = {
+    if (command.message != null) {
+      System.out.println(command.message)
+    }
+    System.out.println(s"Scanned ${command.count}/${command.total} For Similarities")
+  }
+
+  override def handleMessage(command: SubmitMessage): Unit = {
+    System.out.println(command.message)
+  }
 }

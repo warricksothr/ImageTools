@@ -1,5 +1,8 @@
 package com.sothr.imagetools;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
 import com.sothr.imagetools.image.SimilarImages;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
@@ -40,31 +43,73 @@ class AppCLI {
   private static Options getOptions() {
     //scan a list of directories
     Options options = new Options();
-    options.addOption(new Option("s", true, "scan directories for a list of similar images"));
+
+    //show help
+    Option helpOption = OptionBuilder.create('h');
+    helpOption.setLongOpt("help");
+    helpOption.setDescription("Display this help dialog");
+    options.addOption(helpOption);
+
+    //scan directories
+    Option scanOption = OptionBuilder.create('s');
+    scanOption.setLongOpt("scan");
+    scanOption.setDescription("Scan directories for a list of similar images");
+    scanOption.setArgs(1);
+    scanOption.setArgName("DIRECTORY");
+    options.addOption(scanOption);
+
     //scan directories in a recursive manner
-    options.addOption(new Option("r", false, "scan directories recursively"));
+    Option recursiveOption = OptionBuilder.create('r');
+    recursiveOption.setLongOpt("recursive");
+    recursiveOption.setDescription("Scan directories recursively");
+    options.addOption(recursiveOption);
+
+    //depth limit
+    Option depthOption = OptionBuilder.create('d');
+    depthOption.setLongOpt("depth");
+    depthOption.setDescription("Limit the maximum depth of the recursive search");
+    depthOption.setArgs(1);
+    depthOption.setArgName("INTEGER");
+    options.addOption(depthOption);
     return options;
   }
 
   private static void process(CommandLine cmd) {
     //scan a comma separated list of paths to search for image similarities
-    Engine engine = new ConcurrentEngine();
-    if (cmd.hasOption('s')) {
-      Boolean recursive = false;
-      Integer recursiveDepth = 500;
-      if (cmd.hasOption('r')) {
-          recursive = true;
-      } 
-      String scanList = cmd.getOptionValue('s');
-      String[] paths = scanList.split(",");
-      for (String path : paths) {
-        List<SimilarImages> similarImages = engine.getSimilarImagesForDirectory(path, recursive, recursiveDepth);
-        for (int index = 0; index < similarImages.length(); index++) {
-          SimilarImages similar = similarImages.apply(index);
-          System.out.println(similar.toString());
+    try {
+      Engine engine = new ConcurrentEngine();
+
+      //create the listeners that will be passed onto the actors
+      ActorSystem system = AppConfig.getAppActorSystem();
+      Props cliListenerProps = Props.create(CLIEngineListener.class);
+      ActorRef cliListener = system.actorOf(cliListenerProps);
+
+      //set the listeners
+      engine.setProcessedListener(cliListener);
+      engine.setSimilarityListener(cliListener);
+
+
+      if (cmd.hasOption('s')) {
+        Boolean recursive = false;
+        Integer recursiveDepth = 500;
+        if (cmd.hasOption('r')) {
+            recursive = true;
+        }
+        if (cmd.hasOption('d')) {
+          recursiveDepth = Integer.parseInt(cmd.getOptionValue('d'));
+        }
+        String scanList = cmd.getOptionValue('s');
+        String[] paths = scanList.split(",");
+        for (String path : paths) {
+          List<SimilarImages> similarImages = engine.getSimilarImagesForDirectory(path, recursive, recursiveDepth);
+          for (int index = 0; index < similarImages.length(); index++) {
+            SimilarImages similar = similarImages.apply(index);
+            System.out.println(similar.toString());
+          }
         }
       }
+    } catch (Exception ex) {
+      throw new IllegalArgumentException("One or more arguments could not be parsed correctly", ex);
     }
   }
-
 }

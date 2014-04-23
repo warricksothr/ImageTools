@@ -1,7 +1,7 @@
 package com.sothr.imagetools
 
 import java.io.File
-import akka.actor.{Actor, ActorSystem, Props, ActorLogging}
+import akka.actor._
 import akka.routing.{Broadcast, RoundRobinRouter, SmallestMailboxRouter}
 import akka.pattern.ask
 import akka.util.Timeout
@@ -11,15 +11,22 @@ import com.sothr.imagetools.hash.HashService
 import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
 import scala.concurrent.Await
 import java.lang.Thread
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.mutable
+import akka.routing.Broadcast
 
 class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
-    val system = ActorSystem("EngineActorSystem")
-    val engineProcessingController = system.actorOf(Props[ConcurrentEngineProcessingController], name = "EngineProcessingController")
-    val engineSimilarityController = system.actorOf(Props[ConcurrentEngineSimilarityController], name = "EngineSimilarityController")
-    implicit val timeout = Timeout(30, TimeUnit.SECONDS)
-    
+  val engineProcessingController = system.actorOf(Props[ConcurrentEngineProcessingController], name = "EngineProcessingController")
+  val engineSimilarityController = system.actorOf(Props[ConcurrentEngineSimilarityController], name = "EngineSimilarityController")
+  implicit val timeout = Timeout(30, TimeUnit.SECONDS)
+
+  override def setProcessedListener(listenerRef: ActorRef) = {
+    engineProcessingController ! SetNewListener(listenerRef)
+  }
+
+  override def setSimilarityListener(listenerRef: ActorRef) = {
+    engineSimilarityController ! SetNewListener(listenerRef)
+  }
+
   def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
     val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
@@ -104,7 +111,9 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
 }
 
 
-// exeternal cases //
+// external cases //
+case class SetNewListener(listenerType: ActorRef)
+
 // processing files into images
 case class EngineProcessFile(file:File)
 case object EngineNoMoreFiles
@@ -131,13 +140,23 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     var processed = 0
     
     var processorsFinished = 0
-    
+    var listener = context.actorOf(Props[DefaultLoggingEngineListener],
+      name = "ProcessedEngineListener")
+
+    def setListener(newListener: ActorRef) = {
+      //remove the old listener
+      this.listener ! PoisonPill
+      //setup the new listener
+      this.listener = newListener
+    }
+
     override def preStart() = {
         log.info("Staring the controller for processing images")
         log.info("Using {} actors to process images", numOfRouters)
     }
     
     override def receive = {
+        case command:SetNewListener => setListener(command.listenerType)
         case command:EngineProcessFile => processFile(command)
         case command:EngineFileProcessed => fileProcessed(command)
         case EngineNoMoreFiles => requestWrapup()
@@ -145,6 +164,11 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
         case EngineIsProcessingFinished => isProcessingFinished()
         case EngineGetProcessingResults => getResults()
         case _ => log.info("received unknown message")
+    }
+
+    override def postStop() = {
+      super.postStop()
+      this.listener ! PoisonPill
     }
     
     def processFile(command:EngineProcessFile) = {
@@ -155,7 +179,10 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     
     def fileProcessed(command:EngineFileProcessed) = {
         processed += 1
-        if (processed % 25 == 0 || processed == toProcess) log.info(s"Processed $processed/$toProcess")
+        if (processed % 25 == 0 || processed == toProcess) {
+          //log.info(s"Processed $processed/$toProcess")
+          listener ! ComparedFileCount(processed,toProcess)
+        }
         if (command.image != null) {
             log.debug(s"processed image: ${command.image.imagePath}")
             images += command.image
@@ -256,12 +283,23 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
 
   var processorsFinished = 0
 
+  var listener = context.actorOf(Props[DefaultLoggingEngineListener],
+    name = "SimilarityEngineListener")
+
+  def setListener(newListener: ActorRef) = {
+    //remove the old listener
+    this.listener ! PoisonPill
+    //setup the new listener
+    this.listener = newListener
+  }
+
   override def preStart() = {
-    log.info("Staring the controller for processing similarites between images")
-    log.info("Using {} actors to process image similarites", numOfRouters)
+    log.info("Staring the controller for processing similarities between images")
+    log.info("Using {} actors to process image similarities", numOfRouters)
   }
 
   override def receive = {
+    case command:SetNewListener => setListener(command.listenerType)
     case command:EngineCompareImages => findSimilarities(command)
     case command:EngineCompareImagesComplete => similarityProcessed(command)
     case EngineNoMoreComparisons => requestWrapup()
@@ -271,12 +309,17 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
     case _ => log.info("received unknown message")
   }
 
+  override def postStop() = {
+    super.postStop()
+    this.listener ! PoisonPill
+  }
 
   def findSimilarities(command:EngineCompareImages) = {
     log.debug(s"Finding similarities between {} and {} images", command.image1.imagePath, command.images.length)
     toProcess += 1
     if (toProcess % 250 == 0) {
-        log.info("Sent {} images to be processed for similarites", toProcess)
+        //log.info("Sent {} images to be processed for similarites", toProcess)
+        listener ! SubmitMessage(s"Sent $toProcess images to be processed for similarites")
     }
     //just relay the command to our workers
     router ! command
@@ -284,7 +327,10 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
 
   def similarityProcessed(command:EngineCompareImagesComplete) = {
     processed += 1
-    if (processed % 25 == 0 || processed == toProcess) log.info(s"Processed $processed/$toProcess")
+    if (processed % 25 == 0 || processed == toProcess) {
+      //log.info(s"Processed $processed/$toProcess")
+      listener ! ScannedFileCount(processed,toProcess)
+    }
     if (command.similarImages != null) {
       log.debug(s"Found similar images: ${command.similarImages}")
       allSimilarImages += command.similarImages

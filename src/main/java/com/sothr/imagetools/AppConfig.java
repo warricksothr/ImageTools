@@ -1,5 +1,6 @@
 package com.sothr.imagetools;
 
+import akka.actor.ActorSystem;
 import com.sothr.imagetools.dao.HibernateUtil;
 import com.sothr.imagetools.util.ResourceLoader;
 import com.sothr.imagetools.util.PropertiesService;
@@ -33,6 +34,13 @@ public class AppConfig {
 
   //Cache defaults
   private static Boolean configuredCache = false;
+
+  // General Akka Actor System
+  private static ActorSystem appSystem = ActorSystem.create("ITActorSystem");
+
+  public static ActorSystem getAppActorSystem() {
+    return appSystem;
+  }
 
   public static void configureApp() {
     logger = (Logger)LoggerFactory.getLogger(AppConfig.class);
