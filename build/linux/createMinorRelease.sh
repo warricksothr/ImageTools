@@ -19,6 +19,11 @@ VERSION="${arr[0]}.$minor.0-${arr2[1]}"
 #update the POM
 mvn versions:set -DnewVersion=$VERSION
 
+#Build the new version and make the necessary changes
+cd $HOME
+. createBuildRelease.sh
+
+cd ../..
 #commit the new patch version
 git commit -a -m "Creating minor version $VERSION"
 
@@ -27,8 +32,3 @@ git tag -a v$VERSION -m "Minor Release Version $VERSION"
 
 #push the build and tag
 git push --follow-tags
-
-cd $HOME
-. build.sh
-cd $HOME
-. package.sh

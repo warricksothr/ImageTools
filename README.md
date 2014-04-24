@@ -1,4 +1,4 @@
-ImageTools v0.1.0-DEV
+ImageTools v0.1.1-DEV
 ==========
 http://imagetools.sothr.com
 ----------

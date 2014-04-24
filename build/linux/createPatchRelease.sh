@@ -19,6 +19,10 @@ VERSION="${arr[0]}.${arr[1]}.$patch-${arr2[1]}"
 #update the POM
 mvn versions:set -DnewVersion=$VERSION
 
+cd $HOME
+. createBuildRelease.sh
+
+cd ../..
 #commit the new patch version
 git commit -a -m "Creating patch version $VERSION"
 
@@ -27,8 +31,3 @@ git tag -a v$VERSION -m "Patch Release Version $VERSION"
 
 #push the build and tag
 git push --follow-tags
-
-cd $HOME
-. build.sh
-cd $HOME
-. package.sh
