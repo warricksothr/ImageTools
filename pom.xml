@@ -4,7 +4,7 @@
 
   <groupId>com.sothr.imagetools</groupId>
   <artifactId>Image-Tools</artifactId>
-  <version>0.1.0-DEV</version>
+  <version>0.1.1-DEV</version>
   <packaging>jar</packaging>
 
   <name>Image-Tools</name>
