@@ -20,7 +20,7 @@ VERSION="$major.0.0-${arr2[1]}"
 mvn versions:set -DnewVersion=$VERSION
 
 #commit the new patch version
-git commit -a . -m "Creating major version $VERSION"
+git commit -a -m "Creating major version $VERSION"
 
 #tag the build
 git tag -a v$VERSION -m "Major Release Version $VERSION"

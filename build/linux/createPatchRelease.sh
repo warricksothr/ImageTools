@@ -20,7 +20,7 @@ VERSION="${arr[0]}.${arr[1]}.$patch-${arr2[1]}"
 mvn versions:set -DnewVersion=$VERSION
 
 #commit the new patch version
-git commit -a . -m "Creating patch version $VERSION"
+git commit -a -m "Creating patch version $VERSION"
 
 #tag the build
 git tag -a v$VERSION -m "Patch Release Version $VERSION"
