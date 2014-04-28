@@ -3,8 +3,7 @@ package com.sothr.imagetools.ui.controller
 import javafx.fxml.FXML
 import javafx.event.ActionEvent
 import javafx.stage.{StageStyle, Stage}
-import javafx.scene.Scene
-import javafx.scene.Group
+import javafx.scene.{Scene,Group}
 import javafx.scene.text.{TextAlignment, Text}
 import java.io.IOException
 import java.util.Scanner
@@ -12,6 +11,8 @@ import com.sothr.imagetools.util.ResourceLoader
 import grizzled.slf4j.Logging
 import javafx.scene.web.WebView
 import org.markdown4j.Markdown4jProcessor
+import javafx.scene.image.{Image, ImageView}
+import javafx.collections.{FXCollections, ObservableList}
 
 /**
  * Created by drew on 12/31/13.
@@ -22,6 +23,25 @@ class AppController extends Logging {
 
   //Define controls
   @FXML var rootMenuBar : javafx.scene.control.MenuBar = null
+  @FXML var imageTilePane : javafx.scene.layout.TilePane = null
+  @FXML var tagListView : javafx.scene.control.ListView[String] = null
+
+  @FXML def initialize() = {
+    //test
+    val testImage = new Image("test.jpg")
+    for (i <- 1 to 100) {
+      val genImageView = new ImageView()
+      genImageView.setImage(testImage)
+      genImageView.setFitWidth(128.0)
+      genImageView.setPreserveRatio(true)
+      imageTilePane.getChildren.add(genImageView)
+    }
+    val list = FXCollections.observableArrayList[String]()
+    for (i <- 1 to 100) {
+      list.add(s"test-item ${i}")
+    }
+    tagListView.setItems(list)
+  }
 
   //region MenuItem Actions
 

@@ -6,13 +6,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.sothr.imagetools.ui.controller.AppController">
+<AnchorPane minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sothr.imagetools.ui.controller.AppController">
   <children>
     <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="30.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#closeAction" text="Close" fx:id="" />
+            <MenuItem fx:id="" mnemonicParsing="false" onAction="#closeAction" text="Close" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
@@ -32,7 +32,7 @@
       <children>
         <SplitPane dividerPositions="0.2181996086105675" focusTraversable="true" prefHeight="569.0" prefWidth="1024.0" visible="true" VBox.vgrow="ALWAYS">
           <items>
-            <TabPane minHeight="0.0" minWidth="220.0" prefHeight="567.0" prefWidth="220.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane maxWidth="220.0" minHeight="0.0" minWidth="220.0" prefHeight="567.0" prefWidth="220.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab closable="false" text="Folders">
                   <content>
@@ -61,11 +61,7 @@
                             <Button layoutY="27.0" mnemonicParsing="false" prefWidth="192.0" text="Filter" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                           </children>
                         </AnchorPane>
-                        <ScrollPane id="ScrollPane" prefViewportHeight="387.0" prefViewportWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
-                          <content>
-                            <ListView prefHeight="385.0" prefWidth="198.0" />
-                          </content>
-                        </ScrollPane>
+                            <ListView fx:id="tagListView" prefHeight="385.0" prefWidth="198.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
                         <AnchorPane id="AnchorPane" prefWidth="192.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                           <children>
                             <Button layoutY="2.0" mnemonicParsing="false" prefWidth="192.0" text="View All Images In Tags" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
@@ -92,7 +88,7 @@
                 </ToolBar>
                 <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" minWidth="600.0" pannable="false" prefViewportHeight="567.0" prefViewportWidth="766.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                   <content>
-                    <TilePane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefColumns="6" prefHeight="-1.0" prefRows="6" prefTileHeight="128.0" prefTileWidth="128.0" prefWidth="-1.0" tileAlignment="TOP_LEFT" />
+                    <TilePane fx:id="imageTilePane" hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefColumns="6" prefHeight="-1.0" prefTileHeight="128.0" prefTileWidth="128.0" prefWidth="-1.0" tileAlignment="TOP_LEFT" vgap="5.0" />
                   </content>
                   <VBox.margin>
                     <Insets />
