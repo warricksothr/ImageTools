@@ -7,12 +7,13 @@ import javafx.scene.{Scene,Group}
 import javafx.scene.text.{TextAlignment, Text}
 import java.io.IOException
 import java.util.Scanner
+import com.sothr.imagetools.image.Image
+import com.sothr.imagetools.ui.component.ImageTileFactory
 import com.sothr.imagetools.util.ResourceLoader
 import grizzled.slf4j.Logging
 import javafx.scene.web.WebView
 import org.markdown4j.Markdown4jProcessor
-import javafx.scene.image.{Image, ImageView}
-import javafx.collections.{FXCollections, ObservableList}
+import javafx.collections.{FXCollections}
 
 /**
  * Created by drew on 12/31/13.
@@ -28,13 +29,11 @@ class AppController extends Logging {
 
   @FXML def initialize() = {
     //test
-    val testImage = new Image("test.jpg")
+    val testImage = new Image()
+    testImage.setThumbnailPath("test.jpg")
+    testImage.setImagePath("test.jpg")
     for (i <- 1 to 100) {
-      val genImageView = new ImageView()
-      genImageView.setImage(testImage)
-      genImageView.setFitWidth(128.0)
-      genImageView.setPreserveRatio(true)
-      imageTilePane.getChildren.add(genImageView)
+      imageTilePane.getChildren.add(ImageTileFactory.get(testImage))
     }
     val list = FXCollections.observableArrayList[String]()
     for (i <- 1 to 100) {

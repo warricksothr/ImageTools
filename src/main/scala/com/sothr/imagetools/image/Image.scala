@@ -7,7 +7,7 @@ import javax.persistence._
 
 @Entity
 @Table(name = "Image")
-class Image(val image:String, val thumbnail:String, val size:Tuple2[Int,Int], val imageHashes:ImageHashDTO = null) extends Serializable with Logging {
+class Image(val image:String, val thumbnail:String, val size:(Int, Int), val imageHashes:ImageHashDTO = null) extends Serializable with Logging {
 
   def this() = this ("", "", (0,0), null)
 
@@ -29,9 +29,19 @@ class Image(val image:String, val thumbnail:String, val size:Tuple2[Int,Int], va
   def setHashes(newHashes:ImageHashDTO) = { hashes = newHashes}
 
   @transient
-  var imageSize:Tuple2[Int,Int] = { new Tuple2(width, height) }
+  var imageSize:(Int, Int) = { new Tuple2(width, height) }
+
+  @transient
+  var imageName:String = ""
 
   var imageType:ImageType = ImageType.SingleFrameImage
+
+  def getName():String = {
+    if(this.imageName.length < 1) {
+      this.imageName = this.getImagePath.split('/').last
+    }
+    this.imageName
+  }
 
   def isSimilarTo(otherImage:Image):Boolean = {
     //debug(s"Checking $imagePath for similarities with ${otherImage.imagePath}")
