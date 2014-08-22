@@ -28,13 +28,13 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.version>1.8</jdk.version>
-    <lib.junit.version>3.8.1</lib.junit.version>
-    <lib.scalatest.version>2.0</lib.scalatest.version>
-    <lib.logback.version>1.0.13</lib.logback.version>
-    <lib.slf4j.version>1.7.5</lib.slf4j.version>
-    <lib.grizzled-slf4j.version>1.0.1</lib.grizzled-slf4j.version>
-    <lib.scala-library.version>2.10.3</lib.scala-library.version>
-    <lib.akka.version>2.2.3</lib.akka.version>
+    <lib.junit.version>4.11</lib.junit.version>
+    <lib.scalatest.version>2.2.1</lib.scalatest.version>
+    <lib.logback.version>1.1.2</lib.logback.version>
+    <lib.slf4j.version>1.7.7</lib.slf4j.version>
+    <lib.grizzled-slf4j.version>1.0.2</lib.grizzled-slf4j.version>
+    <lib.scala-library.version>2.11.2</lib.scala-library.version>
+    <lib.akka.version>2.3.5</lib.akka.version>
     <lib.jta.version>1.1</lib.jta.version>
     <lib.ehcache.version>2.8.0</lib.ehcache.version>
     <lib.commons-cli.version>1.2</lib.commons-cli.version>
@@ -57,7 +57,7 @@
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.10</artifactId>
+      <artifactId>scalatest_2.11</artifactId>
       <version>${lib.scalatest.version}</version>
       <scope>test</scope>
     </dependency>
@@ -83,7 +83,7 @@
     </dependency>
     <dependency>
       <groupId>org.clapper</groupId>
-      <artifactId>grizzled-slf4j_2.10</artifactId>
+      <artifactId>grizzled-slf4j_2.11</artifactId>
       <version>${lib.grizzled-slf4j.version}</version>
     </dependency>
     <dependency>
@@ -128,12 +128,12 @@
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
-      <artifactId>akka-actor_2.10</artifactId>
+      <artifactId>akka-actor_2.11</artifactId>
       <version>${lib.akka.version}</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
-      <artifactId>akka-slf4j_2.10</artifactId>
+      <artifactId>akka-slf4j_2.11</artifactId>
       <version>${lib.akka.version}</version>
     </dependency>
     <dependency>

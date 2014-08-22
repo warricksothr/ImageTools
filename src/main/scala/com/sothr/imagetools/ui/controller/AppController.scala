@@ -2,10 +2,10 @@ package com.sothr.imagetools.ui.controller
 
 import javafx.fxml.FXML
 import javafx.event.ActionEvent
-import javafx.stage.{StageStyle, Stage}
+import javafx.stage.{DirectoryChooser, StageStyle, Stage}
 import javafx.scene.{Scene,Group}
 import javafx.scene.text.{TextAlignment, Text}
-import java.io.IOException
+import java.io.{File, IOException}
 import java.util.Scanner
 import com.sothr.imagetools.image.Image
 import com.sothr.imagetools.ui.component.ImageTileFactory
@@ -20,12 +20,14 @@ import javafx.collections.{FXCollections}
  */
 class AppController extends Logging {
 
-  //val logger:Logger = LoggerFactory.getLogger(this.getClass)
-
   //Define controls
+  @FXML var rootPane : javafx.scene.layout.AnchorPane = null
   @FXML var rootMenuBar : javafx.scene.control.MenuBar = null
   @FXML var imageTilePane : javafx.scene.layout.TilePane = null
   @FXML var tagListView : javafx.scene.control.ListView[String] = null
+
+  // Labels
+  @FXML var selectedDirectoryLabel: javafx.scene.control.Label = null
 
   @FXML def initialize() = {
     //test
@@ -77,6 +79,18 @@ class AppController extends Logging {
     debug("Closing application from the menu bar")
     val stage:Stage = this.rootMenuBar.getScene.getWindow.asInstanceOf[Stage]
     stage.close()
+  }
+
+  @FXML
+  def browseFolders(event:ActionEvent) = {
+    val chooser = new DirectoryChooser()
+    chooser.setTitle("ImageTools Browser")
+    val defaultDirectory = new File(".")
+    chooser.setInitialDirectory(defaultDirectory)
+    val window = this.rootPane.getScene.getWindow
+    val selectedDirectory = chooser.showDialog(window)
+    info(s"Selected Directory: ${selectedDirectory.getAbsolutePath}")
+    selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
   }
 
   //endregion

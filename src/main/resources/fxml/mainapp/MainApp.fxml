@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sothr.imagetools.ui.controller.AppController">
+<AnchorPane fx:id="rootPane" minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sothr.imagetools.ui.controller.AppController">
   <children>
     <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="30.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
@@ -35,21 +35,43 @@
             <TabPane maxWidth="220.0" minHeight="0.0" minWidth="220.0" prefHeight="567.0" prefWidth="220.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab closable="false" text="Folders">
-                  <content>
-                    <AnchorPane prefHeight="200.0" prefWidth="200.0">
-                      <children>
-                        <Label layoutX="14.0" layoutY="14.0" text="Selected Folder:" />
-                        <Label layoutX="14.0" layoutY="30.0" text="&lt;SELECTED&gt;">
-                          <font>
-                            <Font name="System Bold" size="12.0" />
-                          </font>
-                        </Label>
-                        <Button layoutX="14.0" layoutY="66.0" mnemonicParsing="false" text="Browse" />
-                        <Button layoutX="14.0" layoutY="102.0" mnemonicParsing="false" text="Show Similar Images" />
-                        <Button layoutX="14.0" layoutY="138.0" mnemonicParsing="false" text="Show All Images" />
-                      </children>
-                    </AnchorPane>
-                  </content>
+                           <content>
+                              <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="200.0">
+                                 <top>
+                        <Button maxWidth="1.7976931348623157E308" minWidth="200.0" mnemonicParsing="false" onAction="#browseFolders" text="Browse" BorderPane.alignment="CENTER" />
+                                 </top>
+                                 <center>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <children>
+                              <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="210.0" text="Selected Folder:">
+                                             <padding>
+                                                <Insets left="5.0" right="5.0" />
+                                             </padding>
+                                          </Label>
+                              <Label fx:id="selectedDirectoryLabel" alignment="TOP_LEFT" lineSpacing="2.0" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefWidth="210.0" text="&lt;SELECTED&gt;" wrapText="true">
+                                <font>
+                                  <Font name="System Bold" size="12.0" />
+                                </font>
+                                             <padding>
+                                                <Insets left="5.0" right="5.0" />
+                                             </padding>
+                              </Label>
+                                       </children>
+                                    </FlowPane>
+                                 </center>
+                                 <bottom>
+                                    <FlowPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="60.0" prefWidth="220.0" BorderPane.alignment="CENTER">
+                                       <children>
+                              <Button maxWidth="1.7976931348623157E308" minWidth="220.0" mnemonicParsing="false" text="Show All Images" />
+                              <Button maxWidth="200.0" minWidth="220.0" mnemonicParsing="false" text="Show Similar Images" />
+                                       </children>
+                                    </FlowPane>
+                                 </bottom>
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </BorderPane>
+                           </content>
                 </Tab>
                 <Tab text="Tags">
                   <content>
