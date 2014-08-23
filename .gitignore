@@ -38,3 +38,7 @@ version.info
 
 #Cache directory
 .cache/
+
+#Root Config Files
+/user.conf
+/logback.xml

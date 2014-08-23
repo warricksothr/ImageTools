@@ -23,11 +23,11 @@ object ImageService extends Logging {
     //get from memory cache if possible
     try {
       if (imageCache.isKeyInCache(file.getAbsolutePath)) {
-        found = true
         image = imageCache.get(file.getAbsolutePath).getObjectValue.asInstanceOf[Image]
+        found = true
       }
     } catch {
-      case npe:NullPointerException => error(s"Error grabbing \'${file.getAbsolutePath}\' from cache", npe)
+      case npe:NullPointerException => debug(s"\'${file.getAbsolutePath}\' was supposed to be in the cache, but was not")
     }
     //get from datastore if possible
     if (!found) {
@@ -35,7 +35,7 @@ object ImageService extends Logging {
         val tempImage = imageDAO.find(file.getAbsolutePath)
         if (tempImage != null) image = tempImage
       } catch {
-        case ex:Exception => error(s"Error looking up \'${file.getAbsolutePath}\' from database", ex)
+        case ex:Exception => error(s"Error looking up \'${file.getAbsolutePath}\' was supposed to be in the database, but was not", ex)
       }
     }
     image

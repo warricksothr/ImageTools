@@ -31,6 +31,8 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     debug(s"Looking for images in directory: $directoryPath")
     val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
     val images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
+    // make sure the engine is listening
+    engineProcessingController ! EngineStart
     for (file <- imageFiles) {
       engineProcessingController ! EngineProcessFile(file)
     }
@@ -61,6 +63,8 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     debug(s"Looking for similar images in directory: $directoryPath")
     val images = getImagesForDirectory(directoryPath, recursive, recursiveDepth)
     info(s"Searching ${images.length} images for similarities")
+    // make sure the engine is listening
+    engineSimilarityController ! EngineStart
     for (rootImage <- images) {
       debug(s"Looking for images similar to: ${rootImage.imagePath}")
       engineSimilarityController ! EngineCompareImages(rootImage, images)
@@ -113,6 +117,7 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
 
 // external cases //
 case class SetNewListener(listenerType: ActorRef)
+case object EngineStart
 
 // processing files into images
 case class EngineProcessFile(file:File)
@@ -133,8 +138,8 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
       if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
       threads
     }
-    val router = context.actorOf(Props[ConcurrentEngineProcessingActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
-    
+    var router = context.actorOf(Props[ConcurrentEngineProcessingActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
+
     var images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
     var toProcess = 0
     var processed = 0
@@ -159,6 +164,7 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
         case command:SetNewListener => setListener(command.listenerType)
         case command:EngineProcessFile => processFile(command)
         case command:EngineFileProcessed => fileProcessed(command)
+        case EngineStart => startEngine()
         case EngineNoMoreFiles => requestWrapup()
         case EngineActorProcessingFinished => actorProcessingFinished()
         case EngineIsProcessingFinished => checkIfProcessingIsFinished()
@@ -170,7 +176,11 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
       super.postStop()
       this.listener ! PoisonPill
     }
-    
+
+    def startEngine() = {
+        router ! Broadcast(EngineActorReactivate)
+    }
+
     def processFile(command:EngineProcessFile) = {
         log.debug(s"Started evaluating ${command.file.getAbsolutePath}")
         toProcess += 1
@@ -302,6 +312,7 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
     case command:SetNewListener => setListener(command.listenerType)
     case command:EngineCompareImages => findSimilarities(command)
     case command:EngineCompareImagesComplete => similarityProcessed(command)
+    case EngineStart => startEngine()
     case EngineNoMoreComparisons => requestWrapup()
     case EngineActorCompareImagesFinished => actorProcessingFinished()
     case EngineIsSimilarityFinished => checkIfProcessingIsFinished()
@@ -312,6 +323,10 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   override def postStop() = {
     super.postStop()
     this.listener ! PoisonPill
+  }
+
+  def startEngine() = {
+    router ! Broadcast(EngineActorReactivate)
   }
 
   def findSimilarities(command:EngineCompareImages) = {

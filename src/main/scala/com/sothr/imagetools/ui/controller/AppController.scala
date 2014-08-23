@@ -10,7 +10,7 @@ import javafx.scene.web.WebView
 import javafx.scene.{Group, Node, Scene}
 import javafx.stage.{DirectoryChooser, Stage, StageStyle}
 
-import com.sothr.imagetools.engine.{Engine, SequentialEngine}
+import com.sothr.imagetools.engine.{ConcurrentEngine, Engine}
 import com.sothr.imagetools.ui.component.ImageTileFactory
 import com.sothr.imagetools.util.{PropertiesService, ResourceLoader}
 import grizzled.slf4j.Logging
@@ -33,7 +33,7 @@ class AppController extends Logging {
   @FXML var selectedDirectoryLabel: javafx.scene.control.Label = null
 
   // Engine
-  val engine:Engine = new SequentialEngine()
+  val engine:Engine = new ConcurrentEngine()
 
   // Current State
   var currentDirectory:String = "."
