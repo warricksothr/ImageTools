@@ -1,14 +1,15 @@
 package com.sothr.imagetools.hash
 
-import grizzled.slf4j.Logging
-import com.sothr.imagetools.dto.ImageHashDTO
-import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService, Hamming}
-import com.sothr.imagetools.ImageService
 import java.awt.image.BufferedImage
+import java.io.{File, FileInputStream}
 import javax.imageio.ImageIO
-import java.io.{FileInputStream, File}
+
+import com.sothr.imagetools.dto.ImageHashDTO
+import com.sothr.imagetools.image.ImageService
+import com.sothr.imagetools.util.{Hamming, PropertiesService}
+import grizzled.slf4j.Logging
 import org.apache.commons.codec.digest.DigestUtils
-import com.sothr.imagetools.image.Image
+import resource._
 
 /**
  * A service that exposes the ability to construct perceptive hashes from an
@@ -33,14 +34,14 @@ object HashService extends Logging {
     //Get Image Data
     val grayImage = ImageService.convertToGray(image)
 
-    if (PropertiesService.useAhash == true) {
-      ahash = getAhash(grayImage, true)
+    if (PropertiesService.useAhash) {
+      ahash = getAhash(grayImage, alreadyGray = true)
     }
-    if (PropertiesService.useDhash == true) {
-      dhash = getDhash(grayImage, true)
+    if (PropertiesService.useDhash) {
+      dhash = getDhash(grayImage, alreadyGray = true)
     }
-    if (PropertiesService.usePhash == true) {
-      phash = getPhash(grayImage, true)
+    if (PropertiesService.usePhash) {
+      phash = getPhash(grayImage, alreadyGray = true)
     }
 
     val hashes = new ImageHashDTO(ahash, dhash, phash, md5)
@@ -57,7 +58,7 @@ object HashService extends Logging {
     } else {
       grayImage = ImageService.convertToGray(image)
     }
-    val resizedImage = ImageService.resize(grayImage, PropertiesService.aHashPrecision, true)
+    val resizedImage = ImageService.resize(grayImage, PropertiesService.aHashPrecision, forced = true)
     val imageData = ImageService.getImageData(resizedImage)
     AHash.getHash(imageData)
   }
@@ -70,7 +71,7 @@ object HashService extends Logging {
     } else {
       grayImage = ImageService.convertToGray(image)
     }
-    val resizedImage = ImageService.resize(grayImage, PropertiesService.dHashPrecision, true)
+    val resizedImage = ImageService.resize(grayImage, PropertiesService.dHashPrecision, forced = true)
     val imageData = ImageService.getImageData(resizedImage)
     DHash.getHash(imageData)
   }
@@ -83,13 +84,16 @@ object HashService extends Logging {
     } else {
       grayImage = ImageService.convertToGray(image)
     }
-    val resizedImage = ImageService.resize(grayImage, PropertiesService.pHashPrecision, true)
+    val resizedImage = ImageService.resize(grayImage, PropertiesService.pHashPrecision, forced = true)
     val imageData = ImageService.getImageData(resizedImage)
     PHash.getHash(imageData)
   }
 
   def getMD5(filePath:String):String = {
-    DigestUtils.md5Hex(new FileInputStream(filePath))
+    managed(new FileInputStream(filePath)) acquireAndGet {
+      input =>
+      DigestUtils.md5Hex(input)
+    }
   }
   
   def areAhashSimilar(ahash1:Long, ahash2:Long):Boolean = {

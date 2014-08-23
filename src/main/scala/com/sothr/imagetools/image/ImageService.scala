@@ -1,16 +1,16 @@
-package com.sothr.imagetools
+package com.sothr.imagetools.image
 
-import grizzled.slf4j.Logging
-import java.awt.image.{DataBufferByte, BufferedImage, ColorConvertOp}
-import net.coobird.thumbnailator.Thumbnails
-import java.io.File
-import com.sothr.imagetools.image.Image
-import com.sothr.imagetools.hash.HashService
+import java.awt.image.{BufferedImage, ColorConvertOp, DataBufferByte}
+import java.io.{File, IOException}
 import javax.imageio.ImageIO
-import java.io.IOException
-import net.sf.ehcache.Element
-import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
+
+import com.sothr.imagetools.AppConfig
 import com.sothr.imagetools.dao.ImageDAO
+import com.sothr.imagetools.hash.HashService
+import com.sothr.imagetools.util.{PropertiesService, PropertyEnum}
+import grizzled.slf4j.Logging
+import net.coobird.thumbnailator.Thumbnails
+import net.sf.ehcache.Element
 
 object ImageService extends Logging {
 
@@ -80,7 +80,7 @@ object ImageService extends Logging {
   def calculateThumbPath(md5:String):String = {
     //break the path down into 4 char parts
     val subPath = md5.substring(0, 3)
-    var path:String = s"${PropertiesService.get(PropertiesEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertiesEnum.ThumbnailSize.toString)}/$subPath/"
+    var path:String = s"${PropertiesService.get(PropertyEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertyEnum.ThumbnailSize.toString)}/$subPath/"
     try {
       val dir = new File(path)
       if (!dir.exists()) dir.mkdirs()
@@ -105,7 +105,7 @@ object ImageService extends Logging {
 
   def getThumbnail(image:BufferedImage, md5:String):String = {
     //create thumbnail
-    val thumb = resize(image, PropertiesService.get(PropertiesEnum.ThumbnailSize.toString).toInt, forced=false)
+    val thumb = resize(image, PropertiesService.get(PropertyEnum.ThumbnailSize.toString).toInt, forced=false)
     //calculate path
     val path = calculateThumbPath(md5)
     // save thumbnail to path
@@ -129,7 +129,7 @@ object ImageService extends Logging {
   /**
    * Quickly convert an image to grayscale
    *
-   * @param image
+   * @param image image to convert to greyscale
    * @return
    */
   def convertToGray(image:BufferedImage):BufferedImage = {
@@ -162,7 +162,7 @@ object ImageService extends Logging {
   /**
    * Convert a buffered image into a 2d pixel data array
    *
-   * @param image
+   * @param image image to convert without using RGB
    * @return
    */
   private def convertTo2DWithoutUsingGetRGB(image:BufferedImage):Array[Array[Int]] = {

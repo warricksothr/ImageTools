@@ -1,21 +1,24 @@
 package com.sothr.imagetools.ui.controller
 
-import javafx.fxml.FXML
-import javafx.event.ActionEvent
-import javafx.stage.{DirectoryChooser, StageStyle, Stage}
-import javafx.scene.{Scene,Group}
-import javafx.scene.text.{TextAlignment, Text}
 import java.io.{File, IOException}
+import java.util
 import java.util.Scanner
-import com.sothr.imagetools.image.Image
-import com.sothr.imagetools.ui.component.ImageTileFactory
-import com.sothr.imagetools.util.ResourceLoader
-import grizzled.slf4j.Logging
+import javafx.event.ActionEvent
+import javafx.fxml.FXML
+import javafx.scene.text.{Text, TextAlignment}
 import javafx.scene.web.WebView
+import javafx.scene.{Group, Node, Scene}
+import javafx.stage.{DirectoryChooser, Stage, StageStyle}
+
+import com.sothr.imagetools.engine.{Engine, SequentialEngine}
+import com.sothr.imagetools.ui.component.ImageTileFactory
+import com.sothr.imagetools.util.{PropertiesService, ResourceLoader}
+import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
-import javafx.collections.{FXCollections}
 
 /**
+ * Main Application controller
+ *
  * Created by drew on 12/31/13.
  */
 class AppController extends Logging {
@@ -29,19 +32,30 @@ class AppController extends Logging {
   // Labels
   @FXML var selectedDirectoryLabel: javafx.scene.control.Label = null
 
+  // Engine
+  val engine:Engine = new SequentialEngine()
+
+  // Current State
+  var currentDirectory:String = "."
+
   @FXML def initialize() = {
+    if (PropertiesService.has("lastPath")) {
+      currentDirectory = PropertiesService.get("lastPath", ".")
+      selectedDirectoryLabel.setText(PropertiesService.get("lastPath", ""))
+    }
+
     //test
-    val testImage = new Image()
-    testImage.setThumbnailPath("test.jpg")
-    testImage.setImagePath("test.jpg")
-    for (i <- 1 to 100) {
-      imageTilePane.getChildren.add(ImageTileFactory.get(testImage))
-    }
-    val list = FXCollections.observableArrayList[String]()
-    for (i <- 1 to 100) {
-      list.add(s"test-item ${i}")
-    }
-    tagListView.setItems(list)
+    //val testImage = new Image()
+    //testImage.setThumbnailPath("test.jpg")
+    //testImage.setImagePath("test.jpg")
+    //for (i <- 1 to 100) {
+    //  imageTilePane.getChildren.add(ImageTileFactory.get(testImage))
+    //}
+    //val list = FXCollections.observableArrayList[String]()
+    //for (i <- 1 to 100) {
+    //  list.add(s"test-item ${i}")
+    //}
+    //tagListView.setItems(list)
   }
 
   //region MenuItem Actions
@@ -75,7 +89,7 @@ class AppController extends Logging {
   }
 
   @FXML
-  def closeAction(event:ActionEvent ) = {
+  def closeAction(event:ActionEvent) = {
     debug("Closing application from the menu bar")
     val stage:Stage = this.rootMenuBar.getScene.getWindow.asInstanceOf[Stage]
     stage.close()
@@ -85,12 +99,39 @@ class AppController extends Logging {
   def browseFolders(event:ActionEvent) = {
     val chooser = new DirectoryChooser()
     chooser.setTitle("ImageTools Browser")
-    val defaultDirectory = new File(".")
+
+    val defaultDirectory = new File(currentDirectory)
     chooser.setInitialDirectory(defaultDirectory)
     val window = this.rootPane.getScene.getWindow
     val selectedDirectory = chooser.showDialog(window)
     info(s"Selected Directory: ${selectedDirectory.getAbsolutePath}")
     selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
+
+    currentDirectory = selectedDirectory.getAbsolutePath
+    PropertiesService.set("lastPath",selectedDirectory.getAbsolutePath)
+  }
+
+  @FXML
+  def showAllImages(event:ActionEvent) = {
+    imageTilePane.getChildren.setAll(new util.ArrayList[Node]())
+    val images = engine.getImagesForDirectory(currentDirectory)
+    info(s"Displaying ${images.length} images")
+    for (image <- images) {
+      debug(s"Adding image ${image.toString} to app")
+      imageTilePane.getChildren.add(ImageTileFactory.get(image))
+    }
+  }
+
+  @FXML
+  def showSimilarImages(event:ActionEvent) = {
+    imageTilePane.getChildren.setAll(new util.ArrayList[Node]())
+    val similarImages = engine.getSimilarImagesForDirectory(currentDirectory)
+    info(s"Displaying ${similarImages.length} similar images")
+    for (similarImage <- similarImages) {
+      debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
+      imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage))
+      similarImage.similarImages.foreach( image => imageTilePane.getChildren.add(ImageTileFactory.get(image)))
+    }
   }
 
   //endregion
@@ -106,10 +147,10 @@ class AppController extends Logging {
   /**
    * Render HTML content to a utility dialog. No input or output, just raw rendered content through a webkit engine.
    *
-   * @param title
-   * @param htmlBody
-   * @param width
-   * @param height
+   * @param title Title of the dialog
+   * @param htmlBody Body to render
+   * @param width Desired width of the dialog
+   * @param height Desired height of the dialog
    */
   def showHTMLUtilityDialog(title:String, htmlBody:String, width:Double = 800.0, height:Double = 600.0) = {
     val dialog:Stage = new Stage()
@@ -156,9 +197,9 @@ class AppController extends Logging {
   /**
    * Show a plain text utility dialog
    *
-   * @param message
-   * @param wrapWidth
-   * @param alignment
+   * @param message Message to display
+   * @param wrapWidth When to wrap
+   * @param alignment How it should be aligned
    */
   def showUtilityDialog(title:String,
                         message:String,
@@ -188,6 +229,6 @@ class AppController extends Logging {
   }
 
   def print():String = {
-    return "This method works"
+    "This method works"
   }
 }

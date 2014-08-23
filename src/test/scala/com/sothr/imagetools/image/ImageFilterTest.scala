@@ -1,9 +1,12 @@
 package com.sothr.imagetools.image
 
-import com.sothr.imagetools.BaseTest
 import java.io.File
 
+import com.sothr.imagetools.BaseTest
+
 /**
+ * Test to make sure that the image filters work
+ *
  * Created by drew on 1/26/14.
  */
 class ImageFilterTest extends BaseTest{

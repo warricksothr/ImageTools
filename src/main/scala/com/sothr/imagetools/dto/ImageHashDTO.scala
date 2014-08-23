@@ -1,7 +1,8 @@
 package com.sothr.imagetools.dto
 
-import grizzled.slf4j.Logging
 import javax.persistence._
+
+import grizzled.slf4j.Logging
 
 @Entity
 @Table(name = "ImageHash")

@@ -1,13 +1,17 @@
 package com.sothr.imagetools.hash
 
-import com.sothr.imagetools.{AppConfig, BaseTest, TestParams}
-import javax.imageio.ImageIO
 import java.io.File
+import javax.imageio.ImageIO
+
 import com.sothr.imagetools.dto.ImageHashDTO
-import net.sf.ehcache.{Cache, Element}
+import com.sothr.imagetools.{AppConfig, BaseTest, TestParams}
+import net.sf.ehcache.Element
+
 import scala.collection.mutable
 
 /**
+ * Test the Hash service and make sure it is consistent
+ *
  * Created by dev on 1/23/14.
  */
 class HashServiceTest extends BaseTest {
@@ -60,7 +64,7 @@ class HashServiceTest extends BaseTest {
       Array(64,63,62,61,60,59,58,57))
     val hash = DHash.getHash(testData)
     debug(s"Hash of test array: $hash")
-    assert(hash == (Long.MaxValue))
+    assert(hash == Long.MaxValue)
   }
 
   test("Calculate DHash Large Sample Image 1") {
@@ -389,21 +393,21 @@ class HashServiceTest extends BaseTest {
   test("Calculate ImageHash Large Sample Image 1") {
     debug("Starting 'Calculate ImageHash Large Sample Image 1' test")
     val hash = HashService.getImageHashes(TestParams.LargeSampleImage1)
-    debug(s"Testing that ${hash.hashCode} = -812844858")
+    debug(s"Testing that ${hash.hashCode()} = -812844858")
     assert(hash.hashCode == -812844858)
   }
 
   test("Calculate ImageHash Medium Sample Image 1") {
     debug("Starting 'Calculate ImageHash Medium Sample Image 1' test")
     val hash = HashService.getImageHashes(TestParams.MediumSampleImage1)
-    debug(s"Testing that ${hash.hashCode} = -812836666")
+    debug(s"Testing that ${hash.hashCode()} = -812836666")
     assert(hash.hashCode == -812836666)
   }
 
   test("Calculate ImageHash Small Sample Image 1") {
     debug("Starting 'Calculate ImageHash Small Sample Image 1' test")
     val hash = HashService.getImageHashes(TestParams.SmallSampleImage1)
-    debug(s"Testing that ${hash.hashCode} = -812840762")
+    debug(s"Testing that ${hash.hashCode()} = -812840762")
     assert(hash.hashCode == -812840762)
   }
 

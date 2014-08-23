@@ -1,9 +1,14 @@
 package com.sothr.imagetools.image
 
 import java.io.{File, FilenameFilter}
+
 import scala.collection.immutable.HashSet
 
 /**
+ * Filter for file names
+ *
+ * Used to detect image files based on extension
+ *
  * Created by drew on 1/26/14.
  */
 class ImageFilter extends FilenameFilter {

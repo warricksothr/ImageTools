@@ -1,14 +1,16 @@
 package com.sothr.imagetools.dao
 
-import org.hibernate.{Session, SessionFactory}
 import com.sothr.imagetools.image.Image
+import org.hibernate.{Session, SessionFactory}
 
 /**
+ * Interact with stored images
+ *
  * Created by drew on 2/8/14.
  */
 class ImageDAO {
 
-  private val sessionFactory:SessionFactory = HibernateUtil.getSessionFactory()
+  private val sessionFactory:SessionFactory = HibernateUtil.getSessionFactory
 
   def find(path:String):Image = {
     val session:Session = sessionFactory.getCurrentSession

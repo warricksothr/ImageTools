@@ -1,7 +1,9 @@
 package com.sothr.imagetools.hash
 
 /**
- * Created by dev on 1/22/14.
+ * Interface for perceptual hashing
+ *
+ * Created by drew on 1/22/14.
  */
 trait PerceptualHasher {
 

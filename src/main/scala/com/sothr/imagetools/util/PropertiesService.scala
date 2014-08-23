@@ -1,10 +1,10 @@
 package com.sothr.imagetools.util
 
+import java.io.{File, FileOutputStream, PrintStream}
+import java.util.Properties
+
 import com.typesafe.config.{Config, ConfigFactory}
 import grizzled.slf4j.Logging
-import java.io.{File, PrintStream, FileOutputStream}
-import java.util.Properties
-import scala.collection.JavaConversions._
 
 /*
  * Service for loading and interacting with the properties file
@@ -41,48 +41,47 @@ object PropertiesService extends Logging {
    */
   def loadProperties(defaultLocation:String, userLocation:String = null) = {
     info(s"Attempting to load properties from: $defaultLocation")
-    defaultConf = ConfigFactory.load(defaultLocation);
+    defaultConf = ConfigFactory.load(defaultLocation)
     if (userLocation != null) {
-      userConf = ConfigFactory.parseFile(new File(userLocation));
+      userConf = ConfigFactory.parseFile(new File(userLocation))
     } else {
       userConf = ConfigFactory.empty
       info("No user properties file exists to load from")
     }
-    version = new Version(get(PropertiesEnum.Version.toString));
+    version = new Version(get(PropertyEnum.Version.toString))
     info(s"Detected Version: $version")
     
     //load special properties
-    TimingEnabled = get(PropertiesEnum.Timed.toString).toBoolean
+    TimingEnabled = get(PropertyEnum.Timed.toString).toBoolean
     
     //ahash
-    aHashPrecision = get(PropertiesEnum.AhashPrecision.toString).toInt
-    aHashTolerance = get(PropertiesEnum.AhashTolerance.toString).toInt
-    aHashWeight = get(PropertiesEnum.AhashWeight.toString).toFloat
-    useAhash = get(PropertiesEnum.UseAhash.toString).toBoolean
+    aHashPrecision = get(PropertyEnum.AhashPrecision.toString).toInt
+    aHashTolerance = get(PropertyEnum.AhashTolerance.toString).toInt
+    aHashWeight = get(PropertyEnum.AhashWeight.toString).toFloat
+    useAhash = get(PropertyEnum.UseAhash.toString).toBoolean
     //dhash
-    dHashPrecision = get(PropertiesEnum.DhashPrecision.toString).toInt
-    dHashTolerance = get(PropertiesEnum.DhashTolerance.toString).toInt
-    dHashWeight = get(PropertiesEnum.DhashWeight.toString).toFloat
-    useDhash = get(PropertiesEnum.UseDhash.toString).toBoolean
+    dHashPrecision = get(PropertyEnum.DhashPrecision.toString).toInt
+    dHashTolerance = get(PropertyEnum.DhashTolerance.toString).toInt
+    dHashWeight = get(PropertyEnum.DhashWeight.toString).toFloat
+    useDhash = get(PropertyEnum.UseDhash.toString).toBoolean
     //phash
-    pHashPrecision = get(PropertiesEnum.PhashPrecision.toString).toInt
-    pHashTolerance = get(PropertiesEnum.PhashTolerance.toString).toInt
-    pHashWeight = get(PropertiesEnum.PhashWeight.toString).toFloat
-    usePhash = get(PropertiesEnum.UsePhash.toString).toBoolean
+    pHashPrecision = get(PropertyEnum.PhashPrecision.toString).toInt
+    pHashTolerance = get(PropertyEnum.PhashTolerance.toString).toInt
+    pHashWeight = get(PropertyEnum.PhashWeight.toString).toFloat
+    usePhash = get(PropertyEnum.UsePhash.toString).toBoolean
     info("Loaded Special Properties")
   }
 
   private def cleanAndPrepareNewUserProperties():Properties = {
     //insert special keys here
-    newUserConf.setProperty(PropertiesEnum.PreviousVersion.toString, version.parsableToString())
+    newUserConf.setProperty(PropertyEnum.PreviousVersion.toString, version.parsableToString())
     //remove special keys here
-    newUserConf.remove(PropertiesEnum.Version.toString)
+    newUserConf.remove(PropertyEnum.Version.toString)
     newUserConf
   }
 
-  private def getCleanedMergedUserConf():Config = {
-
-      ConfigFactory.parseProperties(cleanAndPrepareNewUserProperties()) withFallback(userConf)
+  private def getCleanedMergedUserConf:Config = {
+      ConfigFactory.parseProperties(cleanAndPrepareNewUserProperties()) withFallback userConf
   }
 
   def saveConf(location:String) = {
@@ -93,6 +92,16 @@ object PropertiesService extends Logging {
     out.print(userConfToSave.root.render)
     out.flush()
     out.close()
+  }
+
+  def has(key:String):Boolean = {
+    var result = false
+    if (newUserConf.containsKey(key)
+        || userConf.hasPath(key)
+        || defaultConf.hasPath(key)) {
+      result = true
+    }
+    result
   }
 
   def get(key:String, defaultValue:String=null):String = {
@@ -109,7 +118,7 @@ object PropertiesService extends Logging {
     else if (defaultConf.hasPath(key)) {
         result = defaultConf.getString(key)
     }
-    return result
+    result
   }
 
   def set(key:String, value:String) = {

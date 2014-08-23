@@ -1,12 +1,17 @@
-package com.sothr.imagetools
+package com.sothr.imagetools.engine
 
-import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
-import scala.collection.mutable
 import java.io.File
-import grizzled.slf4j.Logging
+
 import akka.actor.{ActorRef, Props}
+import com.sothr.imagetools.image.{Image, ImageService, SimilarImages}
+import grizzled.slf4j.Logging
+
+import scala.collection.mutable
 
 /**
+ * Engine that works sequentially
+ * Very Slow, but consistent. Excellent for testing
+ *
  * Created by drew on 1/26/14.
  */
 class SequentialEngine extends Engine with Logging {

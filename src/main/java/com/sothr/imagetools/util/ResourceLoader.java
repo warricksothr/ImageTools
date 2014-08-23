@@ -2,17 +2,20 @@ package com.sothr.imagetools.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.net.URL;
 
 /**
+ * Seamlessly handle resource loading
+ *
  * Created by drew on 1/5/14.
  */
 public class ResourceLoader {
 
     private static final ResourceLoader instance = new ResourceLoader();
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private ResourceLoader() {
         logger.info("Created Resource Loader");

@@ -1,13 +1,18 @@
-package com.sothr.imagetools
+package com.sothr.imagetools.engine
 
-import com.sothr.imagetools.image.{SimilarImages, ImageFilter, Image}
-import com.sothr.imagetools.util.DirectoryFilter
-import scala.collection.mutable
 import java.io.File
+
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
+import com.sothr.imagetools.AppConfig
+import com.sothr.imagetools.image.{Image, ImageFilter, SimilarImages}
+import com.sothr.imagetools.util.DirectoryFilter
 import grizzled.slf4j.Logging
-import akka.actor.{ActorRef, ActorSystem, ActorLogging, Actor}
+
+import scala.collection.mutable
 
 /**
+ * Engine definition
+ *
  * Created by drew on 1/26/14.
  */
 abstract class Engine extends Logging {
@@ -44,12 +49,12 @@ abstract class Engine extends Logging {
   /**
    * Get all images for a directory with hashes
    */
-  def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image];
+  def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image]
   
   /**
    * Get all similar images for a directory with hashes
    */
-  def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages];
+  def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages]
 }
 
 case class SubmitMessage(message:String)

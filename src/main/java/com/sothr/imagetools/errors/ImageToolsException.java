@@ -1,6 +1,8 @@
 package com.sothr.imagetools.errors;
 
 /**
+ * Simple Exception
+ *
  * Created by drew on 12/31/13.
  */
 public class ImageToolsException extends Exception {

@@ -1,6 +1,10 @@
 package com.sothr.imagetools
 
+import com.sothr.imagetools.engine.{ConcurrentEngine, Engine, SequentialEngine}
+
 /**
+ * Basic Test of the engines
+ *
  * Created by drew on 1/26/14.
  */
 class EngineTest extends BaseTest{

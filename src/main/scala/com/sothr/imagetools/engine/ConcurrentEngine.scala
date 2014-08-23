@@ -1,18 +1,18 @@
-package com.sothr.imagetools
+package com.sothr.imagetools.engine
 
 import java.io.File
-import akka.actor._
-import akka.routing.{Broadcast, RoundRobinRouter, SmallestMailboxRouter}
-import akka.pattern.ask
-import akka.util.Timeout
 import java.util.concurrent.TimeUnit
-import com.sothr.imagetools.image.{SimilarImages, Image}
+
+import akka.actor._
+import akka.pattern.ask
+import akka.routing.{Broadcast, RoundRobinRouter, SmallestMailboxRouter}
+import akka.util.Timeout
 import com.sothr.imagetools.hash.HashService
-import com.sothr.imagetools.util.{PropertiesEnum, PropertiesService}
-import scala.concurrent.Await
-import java.lang.Thread
+import com.sothr.imagetools.image.{Image, ImageService, SimilarImages}
+import com.sothr.imagetools.util._
+
 import scala.collection.mutable
-import akka.routing.Broadcast
+import scala.concurrent.Await
 
 class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
   val engineProcessingController = system.actorOf(Props[ConcurrentEngineProcessingController], name = "EngineProcessingController")
@@ -127,7 +127,7 @@ case object EngineActorReactivate
 
 class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     val numOfRouters = {
-      val max = PropertiesService.get(PropertiesEnum.ConcurrentProcessingLimit.toString).toInt
+      val max = PropertiesService.get(PropertyEnum.ConcurrentProcessingLimit.toString).toInt
       val processors = Runtime.getRuntime.availableProcessors()
       var threads = 0
       if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
@@ -161,8 +161,8 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
         case command:EngineFileProcessed => fileProcessed(command)
         case EngineNoMoreFiles => requestWrapup()
         case EngineActorProcessingFinished => actorProcessingFinished()
-        case EngineIsProcessingFinished => isProcessingFinished()
-        case EngineGetProcessingResults => getResults()
+        case EngineIsProcessingFinished => checkIfProcessingIsFinished()
+        case EngineGetProcessingResults => checkForResults()
         case _ => log.info("received unknown message")
     }
 
@@ -203,7 +203,7 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     /*
      * Check if processing is done 
      */
-    def isProcessingFinished() = {
+    def checkIfProcessingIsFinished() = {
         try {
           if (processorsFinished >= numOfRouters) sender ! true else sender ! false
         } catch {
@@ -216,7 +216,7 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     /*
      * Get the results of the processing 
      */
-    def getResults() = {
+    def checkForResults() = {
         try {
             processorsFinished = 0
             toProcess = 0
@@ -269,7 +269,7 @@ case object EngineActorCompareImagesFinished
 
 class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   val numOfRouters = {
-    val max = PropertiesService.get(PropertiesEnum.ConcurrentSimiliartyLimit.toString).toInt
+    val max = PropertiesService.get(PropertyEnum.ConcurrentSimilarityLimit.toString).toInt
     val processors = Runtime.getRuntime.availableProcessors()
     var threads = 0
     if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
@@ -304,8 +304,8 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
     case command:EngineCompareImagesComplete => similarityProcessed(command)
     case EngineNoMoreComparisons => requestWrapup()
     case EngineActorCompareImagesFinished => actorProcessingFinished()
-    case EngineIsSimilarityFinished => isProcessingFinished()
-    case EngineGetSimilarityResults => getResults()
+    case EngineIsSimilarityFinished => checkIfProcessingIsFinished()
+    case EngineGetSimilarityResults => checkForResults()
     case _ => log.info("received unknown message")
   }
 
@@ -352,7 +352,7 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   /*
    * Check if processing is done
    */
-  def isProcessingFinished() = {
+  def checkIfProcessingIsFinished() = {
     try {
       log.debug("Processors Finished {}/{}", processorsFinished, numOfRouters)
       if (processorsFinished >= numOfRouters) sender ! true else sender ! false
@@ -366,7 +366,7 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   /*
    * Get the results of the processing
    */
-  def getResults() = {
+  def checkForResults() = {
     try {
       processorsFinished = 0
       toProcess = 0

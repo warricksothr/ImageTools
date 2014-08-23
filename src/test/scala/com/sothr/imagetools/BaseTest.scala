@@ -1,8 +1,8 @@
 package com.sothr.imagetools
 
-import grizzled.slf4j.Logging
 import com.sothr.imagetools.util.Timing
-import org.scalatest.{FunSuite,Matchers,OptionValues,Inside,Inspectors,BeforeAndAfter}
+import grizzled.slf4j.Logging
+import org.scalatest.{BeforeAndAfter, FunSuite, Inside, Inspectors, Matchers, OptionValues}
 
 abstract class BaseTest extends FunSuite with Matchers with OptionValues with Inside with Inspectors with BeforeAndAfter with Logging with Timing {
 

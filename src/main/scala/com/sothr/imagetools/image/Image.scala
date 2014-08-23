@@ -1,9 +1,10 @@
 package com.sothr.imagetools.image
 
+import javax.persistence._
+
 import com.sothr.imagetools.dto.ImageHashDTO
 import com.sothr.imagetools.hash.HashService
 import grizzled.slf4j.Logging
-import javax.persistence._
 
 @Entity
 @Table(name = "Image")
@@ -36,7 +37,7 @@ class Image(val image:String, val thumbnail:String, val size:(Int, Int), val ima
 
   var imageType:ImageType = ImageType.SingleFrameImage
 
-  def getName():String = {
+  def getName:String = {
     if(this.imageName.length < 1) {
       this.imageName = this.getImagePath.split('/').last
     }
@@ -57,7 +58,7 @@ class Image(val image:String, val thumbnail:String, val size:(Int, Int), val ima
   }*/
 
   def cloneImage:Image = {
-      return new Image(imagePath,thumbnailPath,imageSize,hashes.cloneHashes)
+      new Image(imagePath,thumbnailPath,imageSize,hashes.cloneHashes)
   }
 
   override def toString:String = {

@@ -3,6 +3,8 @@ package com.sothr.imagetools.image
 import grizzled.slf4j.Logging
 
 /**
+ * Similar Image payload class
+ *
  * Created by drew on 1/26/14.
  */
 class SimilarImages(val rootImage:Image, val similarImages:List[Image]) extends Logging {
@@ -28,7 +30,7 @@ class SimilarImages(val rootImage:Image, val similarImages:List[Image]) extends 
   override def toString:String = {
     s"""RootImage: ${rootImage.imagePath}
     Similar Images:
-    ${getPrettySimilarImagesList}""".stripMargin
+    $getPrettySimilarImagesList""".stripMargin
   }
 
 }

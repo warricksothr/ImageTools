@@ -3,7 +3,9 @@ package com.sothr.imagetools.hash
 import grizzled.slf4j.Logging
 
 /**
- * Created by dev on 1/22/14.
+ * DHash algorithm class
+ *
+ * Created by Drew on 1/22/14.
  */
 object DHash extends PerceptualHasher with Logging {
   def getHash(imageData: Array[Array[Int]]): Long = {

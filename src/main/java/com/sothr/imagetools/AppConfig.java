@@ -1,23 +1,19 @@
 package com.sothr.imagetools;
 
 import akka.actor.ActorSystem;
-import com.sothr.imagetools.dao.HibernateUtil;
-import com.sothr.imagetools.util.ResourceLoader;
-import com.sothr.imagetools.util.PropertiesService;
-import com.sothr.imagetools.util.PropertiesEnum;
-import javafx.stage.Stage;
-import net.sf.ehcache.CacheManager;
-
-import org.slf4j.LoggerFactory;
-
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+import com.sothr.imagetools.dao.HibernateUtil;
+import com.sothr.imagetools.util.PropertiesService;
+import com.sothr.imagetools.util.ResourceLoader;
+import javafx.stage.Stage;
+import net.sf.ehcache.CacheManager;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Properties;
 
 public class AppConfig {
 
@@ -37,7 +33,7 @@ public class AppConfig {
   private static Boolean configuredCache = false;
 
   // General Akka Actor System
-  private static ActorSystem appSystem = ActorSystem.create("ITActorSystem");
+  private static final ActorSystem appSystem = ActorSystem.create("ITActorSystem");
 
   // The Main App
   private static Stage primaryStage = null;
@@ -55,7 +51,7 @@ public class AppConfig {
     configCache();
   }
 
-  public static void configLogging(String location) {
+   private static void configLogging(String location) {
     //Logging Config
     //remove previous configuration if it exists
     Logger rootLogger = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -91,11 +87,11 @@ public class AppConfig {
     }
     String message = fromFile ? "From File" : "From Defaults";
     logger.info(String.format("Configured Logger %s", message));
-    logger.info("Detected Version: %s of Image Tools".format(PropertiesService.getVersion().toString()));
+    logger.info(String.format("Detected Version: %s of Image Tools", PropertiesService.getVersion().toString()));
   }
 
   //Only configure logging from the default file once
-  public static void configLogging() {
+  private static void configLogging() {
     if (!configuredLogging) {
       configLogging(LOGSETTINGSFILE);
       configuredLogging = true;
@@ -103,7 +99,7 @@ public class AppConfig {
     }
   }
 
-  public static void loadProperties() {
+  private static void loadProperties() {
     if (!loadedProperties) {
       File file = new File(USERPROPERTIESFILE);
       if (file.exists()) {
@@ -116,7 +112,7 @@ public class AppConfig {
     }
   }
 
-  public static void configCache() {
+  private static void configCache() {
     if (!configuredCache) {
       cacheManager = CacheManager.newInstance();
       configuredCache = true;
@@ -129,7 +125,7 @@ public class AppConfig {
     HibernateUtil.getSessionFactory().close();
   }
 
-  public static void saveProperties() {
+  private static void saveProperties() {
     PropertiesService.saveConf(USERPROPERTIESFILE);
     logger.debug("Saved properties");
   }
