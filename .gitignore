@@ -28,6 +28,12 @@ target/
 /name.info
 /version.info
 
+/gui/name.info
+/gui/version.info
+
+/cli/name.info
+/cli/version.info
+
 # Image Tools Log Files
 ImageTools.debug*
 ImageTools.info*
