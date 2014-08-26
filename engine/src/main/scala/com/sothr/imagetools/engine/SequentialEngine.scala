@@ -3,7 +3,8 @@ package com.sothr.imagetools.engine
 import java.io.File
 
 import akka.actor.{ActorRef, Props}
-import com.sothr.imagetools.image.{Image, ImageService, SimilarImages}
+import com.sothr.imagetools.engine.image.{SimilarImages, ImageService, Image}
+import com.sothr.imagetools.image.SimilarImages
 import grizzled.slf4j.Logging
 
 import scala.collection.mutable

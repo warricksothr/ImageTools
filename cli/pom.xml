@@ -70,7 +70,7 @@
                 <manifest>
                   <addClasspath>true</addClasspath>
                   <classpathPrefix>lib/</classpathPrefix>
-                  <mainClass>com.sothr.imagetools.AppCLI</mainClass>
+                  <mainClass>com.sothr.imagetools.cli.AppCLI</mainClass>
                 </manifest>
               </archive>
               <outputDirectory>

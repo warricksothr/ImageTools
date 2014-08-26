@@ -7,9 +7,10 @@ import akka.actor._
 import akka.pattern.ask
 import akka.routing.{Broadcast, RoundRobinRouter, SmallestMailboxRouter}
 import akka.util.Timeout
-import com.sothr.imagetools.hash.HashService
-import com.sothr.imagetools.image.{Image, ImageService, SimilarImages}
-import com.sothr.imagetools.util._
+import com.sothr.imagetools.engine.hash.HashService
+import com.sothr.imagetools.engine.image.{SimilarImages, ImageService, Image}
+import com.sothr.imagetools.image.SimilarImages
+import com.sothr.imagetools.engine.util._
 
 import scala.collection.mutable
 import scala.concurrent.Await

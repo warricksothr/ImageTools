@@ -74,7 +74,7 @@
                 <manifest>
                   <addClasspath>true</addClasspath>
                   <classpathPrefix>lib/</classpathPrefix>
-                  <mainClass>com.sothr.imagetools.App</mainClass>
+                  <mainClass>com.sothr.imagetools.ui.App</mainClass>
                 </manifest>
               </archive>
               <outputDirectory>

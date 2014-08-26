@@ -3,7 +3,7 @@
     "-//Hibernate/Hibernate Mapping DTD//EN"
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-  <class name="com.sothr.imagetools.dto.ImageHashDTO" table="ImageHash">
+  <class name="com.sothr.imagetools.engine.dto.ImageHashDTO" table="ImageHash">
     <meta attribute="class-description">
       This class contains the image hashes
     </meta>

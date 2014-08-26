@@ -3,9 +3,10 @@ package com.sothr.imagetools.engine
 import java.io.File
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
-import com.sothr.imagetools.AppConfig
-import com.sothr.imagetools.image.{Image, ImageFilter, SimilarImages}
-import com.sothr.imagetools.util.DirectoryFilter
+import AppConfig
+import com.sothr.imagetools.engine.image.{SimilarImages, ImageFilter, Image}
+import com.sothr.imagetools.image.SimilarImages
+import com.sothr.imagetools.engine.util.DirectoryFilter
 import grizzled.slf4j.Logging
 
 import scala.collection.mutable
