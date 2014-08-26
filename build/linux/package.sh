@@ -34,10 +34,11 @@ packageProject ()
 VERSION=$(head -1 ./version.info)
 RELEASE="$PWD/target"
 
-#make sure release exists
-if [ ! -d $RELEASE ]; then
-    mkdir $RELEASE
+#make sure release exists and is empty
+if [ -d $RELEASE ]; then
+    rm -R $RELEASE
 fi
+mkdir $RELEASE
 
 packageProject $VERSION "./cli" $RELEASE
 packageProject $VERSION "./gui" $RELEASE
