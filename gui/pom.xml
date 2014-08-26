@@ -14,7 +14,7 @@
   <version>0.1.0</version>
   <packaging>jar</packaging>
 
-  <name>Image-Tools-GUI</name>
+  <name>ImageTools-GUI</name>
   <description>The Graphical User Interface for Image-Tools</description>
   <url>http://imagetools.sothr.com</url>
   <organization>

@@ -14,7 +14,7 @@
   <version>0.1.2</version>
   <packaging>jar</packaging>
 
-  <name>Image-Tools-Engine</name>
+  <name>ImageTools-Engine</name>
   <description>An image collection management utility</description>
   <url>http://imagetools.sothr.com</url>
   <organization>

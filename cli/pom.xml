@@ -14,7 +14,7 @@
   <version>0.1.0</version>
   <packaging>jar</packaging>
 
-  <name>Image-Tools-CLI</name>
+  <name>ImageTools-CLI</name>
   <description>The Command Line Interface for Image-Tools</description>
   <url>http://imagetools.sothr.com</url>
   <organization>
