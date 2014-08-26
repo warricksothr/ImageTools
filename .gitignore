@@ -26,7 +26,6 @@ target/
 
 # Build Name and Version Files
 /name.info
-/version.info
 
 /gui/name.info
 /gui/version.info

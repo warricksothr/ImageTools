@@ -14,7 +14,7 @@ IFS='-' read -a arr2 <<< "${arr[2]}"
 let patch=${arr2[0]}+1
 #echo $patch
 VERSION="${arr[0]}.${arr[1]}.$patch-${arr2[1]}"
-#echo $VERSION
+echo $VERSION
 
 #update the POM
 mvn versions:set -DnewVersion=$VERSION
