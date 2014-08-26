@@ -25,13 +25,13 @@
 target/
 
 # Build Name and Version Files
-name.info
-version.info
+/name.info
+/version.info
 
 # Image Tools Log Files
-*.debug*
-*.info*
-*.err*
+/*.debug*
+/*.info*
+/*.err*
 
 #POM versions backup
 *.versionsBackup
@@ -41,4 +41,4 @@ version.info
 
 #Root Config Files
 /user.conf
-/logback.xml
+i/logback.xml
