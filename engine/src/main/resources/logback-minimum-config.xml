@@ -3,9 +3,9 @@
   <appender name="EL" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <File>ImageTools.err</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%date{HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>ERROR</level>
     </filter>

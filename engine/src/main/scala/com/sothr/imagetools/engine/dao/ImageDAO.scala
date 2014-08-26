@@ -10,25 +10,25 @@ import org.hibernate.{Session, SessionFactory}
  */
 class ImageDAO {
 
-  private val sessionFactory:SessionFactory = HibernateUtil.getSessionFactory
+  private val sessionFactory: SessionFactory = HibernateUtil.getSessionFactory
 
-  def find(path:String):Image = {
-    val session:Session = sessionFactory.getCurrentSession
+  def find(path: String): Image = {
+    val session: Session = sessionFactory.getCurrentSession
     session.getTransaction.begin()
     val result = session.get(classOf[Image], path).asInstanceOf[Image]
     session.getTransaction.commit()
     result
   }
 
-  def save(image:Image) = {
-    val session:Session = sessionFactory.getCurrentSession
+  def save(image: Image) = {
+    val session: Session = sessionFactory.getCurrentSession
     session.getTransaction.begin()
     session.saveOrUpdate(image)
     session.getTransaction.commit()
   }
 
-  def save(images:List[Image]) = {
-    val session:Session = sessionFactory.getCurrentSession
+  def save(images: List[Image]) = {
+    val session: Session = sessionFactory.getCurrentSession
     session.getTransaction.begin()
     for (image <- images) session.saveOrUpdate(image)
     session.getTransaction.commit()

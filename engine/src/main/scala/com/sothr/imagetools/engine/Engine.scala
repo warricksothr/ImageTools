@@ -3,9 +3,7 @@ package com.sothr.imagetools.engine
 import java.io.File
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
-import AppConfig
-import com.sothr.imagetools.engine.image.{SimilarImages, ImageFilter, Image}
-import com.sothr.imagetools.image.SimilarImages
+import com.sothr.imagetools.engine.image.{Image, ImageFilter, SimilarImages}
 import com.sothr.imagetools.engine.util.DirectoryFilter
 import grizzled.slf4j.Logging
 
@@ -18,16 +16,17 @@ import scala.collection.mutable
  */
 abstract class Engine extends Logging {
   val system = ActorSystem("EngineActorSystem")
-  val imageFilter:ImageFilter = new ImageFilter()
+  val imageFilter: ImageFilter = new ImageFilter()
   val imageCache = AppConfig.cacheManager.getCache("images")
 
   def setProcessedListener(listenerType: ActorRef)
+
   def setSimilarityListener(listenerType: ActorRef)
 
-  def getAllImageFiles(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[File] = {
+  def getAllImageFiles(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[File] = {
     val fileList = new mutable.MutableList[File]()
     if (directoryPath != null && directoryPath != "") {
-      val directory:File = new File(directoryPath)
+      val directory: File = new File(directoryPath)
       val imageFilter = new ImageFilter
       if (directory.isDirectory) {
         val files = directory.listFiles(imageFilter)
@@ -38,7 +37,7 @@ abstract class Engine extends Logging {
             val directoryFilter = new DirectoryFilter
             val directories = directory.listFiles(directoryFilter)
             for (directory <- directories) {
-                fileList ++= getAllImageFiles(directory.getAbsolutePath, recursive, recursiveDepth-1)
+              fileList ++= getAllImageFiles(directory.getAbsolutePath, recursive, recursiveDepth - 1)
             }
           }
         }
@@ -50,28 +49,33 @@ abstract class Engine extends Logging {
   /**
    * Get all images for a directory with hashes
    */
-  def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image]
-  
+  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image]
+
   /**
    * Get all similar images for a directory with hashes
    */
-  def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages]
+  def getSimilarImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[SimilarImages]
 }
 
-case class SubmitMessage(message:String)
-case class ScannedFileCount(count:Integer, total:Integer, message:String=null)
-case class ComparedFileCount(count:Integer,total:Integer, message:String=null)
+case class SubmitMessage(message: String)
+
+case class ScannedFileCount(count: Integer, total: Integer, message: String = null)
+
+case class ComparedFileCount(count: Integer, total: Integer, message: String = null)
+
 abstract class EngineListener extends Actor with ActorLogging {
   override def receive: Actor.Receive = {
-    case command:SubmitMessage => handleMessage(command)
-    case command:ScannedFileCount => handleScannedFileCount(command)
-    case command:ComparedFileCount => handleComparedFileCount(command)
+    case command: SubmitMessage => handleMessage(command)
+    case command: ScannedFileCount => handleScannedFileCount(command)
+    case command: ComparedFileCount => handleComparedFileCount(command)
     case _ => log.info("received unknown message")
   }
 
-  def handleMessage(command:SubmitMessage)
-  def handleScannedFileCount(command:ScannedFileCount)
-  def handleComparedFileCount(command:ComparedFileCount)
+  def handleMessage(command: SubmitMessage)
+
+  def handleScannedFileCount(command: ScannedFileCount)
+
+  def handleComparedFileCount(command: ComparedFileCount)
 }
 
 /**
@@ -82,14 +86,14 @@ class DefaultLoggingEngineListener extends EngineListener with ActorLogging {
     if (command.message != null) {
       log.info(command.message)
     }
-    log.info("Processed {}/{}",command.count,command.total)
+    log.info("Processed {}/{}", command.count, command.total)
   }
 
   override def handleScannedFileCount(command: ScannedFileCount): Unit = {
     if (command.message != null) {
       log.info(command.message)
     }
-    log.info("Scanned {}/{} For Similarities",command.count,command.total)
+    log.info("Scanned {}/{} For Similarities", command.count, command.total)
   }
 
   override def handleMessage(command: SubmitMessage): Unit = {

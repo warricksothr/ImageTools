@@ -7,7 +7,6 @@ import javafx.scene.control.{Label, Tooltip}
 import javafx.scene.image.{Image, ImageView}
 import javafx.scene.input.MouseEvent
 
-import com.sothr.imagetools.engine.image
 import grizzled.slf4j.Logging
 import resource._
 
@@ -18,29 +17,29 @@ import resource._
  */
 object ImageTileFactory extends Logging {
 
-  def get(image:image.Image):ImageTile = {
+  def get(image: com.sothr.imagetools.engine.image.Image): ImageTile = {
     val imageTile = new ImageTile()
     imageTile.setImageData(image)
     //set tile size
-    imageTile.setPrefSize(160.0d,160.0d)
-    imageTile.setMinSize(160.0d,160.0d)
-    imageTile.setMaxSize(160.0d,160.0d)
+    imageTile.setPrefSize(160.0d, 160.0d)
+    imageTile.setMinSize(160.0d, 160.0d)
+    imageTile.setMaxSize(160.0d, 160.0d)
     //set padding
-    imageTile.setPadding(new Insets(2,2,2,2))
+    imageTile.setPadding(new Insets(2, 2, 2, 2))
     //imageTile.setSpacing(5.0d)
     imageTile.setAlignment(Pos.TOP_CENTER)
     imageTile.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler[MouseEvent] {
-        override def handle(event: MouseEvent): Unit = {
-          if (event.isPrimaryButtonDown) {
-            //double click
-            if (event.getClickCount == 2) {
+      override def handle(event: MouseEvent): Unit = {
+        if (event.isPrimaryButtonDown) {
+          //double click
+          if (event.getClickCount == 2) {
 
-            } else {
+          } else {
 
-            }
-          } else if (event.isSecondaryButtonDown) {
-            //right click context menu
           }
+        } else if (event.isSecondaryButtonDown) {
+          //right click context menu
+        }
       }
     })
 

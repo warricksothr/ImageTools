@@ -10,9 +10,9 @@ import javafx.scene.web.WebView
 import javafx.scene.{Group, Node, Scene}
 import javafx.stage.{DirectoryChooser, Stage, StageStyle}
 
+import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
 import com.sothr.imagetools.engine.{ConcurrentEngine, Engine}
 import com.sothr.imagetools.ui.component.ImageTileFactory
-import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
 import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
 
@@ -24,19 +24,19 @@ import org.markdown4j.Markdown4jProcessor
 class AppController extends Logging {
 
   //Define controls
-  @FXML var rootPane : javafx.scene.layout.AnchorPane = null
-  @FXML var rootMenuBar : javafx.scene.control.MenuBar = null
-  @FXML var imageTilePane : javafx.scene.layout.TilePane = null
-  @FXML var tagListView : javafx.scene.control.ListView[String] = null
+  @FXML var rootPane: javafx.scene.layout.AnchorPane = null
+  @FXML var rootMenuBar: javafx.scene.control.MenuBar = null
+  @FXML var imageTilePane: javafx.scene.layout.TilePane = null
+  @FXML var tagListView: javafx.scene.control.ListView[String] = null
 
   // Labels
   @FXML var selectedDirectoryLabel: javafx.scene.control.Label = null
 
   // Engine
-  val engine:Engine = new ConcurrentEngine()
+  val engine: Engine = new ConcurrentEngine()
 
   // Current State
-  var currentDirectory:String = "."
+  var currentDirectory: String = "."
 
   @FXML def initialize() = {
     if (PropertiesService.has("lastPath")) {
@@ -61,12 +61,12 @@ class AppController extends Logging {
   //region MenuItem Actions
 
   @FXML
-  def helpAction(event:ActionEvent) = {
+  def helpAction(event: ActionEvent) = {
     showExternalHTMLUtilityDialog("http://www.sothr.com")
   }
 
   @FXML
-  def aboutAction(event:ActionEvent) = {
+  def aboutAction(event: ActionEvent) = {
     debug("Displaying about screen")
     var aboutMessage = "Simple About Message"
     try {
@@ -80,7 +80,7 @@ class AppController extends Logging {
       debug(s"Parsed About Message: '$aboutMessage'")
 
     } catch {
-      case ioe:IOException =>
+      case ioe: IOException =>
         error("Unable to read about file")
     }
 
@@ -89,14 +89,14 @@ class AppController extends Logging {
   }
 
   @FXML
-  def closeAction(event:ActionEvent) = {
+  def closeAction(event: ActionEvent) = {
     debug("Closing application from the menu bar")
-    val stage:Stage = this.rootMenuBar.getScene.getWindow.asInstanceOf[Stage]
+    val stage: Stage = this.rootMenuBar.getScene.getWindow.asInstanceOf[Stage]
     stage.close()
   }
 
   @FXML
-  def browseFolders(event:ActionEvent) = {
+  def browseFolders(event: ActionEvent) = {
     val chooser = new DirectoryChooser()
     chooser.setTitle("ImageTools Browser")
 
@@ -108,11 +108,11 @@ class AppController extends Logging {
     selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
 
     currentDirectory = selectedDirectory.getAbsolutePath
-    PropertiesService.set("lastPath",selectedDirectory.getAbsolutePath)
+    PropertiesService.set("lastPath", selectedDirectory.getAbsolutePath)
   }
 
   @FXML
-  def showAllImages(event:ActionEvent) = {
+  def showAllImages(event: ActionEvent) = {
     imageTilePane.getChildren.setAll(new util.ArrayList[Node]())
     val images = engine.getImagesForDirectory(currentDirectory)
     info(s"Displaying ${images.length} images")
@@ -123,14 +123,14 @@ class AppController extends Logging {
   }
 
   @FXML
-  def showSimilarImages(event:ActionEvent) = {
+  def showSimilarImages(event: ActionEvent) = {
     imageTilePane.getChildren.setAll(new util.ArrayList[Node]())
     val similarImages = engine.getSimilarImagesForDirectory(currentDirectory)
     info(s"Displaying ${similarImages.length} similar images")
     for (similarImage <- similarImages) {
       debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
       imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage))
-      similarImage.similarImages.foreach( image => imageTilePane.getChildren.add(ImageTileFactory.get(image)))
+      similarImage.similarImages.foreach(image => imageTilePane.getChildren.add(ImageTileFactory.get(image)))
     }
   }
 
@@ -139,7 +139,7 @@ class AppController extends Logging {
   //todo: include a templating engine for rendering information
 
   //todo: show a dialog that is rendered from markdown content
-  def showMarkdownUtilityDialog(title:String, markdown:String, width:Double = 800.0, height:Double = 600.0) = {
+  def showMarkdownUtilityDialog(title: String, markdown: String, width: Double = 800.0, height: Double = 600.0) = {
     val htmlBody = new Markdown4jProcessor().process(markdown)
     showHTMLUtilityDialog(title, htmlBody, width, height)
   }
@@ -152,10 +152,10 @@ class AppController extends Logging {
    * @param width Desired width of the dialog
    * @param height Desired height of the dialog
    */
-  def showHTMLUtilityDialog(title:String, htmlBody:String, width:Double = 800.0, height:Double = 600.0) = {
-    val dialog:Stage = new Stage()
+  def showHTMLUtilityDialog(title: String, htmlBody: String, width: Double = 800.0, height: Double = 600.0) = {
+    val dialog: Stage = new Stage()
     dialog.initStyle(StageStyle.UTILITY)
-    val parent:Group = new Group()
+    val parent: Group = new Group()
 
     //setup the HTML view
     val htmlView = new WebView
@@ -166,17 +166,17 @@ class AppController extends Logging {
     htmlView.setPrefHeight(height)
     parent.getChildren.add(htmlView)
 
-    val scene:Scene = new Scene(parent)
+    val scene: Scene = new Scene(parent)
     dialog.setScene(scene)
     dialog.setResizable(false)
     dialog.setTitle(title)
     dialog.show()
   }
 
-  def showExternalHTMLUtilityDialog(url:String) = {
-    val dialog:Stage = new Stage()
+  def showExternalHTMLUtilityDialog(url: String) = {
+    val dialog: Stage = new Stage()
     dialog.initStyle(StageStyle.UTILITY)
-    val parent:Group = new Group()
+    val parent: Group = new Group()
 
     //setup the HTML view
     val htmlView = new WebView
@@ -187,7 +187,7 @@ class AppController extends Logging {
     //htmlView.setPrefHeight(height)
     parent.getChildren.add(htmlView)
 
-    val scene:Scene = new Scene(parent)
+    val scene: Scene = new Scene(parent)
     dialog.setScene(scene)
     dialog.setResizable(false)
     dialog.setTitle(htmlView.getEngine.getTitle)
@@ -201,15 +201,15 @@ class AppController extends Logging {
    * @param wrapWidth When to wrap
    * @param alignment How it should be aligned
    */
-  def showUtilityDialog(title:String,
-                        message:String,
-                        wrapWidth:Double=300.0,
-                        xOffset:Double = 25.0,
-                        yOffset:Double = 25.0,
-                        alignment:TextAlignment=TextAlignment.JUSTIFY) = {
-    val dialog:Stage = new Stage()
+  def showUtilityDialog(title: String,
+                        message: String,
+                        wrapWidth: Double = 300.0,
+                        xOffset: Double = 25.0,
+                        yOffset: Double = 25.0,
+                        alignment: TextAlignment = TextAlignment.JUSTIFY) = {
+    val dialog: Stage = new Stage()
     dialog.initStyle(StageStyle.UTILITY)
-    val parent:Group = new Group()
+    val parent: Group = new Group()
 
     // fill the text box
     val messageText = new Text()
@@ -220,15 +220,15 @@ class AppController extends Logging {
     messageText.setTextAlignment(TextAlignment.JUSTIFY)
 
     parent.getChildren.add(messageText)
-    val scene:Scene = new Scene(parent)
+    val scene: Scene = new Scene(parent)
     dialog.setScene(scene)
     dialog.setResizable(false)
-    dialog.setMinWidth(wrapWidth+xOffset*2)
+    dialog.setMinWidth(wrapWidth + xOffset * 2)
     dialog.setTitle(title)
     dialog.show()
   }
 
-  def print():String = {
+  def print(): String = {
     "This method works"
   }
 }

@@ -4,10 +4,10 @@
   <logger name="net.sf.ehcache" level="WARN"/>
   <appender name="C" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-	  <!-- Sorry Windows Users -->
-	  <withJansi>false</withJansi>
+      <!-- Sorry Windows Users -->
+      <withJansi>false</withJansi>
       <pattern>[%date{HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
@@ -16,9 +16,9 @@
     <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
     <File>ImageTools.debug</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>DEBUG</level>
     </filter>
@@ -34,9 +34,9 @@
     <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
     <File>ImageTools.info</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
@@ -52,9 +52,9 @@
     <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
     <File>ImageTools.err</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%.16thread] [%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>ERROR</level>
     </filter>

@@ -9,14 +9,14 @@ import com.sothr.imagetools.engine.image.Image
  *
  * Created by drew on 8/22/14.
  */
-class ImageTile extends VBox{
+class ImageTile extends VBox {
   var imageData: Image = null
 
-  def getImageData:Image = {
+  def getImageData: Image = {
     imageData
   }
 
-  def setImageData(image:Image) = {
+  def setImageData(image: Image) = {
     this.imageData = image
   }
 }

@@ -14,10 +14,10 @@ import org.hibernate.service.ServiceRegistry
  */
 object HibernateUtil extends Logging {
 
-  private val sessionFactory:SessionFactory = buildSessionFactory()
-  private var serviceRegistry:ServiceRegistry = null
+  private val sessionFactory: SessionFactory = buildSessionFactory()
+  private var serviceRegistry: ServiceRegistry = null
 
-  private def buildSessionFactory():SessionFactory = {
+  private def buildSessionFactory(): SessionFactory = {
     try {
       // Create the SessionFactory from hibernate.cfg.xml
       val configuration = new Configuration().configure("hibernate.cfg.xml")
@@ -27,14 +27,14 @@ object HibernateUtil extends Logging {
       serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties).build
       configuration.buildSessionFactory(serviceRegistry)
     } catch {
-      case ex:Throwable =>
-      // Make sure you log the exception, as it might be swallowed
-      error("Initial SessionFactory creation failed.", ex)
-      throw new ExceptionInInitializerError(ex)
+      case ex: Throwable =>
+        // Make sure you log the exception, as it might be swallowed
+        error("Initial SessionFactory creation failed.", ex)
+        throw new ExceptionInInitializerError(ex)
     }
   }
 
-  def getSessionFactory:SessionFactory = {
+  def getSessionFactory: SessionFactory = {
     sessionFactory
   }
 

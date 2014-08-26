@@ -7,6 +7,6 @@ package com.sothr.imagetools.engine.hash
  */
 trait PerceptualHasher {
 
-  def getHash(imageData:Array[Array[Int]]):Long
+  def getHash(imageData: Array[Array[Int]]): Long
 
 }

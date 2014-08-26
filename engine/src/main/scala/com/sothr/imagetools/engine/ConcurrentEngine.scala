@@ -8,8 +8,7 @@ import akka.pattern.ask
 import akka.routing.{Broadcast, RoundRobinRouter, SmallestMailboxRouter}
 import akka.util.Timeout
 import com.sothr.imagetools.engine.hash.HashService
-import com.sothr.imagetools.engine.image.{SimilarImages, ImageService, Image}
-import com.sothr.imagetools.image.SimilarImages
+import com.sothr.imagetools.engine.image.{Image, ImageService, SimilarImages}
 import com.sothr.imagetools.engine.util._
 
 import scala.collection.mutable
@@ -28,10 +27,10 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     engineSimilarityController ! SetNewListener(listenerRef)
   }
 
-  def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image] = {
+  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
     val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
-    val images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
+    val images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
     // make sure the engine is listening
     engineProcessingController ! EngineStart
     for (file <- imageFiles) {
@@ -39,18 +38,18 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     }
     engineProcessingController ! EngineNoMoreFiles
     var doneProcessing = false
-    while(!doneProcessing) {
+    while (!doneProcessing) {
       val f = engineProcessingController ? EngineIsProcessingFinished
       val result = Await.result(f, timeout.duration).asInstanceOf[Boolean]
       result match {
         case true =>
           doneProcessing = true
           debug("Processing Complete")
-        case false => 
+        case false =>
           debug("Still Processing")
           //sleep thread
           Thread.sleep(5000L)
-          //val future = Future { blocking(Thread.sleep(5000L)); "done" }
+        //val future = Future { blocking(Thread.sleep(5000L)); "done" }
       }
     }
     val f = engineProcessingController ? EngineGetProcessingResults
@@ -60,7 +59,7 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
   }
 
   //needs to be rebuilt
-  def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages] = {
+  def getSimilarImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
     val images = getImagesForDirectory(directoryPath, recursive, recursiveDepth)
     info(s"Searching ${images.length} images for similarities")
@@ -73,7 +72,7 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     //tell the comparison engine there's nothing left to compare
     engineSimilarityController ! EngineNoMoreComparisons
     var doneProcessing = false
-    while(!doneProcessing) {
+    while (!doneProcessing) {
       val f = engineSimilarityController ? EngineIsSimilarityFinished
       val result = Await.result(f, timeout.duration).asInstanceOf[Boolean]
       result match {
@@ -94,17 +93,17 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     val cleanedSimilarImages = new mutable.MutableList[SimilarImages]()
     val ignoreSet = new mutable.HashSet[Image]()
     for (similarImages <- result) {
-        count += 1
-        if (count % 25 == 0 || count == result.length) debug(s"Cleaning similar image $count/${result.length} ${result.length - count} left to clean")
-        if (!ignoreSet.contains(similarImages.rootImage)) {
-            cleanedSimilarImages += similarImages
-            ignoreSet += similarImages.rootImage
-            for (image <- similarImages.similarImages) {
-                ignoreSet += image
-            }
+      count += 1
+      if (count % 25 == 0 || count == result.length) debug(s"Cleaning similar image $count/${result.length} ${result.length - count} left to clean")
+      if (!ignoreSet.contains(similarImages.rootImage)) {
+        cleanedSimilarImages += similarImages
+        ignoreSet += similarImages.rootImage
+        for (image <- similarImages.similarImages) {
+          ignoreSet += image
         }
+      }
     }
-    
+
     var similarCount = 0
     for (similarImage <- cleanedSimilarImages) {
       similarCount += 1 + similarImage.similarImages.size
@@ -118,164 +117,176 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
 
 // external cases //
 case class SetNewListener(listenerType: ActorRef)
+
 case object EngineStart
 
 // processing files into images
-case class EngineProcessFile(file:File)
+case class EngineProcessFile(file: File)
+
 case object EngineNoMoreFiles
+
 case object EngineIsProcessingFinished
+
 case object EngineGetProcessingResults
 
 //internal cases
-case class EngineFileProcessed(image:Image)
+case class EngineFileProcessed(image: Image)
+
 case object EngineActorProcessingFinished
+
 case object EngineActorReactivate
 
 class ConcurrentEngineProcessingController extends Actor with ActorLogging {
-    val numOfRouters = {
-      val max = PropertiesService.get(PropertyEnum.ConcurrentProcessingLimit.toString).toInt
-      val processors = Runtime.getRuntime.availableProcessors()
-      var threads = 0
-      if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
-      threads
-    }
-    var router = context.actorOf(Props[ConcurrentEngineProcessingActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
+  val numOfRouters = {
+    val max = PropertiesService.get(PropertyEnum.ConcurrentProcessingLimit.toString).toInt
+    val processors = Runtime.getRuntime.availableProcessors()
+    var threads = 0
+    if (processors > max) threads = max else if (processors > 1) threads = processors - 1 else threads = 1
+    threads
+  }
+  var router = context.actorOf(Props[ConcurrentEngineProcessingActor].withRouter(SmallestMailboxRouter(nrOfInstances = numOfRouters)))
 
-    var images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
-    var toProcess = 0
-    var processed = 0
-    
-    var processorsFinished = 0
-    var listener = context.actorOf(Props[DefaultLoggingEngineListener],
-      name = "ProcessedEngineListener")
+  var images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
+  var toProcess = 0
+  var processed = 0
 
-    def setListener(newListener: ActorRef) = {
-      //remove the old listener
-      this.listener ! PoisonPill
-      //setup the new listener
-      this.listener = newListener
-    }
+  var processorsFinished = 0
+  var listener = context.actorOf(Props[DefaultLoggingEngineListener],
+    name = "ProcessedEngineListener")
 
-    override def preStart() = {
-        log.info("Staring the controller for processing images")
-        log.info("Using {} actors to process images", numOfRouters)
-    }
-    
-    override def receive = {
-        case command:SetNewListener => setListener(command.listenerType)
-        case command:EngineProcessFile => processFile(command)
-        case command:EngineFileProcessed => fileProcessed(command)
-        case EngineStart => startEngine()
-        case EngineNoMoreFiles => requestWrapup()
-        case EngineActorProcessingFinished => actorProcessingFinished()
-        case EngineIsProcessingFinished => checkIfProcessingIsFinished()
-        case EngineGetProcessingResults => checkForResults()
-        case _ => log.info("received unknown message")
-    }
+  def setListener(newListener: ActorRef) = {
+    //remove the old listener
+    this.listener ! PoisonPill
+    //setup the new listener
+    this.listener = newListener
+  }
 
-    override def postStop() = {
-      super.postStop()
-      this.listener ! PoisonPill
-    }
+  override def preStart() = {
+    log.info("Staring the controller for processing images")
+    log.info("Using {} actors to process images", numOfRouters)
+  }
 
-    def startEngine() = {
-        router ! Broadcast(EngineActorReactivate)
-    }
+  override def receive = {
+    case command: SetNewListener => setListener(command.listenerType)
+    case command: EngineProcessFile => processFile(command)
+    case command: EngineFileProcessed => fileProcessed(command)
+    case EngineStart => startEngine()
+    case EngineNoMoreFiles => requestWrapup()
+    case EngineActorProcessingFinished => actorProcessingFinished()
+    case EngineIsProcessingFinished => checkIfProcessingIsFinished()
+    case EngineGetProcessingResults => checkForResults()
+    case _ => log.info("received unknown message")
+  }
 
-    def processFile(command:EngineProcessFile) = {
-        log.debug(s"Started evaluating ${command.file.getAbsolutePath}")
-        toProcess += 1
-        router ! command
+  override def postStop() = {
+    super.postStop()
+    this.listener ! PoisonPill
+  }
+
+  def startEngine() = {
+    router ! Broadcast(EngineActorReactivate)
+  }
+
+  def processFile(command: EngineProcessFile) = {
+    log.debug(s"Started evaluating ${command.file.getAbsolutePath}")
+    toProcess += 1
+    router ! command
+  }
+
+  def fileProcessed(command: EngineFileProcessed) = {
+    processed += 1
+    if (processed % 25 == 0 || processed == toProcess) {
+      //log.info(s"Processed $processed/$toProcess")
+      listener ! ComparedFileCount(processed, toProcess)
     }
-    
-    def fileProcessed(command:EngineFileProcessed) = {
-        processed += 1
-        if (processed % 25 == 0 || processed == toProcess) {
-          //log.info(s"Processed $processed/$toProcess")
-          listener ! ComparedFileCount(processed,toProcess)
-        }
-        if (command.image != null) {
-            log.debug(s"processed image: ${command.image.imagePath}")
-            images += command.image
-        }
+    if (command.image != null) {
+      log.debug(s"processed image: ${command.image.imagePath}")
+      images += command.image
     }
-    
-    def requestWrapup() = {
-        router ! Broadcast(EngineNoMoreFiles)
+  }
+
+  def requestWrapup() = {
+    router ! Broadcast(EngineNoMoreFiles)
+  }
+
+  /*
+   * Record that a processor is done
+   */
+  def actorProcessingFinished() = {
+    processorsFinished += 1
+  }
+
+  /*
+   * Check if processing is done
+   */
+  def checkIfProcessingIsFinished() = {
+    try {
+      if (processorsFinished >= numOfRouters) sender ! true else sender ! false
+    } catch {
+      case e: Exception ⇒
+        sender ! akka.actor.Status.Failure(e)
+        throw e
     }
-    
-    /*
-     * Record that a processor is done
-     */
-    def actorProcessingFinished() = {
-        processorsFinished += 1
+  }
+
+  /*
+   * Get the results of the processing
+   */
+  def checkForResults() = {
+    try {
+      processorsFinished = 0
+      toProcess = 0
+      processed = 0
+      sender ! images.toList
+      images.clear()
+    } catch {
+      case e: Exception ⇒
+        sender ! akka.actor.Status.Failure(e)
+        throw e
     }
-    
-    /*
-     * Check if processing is done 
-     */
-    def checkIfProcessingIsFinished() = {
-        try {
-          if (processorsFinished >= numOfRouters) sender ! true else sender ! false
-        } catch {
-          case e: Exception ⇒
-            sender ! akka.actor.Status.Failure(e)
-            throw e
-        }
-    }
-    
-    /*
-     * Get the results of the processing 
-     */
-    def checkForResults() = {
-        try {
-            processorsFinished = 0
-            toProcess = 0
-            processed = 0
-            sender ! images.toList
-            images.clear()
-        } catch {
-            case e: Exception ⇒
-                sender ! akka.actor.Status.Failure(e)
-                throw e
-        }
-    }
+  }
 }
 
 class ConcurrentEngineProcessingActor extends Actor with ActorLogging {
-    var ignoreMessages = false
-    override def receive = {
-        case command:EngineProcessFile => processFile(command)
-        case EngineNoMoreFiles => finishedProcessingFiles()
-        case EngineActorReactivate => ignoreMessages = false
-        case _ => log.info("received unknown message")
+  var ignoreMessages = false
+
+  override def receive = {
+    case command: EngineProcessFile => processFile(command)
+    case EngineNoMoreFiles => finishedProcessingFiles()
+    case EngineActorReactivate => ignoreMessages = false
+    case _ => log.info("received unknown message")
+  }
+
+  def processFile(command: EngineProcessFile) = {
+    if (!ignoreMessages) {
+      val image = ImageService.getImage(command.file)
+      if (image != null) {
+        sender ! EngineFileProcessed(image)
+      } else {
+        log.debug(s"Failed to process image: ${command.file.getAbsolutePath}")
+      }
     }
-    
-    def processFile(command:EngineProcessFile) = {
-        if (!ignoreMessages) {
-            val image = ImageService.getImage(command.file)
-            if (image != null) {
-                sender ! EngineFileProcessed(image)
-            } else {
-                log.debug(s"Failed to process image: ${command.file.getAbsolutePath}")
-            }
-        }
+  }
+
+  def finishedProcessingFiles() = {
+    if (!ignoreMessages) {
+      ignoreMessages = true
+      sender ! EngineActorProcessingFinished
     }
-    
-    def finishedProcessingFiles() = {
-        if (!ignoreMessages) {
-            ignoreMessages = true
-            sender ! EngineActorProcessingFinished
-        }
-    }
+  }
 }
 
 //finding similarities between images
-case class EngineCompareImages(image1:Image, images:List[Image])
-case class EngineCompareImagesComplete(similarImages:SimilarImages)
+case class EngineCompareImages(image1: Image, images: List[Image])
+
+case class EngineCompareImagesComplete(similarImages: SimilarImages)
+
 case object EngineNoMoreComparisons
+
 case object EngineIsSimilarityFinished
+
 case object EngineGetSimilarityResults
+
 case object EngineActorCompareImagesFinished
 
 class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
@@ -310,9 +321,9 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   }
 
   override def receive = {
-    case command:SetNewListener => setListener(command.listenerType)
-    case command:EngineCompareImages => findSimilarities(command)
-    case command:EngineCompareImagesComplete => similarityProcessed(command)
+    case command: SetNewListener => setListener(command.listenerType)
+    case command: EngineCompareImages => findSimilarities(command)
+    case command: EngineCompareImagesComplete => similarityProcessed(command)
     case EngineStart => startEngine()
     case EngineNoMoreComparisons => requestWrapup()
     case EngineActorCompareImagesFinished => actorProcessingFinished()
@@ -330,22 +341,22 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
     router ! Broadcast(EngineActorReactivate)
   }
 
-  def findSimilarities(command:EngineCompareImages) = {
+  def findSimilarities(command: EngineCompareImages) = {
     log.debug(s"Finding similarities between {} and {} images", command.image1.imagePath, command.images.length)
     toProcess += 1
     if (toProcess % 250 == 0) {
-        //log.info("Sent {} images to be processed for similarites", toProcess)
-        listener ! SubmitMessage(s"Sent $toProcess images to be processed for similarites")
+      //log.info("Sent {} images to be processed for similarites", toProcess)
+      listener ! SubmitMessage(s"Sent $toProcess images to be processed for similarites")
     }
     //just relay the command to our workers
     router ! command
   }
 
-  def similarityProcessed(command:EngineCompareImagesComplete) = {
+  def similarityProcessed(command: EngineCompareImagesComplete) = {
     processed += 1
     if (processed % 25 == 0 || processed == toProcess) {
       //log.info(s"Processed $processed/$toProcess")
-      listener ! ScannedFileCount(processed,toProcess)
+      listener ! ScannedFileCount(processed, toProcess)
     }
     if (command.similarImages != null) {
       log.debug(s"Found similar images: ${command.similarImages}")
@@ -399,14 +410,15 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
 
 class ConcurrentEngineSimilarityActor extends Actor with ActorLogging {
   var ignoreMessages = false
+
   override def receive = {
-    case command:EngineCompareImages => compareImages(command)
+    case command: EngineCompareImages => compareImages(command)
     case EngineNoMoreComparisons => finishedComparisons()
     case EngineActorReactivate => ignoreMessages = false
     case _ => log.info("received unknown message")
   }
 
-  def compareImages(command:EngineCompareImages) = {
+  def compareImages(command: EngineCompareImages) = {
     if (!ignoreMessages) {
       val similarImages = new mutable.MutableList[Image]()
       for (image <- command.images) {

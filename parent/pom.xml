@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <groupId>com.sothr.imagetools</groupId>
   <artifactId>Parent</artifactId>
   <version>1.0.0</version>
@@ -10,13 +10,13 @@
   <name>Image-Tools-Parent</name>
 
   <pluginRepositories>
-    <pluginRepository>      
-      <id>sonatype-releases</id>      
-      <url>http://oss.sonatype.org/content/repositories/releases</url>    
-    </pluginRepository>    
-    <pluginRepository>      
-      <id>clojars.org</id>      
-      <url>http://clojars.org/repo</url>    
+    <pluginRepository>
+      <id>sonatype-releases</id>
+      <url>http://oss.sonatype.org/content/repositories/releases</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -66,19 +66,19 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-	      <groupId>ch.qos.logback</groupId>
-	      <artifactId>logback-core</artifactId>
-	      <version>${lib.logback.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${lib.logback.version}</version>
       </dependency>
       <dependency>
-	      <groupId>ch.qos.logback</groupId>
-	      <artifactId>logback-classic</artifactId>
-	      <version>${lib.logback.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${lib.logback.version}</version>
       </dependency>
       <dependency>
-	      <groupId>ch.qos.logback</groupId>
-	      <artifactId>logback-access</artifactId>
-	      <version>${lib.logback.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-access</artifactId>
+        <version>${lib.logback.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -156,9 +156,9 @@
         <version>${lib.hibernate.version}</version>
       </dependency>
       <dependency>
-    	  <groupId>net.sf.ehcache</groupId>
-    	  <artifactId>ehcache-core</artifactId>
-    	  <version>${lib.hibernate.ehcache.version}</version>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache-core</artifactId>
+        <version>${lib.hibernate.ehcache.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -263,8 +263,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-	      <version>3.1</version>
-	      <configuration>
+        <version>3.1</version>
+        <configuration>
           <source>${jdk.version}</source>
           <target>${jdk.version}</target>
         </configuration>

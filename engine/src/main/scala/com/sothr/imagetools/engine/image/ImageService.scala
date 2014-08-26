@@ -3,6 +3,7 @@ package com.sothr.imagetools.engine.image
 import java.awt.image.{BufferedImage, ColorConvertOp, DataBufferByte}
 import java.io.{File, IOException}
 import javax.imageio.ImageIO
+
 import com.sothr.imagetools.engine.AppConfig
 import com.sothr.imagetools.engine.dao.ImageDAO
 import com.sothr.imagetools.engine.hash.HashService
@@ -16,8 +17,8 @@ object ImageService extends Logging {
   val imageCache = AppConfig.cacheManager.getCache("images")
   private val imageDAO = new ImageDAO()
 
-  private def lookupImage(file:File):Image = {
-    var image:Image = null
+  private def lookupImage(file: File): Image = {
+    var image: Image = null
     var found = false
     //get from memory cache if possible
     try {
@@ -26,7 +27,7 @@ object ImageService extends Logging {
         found = true
       }
     } catch {
-      case npe:NullPointerException => debug(s"\'${file.getAbsolutePath}\' was supposed to be in the cache, but was not")
+      case npe: NullPointerException => debug(s"\'${file.getAbsolutePath}\' was supposed to be in the cache, but was not")
     }
     //get from datastore if possible
     if (!found) {
@@ -34,25 +35,25 @@ object ImageService extends Logging {
         val tempImage = imageDAO.find(file.getAbsolutePath)
         if (tempImage != null) image = tempImage
       } catch {
-        case ex:Exception => error(s"Error looking up \'${file.getAbsolutePath}\' was supposed to be in the database, but was not", ex)
+        case ex: Exception => error(s"Error looking up \'${file.getAbsolutePath}\' was supposed to be in the database, but was not", ex)
       }
     }
     image
   }
-  
-  private def saveImage(image:Image):Image = {
+
+  private def saveImage(image: Image): Image = {
     //save to cache
     imageCache.put(new Element(image.imagePath, image))
     //save to datastore
     try {
       imageDAO.save(image)
     } catch {
-      case ex:Exception => error(s"Error saving \'${image.imagePath}\' to database", ex)
+      case ex: Exception => error(s"Error saving \'${image.imagePath}\' to database", ex)
     }
     image
   }
 
-  def getImage(file:File):Image = {
+  def getImage(file: File): Image = {
     try {
       val image = lookupImage(file)
       if (image != null) {
@@ -64,34 +65,36 @@ object ImageService extends Logging {
         val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
         var thumbnailPath = lookupThumbnailPath(hashes.md5)
         if (thumbnailPath == null) thumbnailPath = getThumbnail(bufferedImage, hashes.md5)
-        val imageSize = { (bufferedImage.getWidth, bufferedImage.getHeight) }
+        val imageSize = {
+          (bufferedImage.getWidth, bufferedImage.getHeight)
+        }
         val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
         debug(s"Created image: $image")
         return saveImage(image)
       }
     } catch {
-      case ioe:IOException => error(s"Error processing ${file.getAbsolutePath}", ioe)
-      case ex:Exception => error(s"Error processing ${file.getAbsolutePath}", ex)
+      case ioe: IOException => error(s"Error processing ${file.getAbsolutePath}", ioe)
+      case ex: Exception => error(s"Error processing ${file.getAbsolutePath}", ex)
     }
     null
   }
 
-  def calculateThumbPath(md5:String):String = {
+  def calculateThumbPath(md5: String): String = {
     //break the path down into 4 char parts
     val subPath = md5.substring(0, 3)
-    var path:String = s"${PropertiesService.get(PropertyEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertyEnum.ThumbnailSize.toString)}/$subPath/"
+    var path: String = s"${PropertiesService.get(PropertyEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertyEnum.ThumbnailSize.toString)}/$subPath/"
     try {
       val dir = new File(path)
       if (!dir.exists()) dir.mkdirs()
     } catch {
-      case ioe:IOException => error(s"Unable to create dirs for path: \'$path\'", ioe)
+      case ioe: IOException => error(s"Unable to create dirs for path: \'$path\'", ioe)
     }
     path += md5 + ".jpg"
     path
   }
 
-  def lookupThumbnailPath(md5:String):String = {
-    var thumbPath:String = null
+  def lookupThumbnailPath(md5: String): String = {
+    var thumbPath: String = null
     if (md5 != null) {
       //check for the actual file
       val checkPath = calculateThumbPath(md5)
@@ -102,9 +105,9 @@ object ImageService extends Logging {
     thumbPath
   }
 
-  def getThumbnail(image:BufferedImage, md5:String):String = {
+  def getThumbnail(image: BufferedImage, md5: String): String = {
     //create thumbnail
-    val thumb = resize(image, PropertiesService.get(PropertyEnum.ThumbnailSize.toString).toInt, forced=false)
+    val thumb = resize(image, PropertiesService.get(PropertyEnum.ThumbnailSize.toString).toInt, forced = false)
     //calculate path
     val path = calculateThumbPath(md5)
     // save thumbnail to path
@@ -112,7 +115,7 @@ object ImageService extends Logging {
       ImageIO.write(thumb, "jpg", new File(path))
       debug(s"Wrote thumbnail to $path")
     } catch {
-        case ioe:IOException => error(s"Unable to save thumbnail to $path", ioe)
+      case ioe: IOException => error(s"Unable to save thumbnail to $path", ioe)
     }
     // return path
     path
@@ -121,7 +124,7 @@ object ImageService extends Logging {
   /**
    * Get the raw data for an image
    */
-  def getImageData(image:BufferedImage):Array[Array[Int]] = {
+  def getImageData(image: BufferedImage): Array[Array[Int]] = {
     convertTo2DWithoutUsingGetRGB(image)
   }
 
@@ -131,10 +134,10 @@ object ImageService extends Logging {
    * @param image image to convert to greyscale
    * @return
    */
-  def convertToGray(image:BufferedImage):BufferedImage = {
+  def convertToGray(image: BufferedImage): BufferedImage = {
     //debug("Converting an image to grayscale")
     val grayImage = new BufferedImage(image.getWidth, image.getHeight, BufferedImage.TYPE_BYTE_GRAY)
-    
+
     //create a color conversion operation
     val op = new ColorConvertOp(
       image.getColorModel.getColorSpace,
@@ -142,19 +145,19 @@ object ImageService extends Logging {
 
     //convert the image to grey
     val result = op.filter(image, grayImage)
-    
+
     //val g = image.getGraphics
     //g.drawImage(image,0,0,null)
     //g.dispose()
     result
   }
 
-  def resize(image:BufferedImage, size:Int, forced:Boolean=false):BufferedImage = {
+  def resize(image: BufferedImage, size: Int, forced: Boolean = false): BufferedImage = {
     //debug(s"Resizing an image to size: ${size}x${size} forced: $forced")
     if (forced) {
-      Thumbnails.of(image).forceSize(size,size).asBufferedImage
+      Thumbnails.of(image).forceSize(size, size).asBufferedImage
     } else {
-      Thumbnails.of(image).size(size,size).asBufferedImage
+      Thumbnails.of(image).size(size, size).asBufferedImage
     }
   }
 
@@ -164,17 +167,17 @@ object ImageService extends Logging {
    * @param image image to convert without using RGB
    * @return
    */
-  private def convertTo2DWithoutUsingGetRGB(image:BufferedImage):Array[Array[Int]] = {
+  private def convertTo2DWithoutUsingGetRGB(image: BufferedImage): Array[Array[Int]] = {
 
     val pixels = image.getRaster.getDataBuffer.asInstanceOf[DataBufferByte].getData
     val numPixels = pixels.length
     val width = image.getWidth
     val height = image.getHeight
-    val isSingleChannel = if(numPixels == (width * height)) true else false
+    val isSingleChannel = if (numPixels == (width * height)) true else false
     val hasAlphaChannel = image.getAlphaRaster != null
     //debug(s"Converting image to 2d. width:$width height:$height")
 
-    val result = Array.ofDim[Int](height,width)
+    val result = Array.ofDim[Int](height, width)
     if (isSingleChannel) {
       //debug(s"Processing Single Channel Image")
       val pixelLength = 1
@@ -183,7 +186,7 @@ object ImageService extends Logging {
       //debug(s"Processing pixels 0 until $numPixels by $pixelLength")
       for (pixel <- 0 until numPixels by pixelLength) {
         //debug(s"Processing pixel: $pixel/${numPixels - 1}")
-        val argb:Int = pixels(pixel).toInt //singleChannel
+        val argb: Int = pixels(pixel).toInt //singleChannel
         //debug(s"Pixel data: $argb")
         result(row)(col) = argb
         col += 1
@@ -201,7 +204,7 @@ object ImageService extends Logging {
       //debug(s"Processing pixels 0 until $numPixels by $pixelLength")
       for (pixel <- 0 until numPixels by pixelLength) {
         //debug(s"Processing pixel: $pixel/${numPixels - 1}")
-        var argb:Int = 0
+        var argb: Int = 0
         argb += pixels(pixel).toInt << 24 //alpha
         argb += pixels(pixel + 1).toInt //blue
         argb += pixels(pixel + 2).toInt << 8 //green
@@ -221,7 +224,7 @@ object ImageService extends Logging {
       //debug(s"Processing pixels 0 until $numPixels by $pixelLength")
       for (pixel <- 0 until numPixels by pixelLength) {
         //debug(s"Processing pixel: $pixel/${numPixels - 1}")
-        var argb:Int = 0
+        var argb: Int = 0
         argb += -16777216; // 255 alpha
         argb += pixels(pixel).toInt //blue
         argb += pixels(pixel + 1).toInt << 8 //green

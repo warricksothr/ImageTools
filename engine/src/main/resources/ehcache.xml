@@ -1,4 +1,4 @@
-<ehcache maxBytesLocalHeap="512M" maxBytesLocalDisk="5g" >
+<ehcache maxBytesLocalHeap="512M" maxBytesLocalDisk="5g">
   <diskStore path=".cache/ehcache"/>
   <cache name="images"
          timeToLiveSeconds="100">

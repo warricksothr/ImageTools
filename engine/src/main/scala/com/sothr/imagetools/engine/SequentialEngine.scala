@@ -3,8 +3,7 @@ package com.sothr.imagetools.engine
 import java.io.File
 
 import akka.actor.{ActorRef, Props}
-import com.sothr.imagetools.engine.image.{SimilarImages, ImageService, Image}
-import com.sothr.imagetools.image.SimilarImages
+import com.sothr.imagetools.engine.image.{Image, ImageService, SimilarImages}
 import grizzled.slf4j.Logging
 
 import scala.collection.mutable
@@ -30,17 +29,17 @@ class SequentialEngine extends Engine with Logging {
     this.similarityListener = listenerRef
   }
 
-  def getImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[Image] = {
+  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {
     debug(s"Looking for images in directory: $directoryPath")
-    val images:mutable.MutableList[Image] = new mutable.MutableList[Image]()
+    val images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
     val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
-    val directory:File = new File(directoryPath)
+    val directory: File = new File(directoryPath)
     var count = 0
     for (file <- imageFiles) {
       count += 1
       if (count % 25 == 0) {
         //info(s"Processed ${count}/${imageFiles.size}")
-        processedListener ! ScannedFileCount(count,imageFiles.size)
+        processedListener ! ScannedFileCount(count, imageFiles.size)
       }
       val image = ImageService.getImage(file)
       if (image != null) {
@@ -50,7 +49,7 @@ class SequentialEngine extends Engine with Logging {
     images.toList
   }
 
-  def getSimilarImagesForDirectory(directoryPath:String, recursive:Boolean=false, recursiveDepth:Int=500):List[SimilarImages] = {
+  def getSimilarImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
     val images = getImagesForDirectory(directoryPath, recursive, recursiveDepth)
     info(s"Searching ${images.length} images for similarities")
@@ -61,9 +60,9 @@ class SequentialEngine extends Engine with Logging {
     for (rootImage <- images) {
       if (!ignoreSet.contains(rootImage)) {
         if (processedCount % 25 == 0) {
-            //info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length -
-            //    processedCount} images to go")
-            similarityListener ! ScannedFileCount(processedCount,images.length-ignoreSet.size)
+          //info(s"Processed ${processedCount}/${images.length - ignoreSet.size} About ${images.length -
+          //    processedCount} images to go")
+          similarityListener ! ScannedFileCount(processedCount, images.length - ignoreSet.size)
         }
         debug(s"Looking for images similar to: ${rootImage.imagePath}")
         ignoreSet += rootImage

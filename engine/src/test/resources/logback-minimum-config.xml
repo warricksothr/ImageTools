@@ -3,9 +3,9 @@
   <appender name="DL" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <File>ImageTools.debug</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>DEBUG</level>
     </filter>
@@ -20,9 +20,9 @@
   <appender name="IL" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <File>ImageTools.info</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
@@ -37,9 +37,9 @@
   <appender name="EL" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <File>ImageTools.err</File>
     <encoder>
-	  <withJansi>false</withJansi>
+      <withJansi>false</withJansi>
       <pattern>[%.16thread] [%date{yy-MM-dd HH:mm:ss}] %-5level [%c{16}] - %message%n</pattern>
-	</encoder>
+    </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>ERROR</level>
     </filter>

@@ -5,92 +5,116 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane fx:id="rootPane" minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sothr.imagetools.ui.controller.AppController">
+<AnchorPane fx:id="rootPane" minHeight="600.0" minWidth="1024.0" prefHeight="600.0" prefWidth="1024.0"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.sothr.imagetools.ui.controller.AppController">
   <children>
-    <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="30.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar fx:id="rootMenuBar" minWidth="-Infinity" prefHeight="30.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0"
+             AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem fx:id="" mnemonicParsing="false" onAction="#closeAction" text="Close" />
+            <MenuItem fx:id="" mnemonicParsing="false" onAction="#closeAction" text="Close"/>
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Settings" />
+            <MenuItem mnemonicParsing="false" text="Settings"/>
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#aboutAction" text="About" />
-            <MenuItem mnemonicParsing="false" onAction="#helpAction" text="Help Site" />
+            <MenuItem mnemonicParsing="false" onAction="#aboutAction" text="About"/>
+            <MenuItem mnemonicParsing="false" onAction="#helpAction" text="Help Site"/>
           </items>
         </Menu>
       </menus>
     </MenuBar>
-    <VBox id="VBox" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+    <VBox id="VBox" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
       <children>
-        <SplitPane dividerPositions="0.2181996086105675" focusTraversable="true" prefHeight="569.0" prefWidth="1024.0" visible="true" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.2181996086105675" focusTraversable="true" prefHeight="569.0" prefWidth="1024.0"
+                   visible="true" VBox.vgrow="ALWAYS">
           <items>
-            <TabPane maxWidth="220.0" minHeight="0.0" minWidth="220.0" prefHeight="567.0" prefWidth="220.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane maxWidth="220.0" minHeight="0.0" minWidth="220.0" prefHeight="567.0" prefWidth="220.0"
+                     tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab closable="false" text="Folders">
-                           <content>
-                              <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="200.0">
-                                 <top>
-                        <Button maxWidth="1.7976931348623157E308" minWidth="200.0" mnemonicParsing="false" onAction="#browseFolders" text="Browse" BorderPane.alignment="CENTER" />
-                                 </top>
-                                 <center>
-                                    <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                                       <children>
-                              <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="210.0" text="Selected Folder:">
-                                             <padding>
-                                                <Insets left="5.0" right="5.0" />
-                                             </padding>
-                                          </Label>
-                              <Label fx:id="selectedDirectoryLabel" alignment="TOP_LEFT" lineSpacing="2.0" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefWidth="210.0" text="&lt;SELECTED&gt;" wrapText="true">
-                                <font>
-                                  <Font name="System Bold" size="12.0" />
-                                </font>
-                                             <padding>
-                                                <Insets left="5.0" right="5.0" />
-                                             </padding>
-                              </Label>
-                                       </children>
-                                    </FlowPane>
-                                 </center>
-                                 <bottom>
-                                    <FlowPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="60.0" prefWidth="220.0" BorderPane.alignment="CENTER">
-                                       <children>
-                              <Button maxWidth="1.7976931348623157E308" minWidth="220.0" mnemonicParsing="false" onAction="#showAllImages" text="Show All Images">
-                                             <FlowPane.margin>
-                                                <Insets bottom="5.0" />
-                                             </FlowPane.margin>
-                                          </Button>
-                              <Button maxWidth="200.0" minWidth="220.0" mnemonicParsing="false" onAction="#showSimilarImages" text="Show Similar Images" />
-                                       </children>
-                                    </FlowPane>
-                                 </bottom>
-                                 <padding>
-                                    <Insets bottom="5.0" top="5.0" />
-                                 </padding>
-                              </BorderPane>
-                           </content>
+                  <content>
+                    <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="200.0"
+                                prefWidth="200.0">
+                      <top>
+                        <Button maxWidth="1.7976931348623157E308" minWidth="200.0" mnemonicParsing="false"
+                                onAction="#browseFolders" text="Browse" BorderPane.alignment="CENTER"/>
+                      </top>
+                      <center>
+                        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                          <children>
+                            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="210.0"
+                                   text="Selected Folder:">
+                              <padding>
+                                <Insets left="5.0" right="5.0"/>
+                              </padding>
+                            </Label>
+                            <Label fx:id="selectedDirectoryLabel" alignment="TOP_LEFT" lineSpacing="2.0"
+                                   maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0"
+                                   prefWidth="210.0" text="&lt;SELECTED&gt;" wrapText="true">
+                              <font>
+                                <Font name="System Bold" size="12.0"/>
+                              </font>
+                              <padding>
+                                <Insets left="5.0" right="5.0"/>
+                              </padding>
+                            </Label>
+                          </children>
+                        </FlowPane>
+                      </center>
+                      <bottom>
+                        <FlowPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="60.0"
+                                  prefWidth="220.0" BorderPane.alignment="CENTER">
+                          <children>
+                            <Button maxWidth="1.7976931348623157E308" minWidth="220.0" mnemonicParsing="false"
+                                    onAction="#showAllImages" text="Show All Images">
+                              <FlowPane.margin>
+                                <Insets bottom="5.0"/>
+                              </FlowPane.margin>
+                            </Button>
+                            <Button maxWidth="200.0" minWidth="220.0" mnemonicParsing="false"
+                                    onAction="#showSimilarImages" text="Show Similar Images"/>
+                          </children>
+                        </FlowPane>
+                      </bottom>
+                      <padding>
+                        <Insets bottom="5.0" top="5.0"/>
+                      </padding>
+                    </BorderPane>
+                  </content>
                 </Tab>
                 <Tab text="Tags">
                   <content>
                     <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                       <children>
-                        <AnchorPane id="AnchorPane" maxHeight="50.0" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                        <AnchorPane id="AnchorPane" maxHeight="50.0" prefHeight="50.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                           <children>
-                            <TextField layoutY="0.0" prefWidth="200.0" text="" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
-                            <Button layoutY="27.0" mnemonicParsing="false" prefWidth="192.0" text="Filter" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                            <TextField layoutY="0.0" prefWidth="200.0" text="" AnchorPane.leftAnchor="20.0"
+                                       AnchorPane.rightAnchor="20.0"/>
+                            <Button layoutY="27.0" mnemonicParsing="false" prefWidth="192.0" text="Filter"
+                                    AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0"/>
                           </children>
                         </AnchorPane>
-                            <ListView fx:id="tagListView" prefHeight="385.0" prefWidth="198.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
-                        <AnchorPane id="AnchorPane" prefWidth="192.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                        <ListView fx:id="tagListView" prefHeight="385.0" prefWidth="198.0"
+                                  AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0"
+                                  AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0"/>
+                        <AnchorPane id="AnchorPane" prefWidth="192.0" AnchorPane.bottomAnchor="5.0"
+                                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                           <children>
-                            <Button layoutY="2.0" mnemonicParsing="false" prefWidth="192.0" text="View All Images In Tags" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
-                            <Button layoutY="28.0" mnemonicParsing="false" prefWidth="192.0" text="Search For Similarities In Tags" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                            <Button layoutY="2.0" mnemonicParsing="false" prefWidth="192.0"
+                                    text="View All Images In Tags" AnchorPane.leftAnchor="20.0"
+                                    AnchorPane.rightAnchor="20.0"/>
+                            <Button layoutY="28.0" mnemonicParsing="false" prefWidth="192.0"
+                                    text="Search For Similarities In Tags" AnchorPane.leftAnchor="20.0"
+                                    AnchorPane.rightAnchor="20.0"/>
                           </children>
                         </AnchorPane>
                       </children>
@@ -103,20 +127,25 @@
               <children>
                 <ToolBar maxHeight="30.0" minHeight="30.0" prefHeight="30.0" VBox.vgrow="ALWAYS">
                   <items>
-                    <Label text="Currect Directory:" />
-                    <Separator orientation="VERTICAL" prefHeight="200.0" />
-                    <Label text="&lt;CURRENT DIRECTORY&gt;" />
+                    <Label text="Currect Directory:"/>
+                    <Separator orientation="VERTICAL" prefHeight="200.0"/>
+                    <Label text="&lt;CURRENT DIRECTORY&gt;"/>
                   </items>
                   <VBox.margin>
-                    <Insets bottom="-5.0" />
+                    <Insets bottom="-5.0"/>
                   </VBox.margin>
                 </ToolBar>
-                <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" minWidth="600.0" pannable="false" prefViewportHeight="567.0" prefViewportWidth="766.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" minWidth="600.0" pannable="false"
+                            prefViewportHeight="567.0" prefViewportWidth="766.0" vbarPolicy="AS_NEEDED"
+                            VBox.vgrow="ALWAYS">
                   <content>
-                    <TilePane fx:id="imageTilePane" hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefColumns="6" prefHeight="-1.0" prefTileHeight="160.0" prefTileWidth="160.0" prefWidth="-1.0" tileAlignment="TOP_LEFT" vgap="5.0" />
+                    <TilePane fx:id="imageTilePane" hgap="5.0" maxHeight="1.7976931348623157E308"
+                              maxWidth="1.7976931348623157E308" minWidth="-1.0" prefColumns="6" prefHeight="-1.0"
+                              prefTileHeight="160.0" prefTileWidth="160.0" prefWidth="-1.0" tileAlignment="TOP_LEFT"
+                              vgap="5.0"/>
                   </content>
                   <VBox.margin>
-                    <Insets />
+                    <Insets/>
                   </VBox.margin>
                 </ScrollPane>
               </children>
@@ -125,13 +154,14 @@
         </SplitPane>
       </children>
     </VBox>
-    <ToolBar maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" orientation="HORIZONTAL" prefHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+    <ToolBar maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" orientation="HORIZONTAL"
+             prefHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <items>
-        <Label text="Progress:" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" />
-        <ProgressBar prefWidth="200.0" progress="0.0" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" />
-        <Label text="&lt;PROGRESS INFORMATION&gt;" />
+        <Label text="Progress:"/>
+        <Separator orientation="VERTICAL" prefHeight="200.0"/>
+        <ProgressBar prefWidth="200.0" progress="0.0"/>
+        <Separator orientation="VERTICAL" prefHeight="200.0"/>
+        <Label text="&lt;PROGRESS INFORMATION&gt;"/>
       </items>
     </ToolBar>
   </children>

@@ -37,53 +37,59 @@ public class AppConfig {
 
   // The Main App
   private static Stage primaryStage = null;
-  public static Stage getPrimaryStage() { return primaryStage; }
-  public static void setPrimaryStage(Stage newPrimaryStage) { primaryStage = newPrimaryStage; }
+
+  public static Stage getPrimaryStage() {
+    return primaryStage;
+  }
+
+  public static void setPrimaryStage(Stage newPrimaryStage) {
+    primaryStage = newPrimaryStage;
+  }
 
   public static ActorSystem getAppActorSystem() {
     return appSystem;
   }
 
   public static void configureApp() {
-    logger = (Logger)LoggerFactory.getLogger(AppConfig.class);
+    logger = (Logger) LoggerFactory.getLogger(AppConfig.class);
     loadProperties();
     configLogging();
     configCache();
   }
 
-   private static void configLogging(String location) {
+  private static void configLogging(String location) {
     //Logging Config
     //remove previous configuration if it exists
-    Logger rootLogger = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     LoggerContext context = rootLogger.getLoggerContext();
     context.reset();
     File file = new File(location);
     Boolean fromFile = false;
     if (file.exists()) {
-        fromFile = true;
-        try {
-          JoranConfigurator configurator = new JoranConfigurator();
-          configurator.setContext(context);
-          // Call context.reset() to clear any previous configuration, e.g. default 
-          // configuration. For multi-step configuration, omit calling context.reset().
-          context.reset(); 
-          configurator.doConfigure(location);
-        } catch (JoranException je) {
-          // StatusPrinter will handle this
-        }
-        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+      fromFile = true;
+      try {
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(context);
+        // Call context.reset() to clear any previous configuration, e.g. default
+        // configuration. For multi-step configuration, omit calling context.reset().
+        context.reset();
+        configurator.doConfigure(location);
+      } catch (JoranException je) {
+        // StatusPrinter will handle this
+      }
+      StatusPrinter.printInCaseOfErrorsOrWarnings(context);
     } else {
-        try {
-          JoranConfigurator configurator = new JoranConfigurator();
-          configurator.setContext(context);
-          // Call context.reset() to clear any previous configuration, e.g. default 
-          // configuration. For multi-step configuration, omit calling context.reset().
-          context.reset();
-          configurator.doConfigure(ResourceLoader.get().getResourceStream("logback-minimum-config.xml"));
-        } catch (JoranException je) {
-          // StatusPrinter will handle this
-        }
-        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+      try {
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(context);
+        // Call context.reset() to clear any previous configuration, e.g. default
+        // configuration. For multi-step configuration, omit calling context.reset().
+        context.reset();
+        configurator.doConfigure(ResourceLoader.get().getResourceStream("logback-minimum-config.xml"));
+      } catch (JoranException je) {
+        // StatusPrinter will handle this
+      }
+      StatusPrinter.printInCaseOfErrorsOrWarnings(context);
     }
     String message = fromFile ? "From File" : "From Defaults";
     logger.info(String.format("Configured Logger %s", message));

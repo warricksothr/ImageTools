@@ -39,8 +39,8 @@ class AppCLI {
         AppConfig.shutdown();
       }
       System.exit(0);
-    }  catch (Exception ex) {
-      logger.error("Unhandled exception in AppCLI",ex);
+    } catch (Exception ex) {
+      logger.error("Unhandled exception in AppCLI", ex);
     }
   }
 
@@ -97,7 +97,7 @@ class AppCLI {
         Boolean recursive = false;
         Integer recursiveDepth = 500;
         if (cmd.hasOption('r')) {
-            recursive = true;
+          recursive = true;
         }
         if (cmd.hasOption('d')) {
           recursiveDepth = Integer.parseInt(cmd.getOptionValue('d'));
