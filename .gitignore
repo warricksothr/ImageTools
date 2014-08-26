@@ -29,9 +29,9 @@ target/
 /version.info
 
 # Image Tools Log Files
-/*.debug*
-/*.info*
-/*.err*
+ImageTools.debug*
+ImageTools.info*
+ImageTools.err*
 
 #POM versions backup
 *.versionsBackup
@@ -41,4 +41,4 @@ target/
 
 #Root Config Files
 /user.conf
-i/logback.xml
+/logback.xml
