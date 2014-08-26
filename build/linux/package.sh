@@ -4,14 +4,14 @@ cd ../..
 
 packageProject ()
 {
-    VERSION=$1
+    local LOCAL_VERSION=$1
     RELEASE=$3
     ROOT=$PWD
     cd $2
 
     #Getting variables that are produced by the script
     NAME=$(head -1 ./name.info)
-    PACKAGENAME=$NAME-$VERSION
+    PACKAGENAME=$NAME-$LOCAL_VERSION
     PACKAGETAR=$PACKAGENAME.tar.gz
     PACKAGEZIP=$PACKAGENAME.zip
     TARGET=$PWD/target
@@ -31,7 +31,7 @@ packageProject ()
 }
 
 #Getting variables that are produced by the script
-VERSION=$(head -1 ./version.info)
+VERSIONSTRING=$(head -1 ./version.info)
 RELEASE="$PWD/target"
 
 #make sure release exists and is empty
@@ -40,6 +40,6 @@ if [ -d $RELEASE ]; then
 fi
 mkdir $RELEASE
 
-packageProject $VERSION "./cli" $RELEASE
-packageProject $VERSION "./gui" $RELEASE
-#packageProject $VERSION "./daemon" $RELEASE
+packageProject $VERSIONSTRING "./cli" $RELEASE
+packageProject $VERSIONSTRING "./gui" $RELEASE
+#packageProject $VERSIONSTRING "./daemon" $RELEASE

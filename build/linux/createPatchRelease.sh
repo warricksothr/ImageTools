@@ -22,6 +22,8 @@ mvn versions:set -DnewVersion=$VERSION
 cd $HOME
 . createBuildRelease.sh
 
+echo $VERSION
+
 #commit the new patch version
 git commit -a -m "Creating patch version $VERSION"
 
