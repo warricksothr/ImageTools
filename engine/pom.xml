@@ -11,7 +11,7 @@
 
   <groupId>com.sothr.imagetools</groupId>
   <artifactId>ImageTools-Engine</artifactId>
-  <version>0.1.1-DEV</version>
+  <version>0.1.2</version>
   <packaging>jar</packaging>
 
   <name>Image-Tools-Engine</name>
@@ -194,6 +194,7 @@
                   <fileset dir="${basedir}/src/main/resources/hibernate" includes="**/*" />
                 </copy>
                 <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE" overwrite="true" />          
+                <copy file="${project.build.directory}/version.info" toFile="${basedir}/../version.info" overwrite="true" />          
               </tasks>
             </configuration>
             <goals>

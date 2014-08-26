@@ -11,7 +11,7 @@
 
   <groupId>com.sothr.imagetools</groupId>
   <artifactId>ImageTools-GUI</artifactId>
-  <version>0.1.0-DEV</version>
+  <version>0.1.0</version>
   <packaging>jar</packaging>
 
   <name>Image-Tools-GUI</name>

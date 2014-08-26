@@ -21,7 +21,7 @@
   </pluginRepositories>
 
   <properties>
-    <imagetools.engine.version>0.1.1-DEV</imagetools.engine.version>
+    <imagetools.engine.version>0.1.2</imagetools.engine.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.version>1.8</jdk.version>
     <scala.binary.version>2.11</scala.binary.version>
