@@ -1,6 +1,6 @@
-ImageTools v0.1.0-DEV
+ImageTools v${project.version}
 ==========
-http://imagetools.sothr.com
+${project.url}
 ----------
 
 Management application for image collections.

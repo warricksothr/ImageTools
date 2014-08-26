@@ -92,7 +92,6 @@
                 <copy file="${project.build.directory}/version.info" toFile="${basedir}/version.info" overwrite="true" />          
                 <copy file="${project.build.directory}/name.info" toFile="${basedir}/name.info" overwrite="true" />          
                 <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE" overwrite="true" />          
-                <copy file="${project.build.directory}/README.md" toFile="${basedir}/README.md" overwrite="true" />
                 <chmod file="${project.build.directory}/startCLI.sh" perm="755"/>
               </tasks>
             </configuration>
