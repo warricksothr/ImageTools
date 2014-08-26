@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.sothr.imagetools</groupId>
+    <artifactId>Parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../parent</relativePath>
+  </parent>
+
+  <groupId>com.sothr.imagetools</groupId>
+  <artifactId>ImageTools-CLI</artifactId>
+  <version>0.1.0-DEV</version>
+  <packaging>jar</packaging>
+
+  <name>Image-Tools-CLI</name>
+  <description>The Command Line Interface for Image-Tools</description>
+  <url>http://imagetools.sothr.com</url>
+  <organization>
+    <name>Sothr Software</name>
+  </organization>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.sothr.imagetools</groupId>
+      <artifactId>ImageTools-Engine</artifactId>
+    </dependency>
+    <dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-access</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.clapper</groupId>
+      <artifactId>grizzled-slf4j_${scala.binary.version}</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Packaging Configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <classpathPrefix>lib/</classpathPrefix>
+                  <mainClass>com.sothr.imagetools.AppCLI</mainClass>
+                </manifest>
+              </archive>
+              <outputDirectory>
+                ${project.build.directory}/release
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>    
+        <artifactId>maven-antrun-plugin</artifactId>    
+        <version>1.4</version>    
+        <executions>      
+          <execution>
+            <id>prepare</id>
+            <phase>process-resources</phase>        
+            <configuration>          
+              <tasks>
+                <copy file="${project.build.directory}/version.info" toFile="${basedir}/version.info" overwrite="true" />          
+                <copy file="${project.build.directory}/name.info" toFile="${basedir}/name.info" overwrite="true" />          
+                <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE" overwrite="true" />          
+                <copy file="${project.build.directory}/README.md" toFile="${basedir}/README.md" overwrite="true" />
+                <chmod file="${project.build.directory}/startCLI.sh" perm="755"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <!-- set permissions on run files -->
+                <chmod file="${project.build.directory}/release/startCLI.sh" perm="755"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions> 
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
