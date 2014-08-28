@@ -1,20 +1,28 @@
 package com.sothr.imagetools.ui.controller
 
 import java.io.{File, IOException}
-import java.util
+import java.util.ArrayList
 import java.util.Scanner
+import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
+import javafx.scene.control.{Label, ProgressBar}
 import javafx.scene.text.{Text, TextAlignment}
 import javafx.scene.web.WebView
 import javafx.scene.{Group, Node, Scene}
 import javafx.stage.{DirectoryChooser, Stage, StageStyle}
 
+import akka.actor._
+import com.sothr.imagetools.engine.image.{SimilarImages, Image}
 import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
-import com.sothr.imagetools.engine.{ConcurrentEngine, Engine}
+import com.sothr.imagetools.engine._
 import com.sothr.imagetools.ui.component.ImageTileFactory
 import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
+
+import scala.concurrent._
+import scala.util.{Failure, Success}
+import ExecutionContext.Implicits.global
 
 /**
  * Main Application controller
@@ -31,6 +39,10 @@ class AppController extends Logging {
 
   // Labels
   @FXML var selectedDirectoryLabel: javafx.scene.control.Label = null
+  @FXML var progressLabel: javafx.scene.control.Label = null
+
+  // Others
+  @FXML var progressBar: javafx.scene.control.ProgressBar = null
 
   // Engine
   val engine: Engine = new ConcurrentEngine()
@@ -42,6 +54,18 @@ class AppController extends Logging {
     if (PropertiesService.has("lastPath")) {
       currentDirectory = PropertiesService.get("lastPath", ".")
       selectedDirectoryLabel.setText(PropertiesService.get("lastPath", ""))
+
+      //setup the engine listener
+      val system: ActorSystem = AppConfig.getAppActorSystem
+      val guiListenerProps: Props = Props.create(classOf[GUIEngineListener])
+      val guiListener: ActorRef = system.actorOf(guiListenerProps)
+      // configure the listener
+      guiListener ! SetupListener(progressBar, progressLabel)
+      // tell the engine to use our listener
+      this.engine.setProcessedListener(guiListener)
+      this.engine.setSimilarityListener(guiListener)
+      // Initialize the progress label
+      guiListener ! SubmitMessage("Initialized System... Ready!")
     }
 
     //test
@@ -95,6 +119,10 @@ class AppController extends Logging {
     stage.close()
   }
 
+  //endregion
+
+  //region buttons
+
   @FXML
   def browseFolders(event: ActionEvent) = {
     val chooser = new DirectoryChooser()
@@ -113,24 +141,51 @@ class AppController extends Logging {
 
   @FXML
   def showAllImages(event: ActionEvent) = {
-    imageTilePane.getChildren.setAll(new util.ArrayList[Node]())
-    val images = engine.getImagesForDirectory(currentDirectory)
-    info(s"Displaying ${images.length} images")
-    for (image <- images) {
-      debug(s"Adding image ${image.toString} to app")
-      imageTilePane.getChildren.add(ImageTileFactory.get(image))
+    imageTilePane.getChildren.setAll(new ArrayList[Node]())
+    val f: Future[List[Image]] = Future {
+      engine.getImagesForDirectory(currentDirectory)
+    }
+
+    f onComplete {
+      case Success(images) =>
+        info(s"Displaying ${images.length} images")
+        // This is used so that JavaFX updates on the proper thread
+        // This is important since UI updates can only happen on that thread
+        Platform.runLater(new Runnable() {
+          override def run() {
+            for (image <- images) {
+              debug(s"Adding image ${image.toString} to app")
+              imageTilePane.getChildren.add(ImageTileFactory.get(image))
+            }
+          }
+        })
+      case Failure(t) =>
+        error("An Error Occurred", t)
     }
   }
 
   @FXML
   def showSimilarImages(event: ActionEvent) = {
-    imageTilePane.getChildren.setAll(new util.ArrayList[Node]())
-    val similarImages = engine.getSimilarImagesForDirectory(currentDirectory)
-    info(s"Displaying ${similarImages.length} similar images")
-    for (similarImage <- similarImages) {
-      debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
-      imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage))
-      similarImage.similarImages.foreach(image => imageTilePane.getChildren.add(ImageTileFactory.get(image)))
+    imageTilePane.getChildren.setAll(new ArrayList[Node]())
+
+    val f: Future[List[SimilarImages]] = Future {
+      engine.getSimilarImagesForDirectory(currentDirectory)
+    }
+
+    f onComplete {
+      case Success(similarImages) =>
+        info(s"Displaying ${similarImages.length} similar images")
+        Platform.runLater(new Runnable() {
+          override def run() {
+            for (similarImage <- similarImages) {
+              debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
+              imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage))
+              similarImage.similarImages.foreach(image => imageTilePane.getChildren.add(ImageTileFactory.get(image)))
+            }
+          }
+        })
+      case Failure(t) =>
+        error("An Error Occurred", t)
     }
   }
 
@@ -232,3 +287,71 @@ class AppController extends Logging {
     "This method works"
   }
 }
+
+//region EngineListener
+case class SetupListener(progressBar: ProgressBar, progressLabel: Label)
+
+/**
+ * Actor for logging output information
+ */
+class GUIEngineListener extends EngineListener with ActorLogging {
+  var progressBar: javafx.scene.control.ProgressBar = null
+  var progressLabel: javafx.scene.control.Label = null
+
+  var isStarted = false
+  var isFinished = false
+
+  override def receive: Actor.Receive = {
+    case command: SetupListener => setupListener(command)
+    case command: SubmitMessage => handleMessage(command)
+    case command: ScannedFileCount => handleScannedFileCount(command)
+    case command: ComparedFileCount => handleComparedFileCount(command)
+    case _ => log.info("received unknown message")
+  }
+
+  def setupListener(command: SetupListener) = {
+    this.progressBar = command.progressBar
+    this.progressLabel = command.progressLabel
+  }
+
+  override def handleComparedFileCount(command: ComparedFileCount): Unit = {
+    Platform.runLater(new Runnable() {
+      override def run(): Unit = {
+        if (command.message != null) {
+          log.debug(command.message)
+          progressLabel.setText(command.message)
+        } else {
+          progressLabel.setText(s"Processed ${command.count}/${command.total}")
+        }
+        log.debug("Processed {}/{}", command.count, command.total)
+        progressBar.setProgress(command.count.toFloat/command.total)
+      }
+    })
+  }
+
+  override def handleScannedFileCount(command: ScannedFileCount): Unit = {
+    Platform.runLater(new Runnable() {
+      override def run(): Unit = {
+        if (command.message != null) {
+          log.debug(command.message)
+          progressLabel.setText(command.message)
+        } else {
+          progressLabel.setText(s"Scanned ${command.count}/${command.total} For Similarities")
+        }
+        log.debug("Scanned {}/{} For Similarities", command.count, command.total)
+        progressBar.setProgress(command.count.toFloat/command.total)
+      }
+    })
+  }
+
+  override def handleMessage(command: SubmitMessage): Unit = {
+    Platform.runLater(new Runnable() {
+      override def run(): Unit = {
+        log.debug(command.message)
+        progressLabel.setText(command.message)
+      }
+    })
+  }
+}
+
+//endregion
