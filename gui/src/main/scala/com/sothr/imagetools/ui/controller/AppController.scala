@@ -17,7 +17,7 @@ import akka.actor._
 import com.sothr.imagetools.engine._
 import com.sothr.imagetools.engine.image.{Image, SimilarImages}
 import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
-import com.sothr.imagetools.ui.component.ImageTileFactory
+import com.sothr.imagetools.ui.component.{ImageTilePane, ImageTileFactory}
 import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
 
@@ -36,6 +36,7 @@ class AppController extends Logging {
   //Define controls
   @FXML var rootPane: AnchorPane = null
   @FXML var rootMenuBar: MenuBar = null
+  @FXML var scrollPane: ScrollPane = null
   @FXML var imageTilePane: TilePane = null
   @FXML var tagListView: ListView[String] = null
 
@@ -76,7 +77,7 @@ class AppController extends Logging {
 
     // set the default images per page if it doesn't exist yet
     if (!PropertiesService.has("app.ui.thumbsPerPage")) {
-      PropertiesService.set("app.ui.thumbsPerPage", "50")
+      PropertiesService.set("app.ui.thumbsPerPage", "100")
     }
 
     // configure the page factory
@@ -88,6 +89,22 @@ class AppController extends Logging {
         new VBox()
       }
     })
+
+    //override the imageTilePane
+    val newImageTilePane = new ImageTilePane()
+    newImageTilePane.setHgap(this.imageTilePane.getHgap)
+    newImageTilePane.setVgap(this.imageTilePane.getVgap)
+    newImageTilePane.setMinHeight(this.imageTilePane.getMinHeight)
+    newImageTilePane.setMinWidth(this.imageTilePane.getMinWidth)
+    newImageTilePane.setMaxHeight(this.imageTilePane.getMaxHeight)
+    newImageTilePane.setMaxWidth(this.imageTilePane.getMaxWidth)
+    newImageTilePane.setPrefColumns(this.imageTilePane.getPrefColumns)
+    newImageTilePane.setPrefRows(this.imageTilePane.getPrefRows)
+    newImageTilePane.setPrefTileHeight(this.imageTilePane.getPrefTileHeight)
+    newImageTilePane.setPrefTileWidth(this.imageTilePane.getPrefTileWidth)
+    newImageTilePane.setTileAlignment(this.imageTilePane.getTileAlignment)
+    this.scrollPane.setContent(newImageTilePane)
+    this.imageTilePane = newImageTilePane
 
     //test
     //val testImage = new Image()
@@ -225,14 +242,14 @@ class AppController extends Logging {
   def setPagesContent(images: List[Image]) = {
     this.currentImages = images
     //set the appropriate size for the pagination
-    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "50").toInt
+    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
     val pageNum = Math.ceil(this.currentImages.size.toFloat / itemsPerPage).toInt
     this.paginator.setPageCount(pageNum)
     this.paginator.setDisable(false)
   }
 
   def showPage(pageIndex: Integer) = {
-    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "50").toInt
+    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
     val startIndex = pageIndex * itemsPerPage
     val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else startIndex + itemsPerPage
     //clear and populate the scrollpane

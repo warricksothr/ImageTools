@@ -3,7 +3,7 @@ package com.sothr.imagetools.engine.util
 import java.io.{File, FileOutputStream, PrintStream}
 import java.util.Properties
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{ConfigRenderOptions, Config, ConfigFactory}
 import grizzled.slf4j.Logging
 
 /*
@@ -13,8 +13,9 @@ object PropertiesService extends Logging {
 
   private var defaultConf: Config = null
   private var userConf: Config = null
-  private var newUserConf: Properties = new Properties()
+  private val newUserConf: Properties = new Properties()
   private var version: Version = null
+  private val configRenderOptions = ConfigRenderOptions.concise().setFormatted(true)
 
   def getVersion: Version = this.version
 
@@ -90,7 +91,7 @@ object PropertiesService extends Logging {
     val out: PrintStream = new PrintStream(new FileOutputStream(location, false))
     val userConfToSave = getCleanedMergedUserConf
     //print to the output stream
-    out.print(userConfToSave.root.render)
+    out.print(userConfToSave.root().render(configRenderOptions))
     out.flush()
     out.close()
   }

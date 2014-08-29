@@ -65,7 +65,7 @@
                       <bottom>
                         <FlowPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="60.0" prefWidth="220.0" BorderPane.alignment="CENTER">
                           <children>
-                                          <CheckBox fx:id="doRecursiveProcessing" mnemonicParsing="false" text="Recursive">
+                                          <CheckBox fx:id="doRecursiveProcessing" mnemonicParsing="false" text="Recursive Search">
                                              <FlowPane.margin>
                                                 <Insets bottom="5.0" />
                                              </FlowPane.margin>
@@ -120,7 +120,7 @@
                     <Insets bottom="-5.0" />
                   </VBox.margin>
                 </ToolBar>
-                <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" minWidth="600.0" pannable="false" prefViewportHeight="567.0" prefViewportWidth="766.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                <ScrollPane id="ScrollPane" fx:id="scrollPane" fitToHeight="true" fitToWidth="true" minWidth="600.0" pannable="false" prefViewportHeight="567.0" prefViewportWidth="766.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                   <content>
                     <TilePane fx:id="imageTilePane" hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefColumns="6" prefHeight="-1.0" prefTileHeight="160.0" prefTileWidth="160.0" prefWidth="-1.0" tileAlignment="TOP_LEFT" vgap="5.0" />
                   </content>
@@ -128,7 +128,10 @@
                     <Insets />
                   </VBox.margin>
                 </ScrollPane>
-                        <Pagination fx:id="paginator" disable="true" maxHeight="40.0" maxPageIndicatorCount="30" minHeight="40.0" pageCount="1" prefHeight="30.0" />
+                        <Pagination fx:id="paginator" maxHeight="1.7976931348623157E308" maxPageIndicatorCount="9" pageCount="1">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets></Pagination>
               </children>
             </VBox>
           </items>
