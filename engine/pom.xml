@@ -9,7 +9,6 @@
     <relativePath>../parent</relativePath>
   </parent>
 
-  <groupId>com.sothr.imagetools</groupId>
   <artifactId>ImageTools-Engine</artifactId>
   <version>0.1.2</version>
   <packaging>jar</packaging>

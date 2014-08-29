@@ -234,7 +234,7 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
    */
   def checkForResults() = {
     try {
-      listener ! SubmitMessage(s"Finished Processing ${processed}/${processed} images")
+      listener ! SubmitMessage(s"Finished Processing $processed/$processed images")
       processorsFinished = 0
       toProcess = 0
       processed = 0
@@ -396,7 +396,7 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
    */
   def checkForResults() = {
     try {
-      listener ! SubmitMessage(s"Finished Scanning ${processed}/${processed} images")
+      listener ! SubmitMessage(s"Finished Scanning $processed/$processed images")
       processorsFinished = 0
       toProcess = 0
       processed = 0

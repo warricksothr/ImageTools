@@ -65,6 +65,11 @@
                       <bottom>
                         <FlowPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="60.0" prefWidth="220.0" BorderPane.alignment="CENTER">
                           <children>
+                                          <CheckBox fx:id="doRecursiveProcessing" mnemonicParsing="false" text="Recursive">
+                                             <FlowPane.margin>
+                                                <Insets bottom="5.0" />
+                                             </FlowPane.margin>
+                                          </CheckBox>
                             <Button maxWidth="1.7976931348623157E308" minWidth="220.0" mnemonicParsing="false" onAction="#showAllImages" text="Show All Images">
                               <FlowPane.margin>
                                 <Insets bottom="5.0" />

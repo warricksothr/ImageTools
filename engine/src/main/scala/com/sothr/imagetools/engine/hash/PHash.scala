@@ -4,6 +4,9 @@ import edu.emory.mathcs.jtransforms.dct.FloatDCT_2D
 import grizzled.slf4j.Logging
 
 /**
+ * Complex perceptual hash
+ * Uses FFT to get
+ *
  * Created by dev on 1/22/14.
  */
 object PHash extends PerceptualHasher with Logging {

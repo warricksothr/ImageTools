@@ -3,6 +3,9 @@ package com.sothr.imagetools.engine.hash
 import grizzled.slf4j.Logging
 
 /**
+ * Speedy AHash Perceptual Hashing
+ * Uses the average value of the pixels as a baseline
+ *
  * Created by dev on 1/22/14.
  */
 object AHash extends PerceptualHasher with Logging {

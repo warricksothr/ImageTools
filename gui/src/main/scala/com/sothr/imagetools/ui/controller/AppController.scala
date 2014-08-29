@@ -1,13 +1,12 @@
 package com.sothr.imagetools.ui.controller
 
 import java.io.{File, IOException}
-import java.util.ArrayList
 import java.util.Scanner
 import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control._
-import javafx.scene.layout.{VBox, TilePane, AnchorPane}
+import javafx.scene.layout.{AnchorPane, TilePane, VBox}
 import javafx.scene.text.{Text, TextAlignment}
 import javafx.scene.web.WebView
 import javafx.scene.{Group, Node, Scene}
@@ -15,17 +14,17 @@ import javafx.stage.{DirectoryChooser, Stage, StageStyle}
 import javafx.util.Callback
 
 import akka.actor._
+import com.sothr.imagetools.engine._
 import com.sothr.imagetools.engine.image.{Image, SimilarImages}
 import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
-import com.sothr.imagetools.engine._
 import com.sothr.imagetools.ui.component.ImageTileFactory
 import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
 
 import scala.collection.mutable
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.util.{Failure, Success}
-import ExecutionContext.Implicits.global
 
 /**
  * Main Application controller
@@ -48,6 +47,7 @@ class AppController extends Logging {
   // Others
   @FXML var progressBar: ProgressBar = null
   @FXML var paginator: Pagination = null
+  @FXML var doRecursiveProcessing: CheckBox = null
 
   // Engine
   val engine: Engine = new ConcurrentEngine()
@@ -164,9 +164,9 @@ class AppController extends Logging {
   @FXML
   def showAllImages(event: ActionEvent) = {
     resetPaginator()
-    imageTilePane.getChildren.setAll(new ArrayList[Node]())
+    imageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val f: Future[List[Image]] = Future {
-      engine.getImagesForDirectory(currentDirectory)
+      engine.getImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
     }
 
     f onComplete {
@@ -187,10 +187,10 @@ class AppController extends Logging {
   @FXML
   def showSimilarImages(event: ActionEvent) = {
     resetPaginator()
-    imageTilePane.getChildren.setAll(new ArrayList[Node]())
+    imageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
 
     val f: Future[List[SimilarImages]] = Future {
-      engine.getSimilarImagesForDirectory(currentDirectory)
+      engine.getSimilarImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
     }
 
     f onComplete {
@@ -234,9 +234,9 @@ class AppController extends Logging {
   def showPage(pageIndex: Integer) = {
     val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "50").toInt
     val startIndex = pageIndex * itemsPerPage
-    val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else (startIndex + itemsPerPage)
+    val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else startIndex + itemsPerPage
     //clear and populate the scrollpane
-    imageTilePane.getChildren.setAll(new ArrayList[Node]())
+    imageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val images = this.currentImages.slice(startIndex, endIndex)
     Platform.runLater(new Runnable() {
       override def run() {
