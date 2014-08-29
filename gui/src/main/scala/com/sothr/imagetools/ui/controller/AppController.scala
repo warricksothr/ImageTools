@@ -54,19 +54,19 @@ class AppController extends Logging {
     if (PropertiesService.has("lastPath")) {
       currentDirectory = PropertiesService.get("lastPath", ".")
       selectedDirectoryLabel.setText(PropertiesService.get("lastPath", ""))
-
-      //setup the engine listener
-      val system: ActorSystem = AppConfig.getAppActorSystem
-      val guiListenerProps: Props = Props.create(classOf[GUIEngineListener])
-      val guiListener: ActorRef = system.actorOf(guiListenerProps)
-      // configure the listener
-      guiListener ! SetupListener(progressBar, progressLabel)
-      // tell the engine to use our listener
-      this.engine.setProcessedListener(guiListener)
-      this.engine.setSimilarityListener(guiListener)
-      // Initialize the progress label
-      guiListener ! SubmitMessage("Initialized System... Ready!")
     }
+
+    //setup the engine listener
+    val system: ActorSystem = AppConfig.getAppActorSystem
+    val guiListenerProps: Props = Props.create(classOf[GUIEngineListener])
+    val guiListener: ActorRef = system.actorOf(guiListenerProps)
+    // configure the listener
+    guiListener ! SetupListener(progressBar, progressLabel)
+    // tell the engine to use our listener
+    this.engine.setProcessedListener(guiListener)
+    this.engine.setSimilarityListener(guiListener)
+    // Initialize the progress label
+    guiListener ! SubmitMessage("Initialized System... Ready!")
 
     //test
     //val testImage = new Image()
