@@ -107,9 +107,9 @@
               <children>
                 <ToolBar maxHeight="30.0" minHeight="30.0" prefHeight="30.0" VBox.vgrow="ALWAYS">
                   <items>
-                    <Label text="Currect Directory:" />
+                    <Label text="Current Directory:" />
                     <Separator orientation="VERTICAL" prefHeight="200.0" />
-                    <Label text="&lt;CURRENT DIRECTORY&gt;" />
+                    <Label fx:id="currentDirectoryLabel" text="&lt;CURRENT DIRECTORY&gt;" />
                   </items>
                   <VBox.margin>
                     <Insets bottom="-5.0" />
@@ -123,6 +123,7 @@
                     <Insets />
                   </VBox.margin>
                 </ScrollPane>
+                        <Pagination fx:id="paginator" disable="true" maxHeight="40.0" maxPageIndicatorCount="30" minHeight="40.0" pageCount="1" prefHeight="30.0" />
               </children>
             </VBox>
           </items>

@@ -6,20 +6,23 @@ import java.util.Scanner
 import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
-import javafx.scene.control.{Label, ProgressBar}
+import javafx.scene.control._
+import javafx.scene.layout.{VBox, TilePane, AnchorPane}
 import javafx.scene.text.{Text, TextAlignment}
 import javafx.scene.web.WebView
 import javafx.scene.{Group, Node, Scene}
 import javafx.stage.{DirectoryChooser, Stage, StageStyle}
+import javafx.util.Callback
 
 import akka.actor._
-import com.sothr.imagetools.engine.image.{SimilarImages, Image}
+import com.sothr.imagetools.engine.image.{Image, SimilarImages}
 import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
 import com.sothr.imagetools.engine._
 import com.sothr.imagetools.ui.component.ImageTileFactory
 import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
 
+import scala.collection.mutable
 import scala.concurrent._
 import scala.util.{Failure, Success}
 import ExecutionContext.Implicits.global
@@ -32,28 +35,31 @@ import ExecutionContext.Implicits.global
 class AppController extends Logging {
 
   //Define controls
-  @FXML var rootPane: javafx.scene.layout.AnchorPane = null
-  @FXML var rootMenuBar: javafx.scene.control.MenuBar = null
-  @FXML var imageTilePane: javafx.scene.layout.TilePane = null
-  @FXML var tagListView: javafx.scene.control.ListView[String] = null
+  @FXML var rootPane: AnchorPane = null
+  @FXML var rootMenuBar: MenuBar = null
+  @FXML var imageTilePane: TilePane = null
+  @FXML var tagListView: ListView[String] = null
 
   // Labels
-  @FXML var selectedDirectoryLabel: javafx.scene.control.Label = null
-  @FXML var progressLabel: javafx.scene.control.Label = null
+  @FXML var selectedDirectoryLabel: Label = null
+  @FXML var currentDirectoryLabel: Label = null
+  @FXML var progressLabel: Label = null
 
   // Others
-  @FXML var progressBar: javafx.scene.control.ProgressBar = null
+  @FXML var progressBar: ProgressBar = null
+  @FXML var paginator: Pagination = null
 
   // Engine
   val engine: Engine = new ConcurrentEngine()
 
   // Current State
   var currentDirectory: String = "."
+  var currentImages: List[Image] = List[Image]()
 
   @FXML def initialize() = {
-    if (PropertiesService.has("lastPath")) {
-      currentDirectory = PropertiesService.get("lastPath", ".")
-      selectedDirectoryLabel.setText(PropertiesService.get("lastPath", ""))
+    if (PropertiesService.has("app.ui.lastPath")) {
+      currentDirectory = PropertiesService.get("app.ui.lastPath", ".")
+      selectedDirectoryLabel.setText(PropertiesService.get("app.ui.lastPath", ""))
     }
 
     //setup the engine listener
@@ -67,6 +73,21 @@ class AppController extends Logging {
     this.engine.setSimilarityListener(guiListener)
     // Initialize the progress label
     guiListener ! SubmitMessage("Initialized System... Ready!")
+
+    // set the default images per page if it doesn't exist yet
+    if (!PropertiesService.has("app.ui.thumbsPerPage")) {
+      PropertiesService.set("app.ui.thumbsPerPage", "50")
+    }
+
+    // configure the page factory
+    paginator.setPageFactory(new Callback[Integer, Node]() {
+      override def call(pageIndex: Integer): Node = {
+        // do all of our display logic
+        showPage(pageIndex)
+        // override behavior to display anything
+        new VBox()
+      }
+    })
 
     //test
     //val testImage = new Image()
@@ -136,11 +157,13 @@ class AppController extends Logging {
     selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
 
     currentDirectory = selectedDirectory.getAbsolutePath
-    PropertiesService.set("lastPath", selectedDirectory.getAbsolutePath)
+    PropertiesService.set("app.ui.lastPath", selectedDirectory.getAbsolutePath)
+    this.currentDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
   }
 
   @FXML
   def showAllImages(event: ActionEvent) = {
+    resetPaginator()
     imageTilePane.getChildren.setAll(new ArrayList[Node]())
     val f: Future[List[Image]] = Future {
       engine.getImagesForDirectory(currentDirectory)
@@ -153,10 +176,7 @@ class AppController extends Logging {
         // This is important since UI updates can only happen on that thread
         Platform.runLater(new Runnable() {
           override def run() {
-            for (image <- images) {
-              debug(s"Adding image ${image.toString} to app")
-              imageTilePane.getChildren.add(ImageTileFactory.get(image))
-            }
+            setPagesContent(images)
           }
         })
       case Failure(t) =>
@@ -166,6 +186,7 @@ class AppController extends Logging {
 
   @FXML
   def showSimilarImages(event: ActionEvent) = {
+    resetPaginator()
     imageTilePane.getChildren.setAll(new ArrayList[Node]())
 
     val f: Future[List[SimilarImages]] = Future {
@@ -177,16 +198,54 @@ class AppController extends Logging {
         info(s"Displaying ${similarImages.length} similar images")
         Platform.runLater(new Runnable() {
           override def run() {
+            val tempImages = new mutable.MutableList[Image]()
             for (similarImage <- similarImages) {
               debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
+              tempImages += similarImage.rootImage
               imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage))
-              similarImage.similarImages.foreach(image => imageTilePane.getChildren.add(ImageTileFactory.get(image)))
+              similarImage.similarImages.foreach(image => tempImages += image)
             }
+            setPagesContent(tempImages.toList)
           }
         })
       case Failure(t) =>
         error("An Error Occurred", t)
     }
+  }
+
+  //endregion
+
+  //region pagination
+
+  def resetPaginator() = {
+    this.paginator.setDisable(true)
+    this.paginator.setPageCount(1)
+  }
+
+  def setPagesContent(images: List[Image]) = {
+    this.currentImages = images
+    //set the appropriate size for the pagination
+    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "50").toInt
+    val pageNum = Math.ceil(this.currentImages.size.toFloat / itemsPerPage).toInt
+    this.paginator.setPageCount(pageNum)
+    this.paginator.setDisable(false)
+  }
+
+  def showPage(pageIndex: Integer) = {
+    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "50").toInt
+    val startIndex = pageIndex * itemsPerPage
+    val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else (startIndex + itemsPerPage)
+    //clear and populate the scrollpane
+    imageTilePane.getChildren.setAll(new ArrayList[Node]())
+    val images = this.currentImages.slice(startIndex, endIndex)
+    Platform.runLater(new Runnable() {
+      override def run() {
+        for (image <- images) {
+          debug(s"Adding image ${image.toString} to app")
+          imageTilePane.getChildren.add(ImageTileFactory.get(image))
+        }
+      }
+    })
   }
 
   //endregion

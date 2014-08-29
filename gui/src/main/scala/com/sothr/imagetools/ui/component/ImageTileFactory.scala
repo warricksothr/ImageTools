@@ -1,6 +1,7 @@
 package com.sothr.imagetools.ui.component
 
-import java.io.FileInputStream
+import java.awt.Desktop
+import java.io.{File, FileInputStream}
 import javafx.event.EventHandler
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.control.{Label, Tooltip}
@@ -33,7 +34,7 @@ object ImageTileFactory extends Logging {
         if (event.isPrimaryButtonDown) {
           //double click
           if (event.getClickCount == 2) {
-
+            Desktop.getDesktop.open(new File(image.getImagePath))
           } else {
 
           }
