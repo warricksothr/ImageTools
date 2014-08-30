@@ -2,17 +2,84 @@ package com.sothr.imagetools.ui.component
 
 import java.util
 import javafx.collections.{ModifiableObservableListBase, ObservableList}
-import javafx.scene.control.MultipleSelectionModel
+import javafx.event.{ActionEvent, EventHandler}
+import javafx.geometry.Side
+import javafx.scene.control.{MenuItem, ContextMenu, MultipleSelectionModel}
+import javafx.scene.input.ContextMenuEvent
 import javafx.scene.layout._
-import javafx.scene.paint.{Color, Paint}
+import javafx.scene.paint.Color
+import javafx.scene.Node
+
+import grizzled.slf4j.Logging
 
 /**
  * Custom Tile Pane with a multi selection model
  *
  * Created by drew on 8/29/14.
  */
-class ImageTilePane extends TilePane {
+class ImageTilePane extends TilePane with Logging {
   val selectionModel = new ImageTilePaneSelectionModel(this)
+
+  //this.setOnContextMenuRequested(new EventHandler[ContextMenuEvent] {
+  //  override def handle(event: ContextMenuEvent): Unit = {
+  //    handleContextMenu(event)
+  //  }
+  //})
+
+  def handleContextMenu(event: ContextMenuEvent) = {
+    //Build and show a context menu
+    debug("Context Menu Request Received")
+    val numSelected = this.selectionModel.getSelectedIndices.size()
+    if (numSelected > 0) {
+      if (numSelected == 1) {
+        val contextMenu = getSingleSelectionContextMenu
+        debug("Showing context menu")
+        contextMenu.show(event.getTarget.asInstanceOf[Node],Side.RIGHT,0d,0d)
+      } else {
+        val contextMenu = getMulipleSelectionContextMenu
+        debug("Showing context menu")
+        contextMenu.show(event.getTarget.asInstanceOf[Node],Side.RIGHT,0d,0d)
+      }
+    }
+  }
+
+  def getSingleSelectionContextMenu : ContextMenu = {
+    debug("Building single-selection context menu")
+    val contextMenu = new ContextMenu()
+    val item1 = new MenuItem("Single Selection")
+    item1.setOnAction(new EventHandler[ActionEvent]() {
+      def handle(e: ActionEvent) = {
+        debug("Single Selection")
+      }
+    })
+    val item2 = new MenuItem("BlahBlah")
+    item2.setOnAction(new EventHandler[ActionEvent]() {
+      def handle(e: ActionEvent) = {
+        debug("BlahBlah")
+      }
+    })
+    contextMenu.getItems.addAll(item1, item2)
+    contextMenu
+  }
+
+  def getMulipleSelectionContextMenu : ContextMenu = {
+    debug("Building multi-selection context menu")
+    val contextMenu = new ContextMenu()
+    val item1 = new MenuItem("Multi Selection")
+    item1.setOnAction(new EventHandler[ActionEvent]() {
+      def handle(e: ActionEvent) = {
+        debug("Multi Selection")
+      }
+    })
+    val item2 = new MenuItem("BlahBlah")
+    item2.setOnAction(new EventHandler[ActionEvent]() {
+      def handle(e: ActionEvent) = {
+        debug("BlahBlah")
+      }
+    })
+    contextMenu.getItems.addAll(item1, item2)
+    contextMenu
+  }
 
   def imageSelected(imageTile: ImageTile) = {
     this.selectionModel.clearAndSelect(this.getChildren.indexOf(imageTile))
@@ -132,7 +199,7 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     this.selectedIndexes.contains(index)
   }
 
-  private def clearSelectionFormatting = {
+  private def clearSelectionFormatting() = {
     val iterator = this.parentTilePane.getChildren.iterator()
     while (iterator.hasNext) {
       //remove the selection styling

@@ -1,11 +1,11 @@
 package com.sothr.imagetools.ui.component
 
 import java.io.FileInputStream
-import javafx.event.EventHandler
+import javafx.event.{EventType, EventHandler}
 import javafx.geometry.{Orientation, Insets, Pos}
 import javafx.scene.control.{Separator, Tooltip, Label}
 import javafx.scene.image.{ImageView}
-import javafx.scene.input.MouseEvent
+import javafx.scene.input.{PickResult, ContextMenuEvent, MouseEvent}
 import javafx.scene.layout.VBox
 
 import grizzled.slf4j.Logging
@@ -51,6 +51,16 @@ class ImageTile(thumbnailWidth: Integer,
           }
         } else if (event.isSecondaryButtonDown) {
           //right click context menu
+          debug("Requesting Context Menu")
+          val contextMenuEvent = new ContextMenuEvent(
+            thisTile,
+            thisTile,
+            ContextMenuEvent.CONTEXT_MENU_REQUESTED,
+            event.getX, event.getY,
+            event.getScreenX, event.getScreenY,
+            false,
+            new PickResult(thisTile, event.getSceneX, event.getSceneY))
+          imageTilePane.handleContextMenu(contextMenuEvent)
         }
       }
     }
@@ -93,6 +103,12 @@ class ImageTile(thumbnailWidth: Integer,
   tooltip.setText(s"${image.getName}")
   imageLabel.setTooltip(tooltip)
   this.getChildren.add(imageLabel)
+
+  //this.setOnContextMenuRequested(new EventHandler[ContextMenuEvent] {
+  //  override def handle(event: ContextMenuEvent): Unit = {
+  //    imageTilePane.handleContextMenu(event)
+  //  }
+  //})
 
   def getImageData: com.sothr.imagetools.engine.image.Image = {
     imageData
