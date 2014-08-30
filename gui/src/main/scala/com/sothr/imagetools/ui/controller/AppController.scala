@@ -240,7 +240,7 @@ class AppController extends Logging {
   }
 
   def setPagesContent(images: List[Image]) = {
-    this.currentImages = images
+    this.currentImages = images.sortBy(_.imageName)
     //set the appropriate size for the pagination
     val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
     val pageNum = Math.ceil(this.currentImages.size.toFloat / itemsPerPage).toInt
