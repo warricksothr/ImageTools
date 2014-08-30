@@ -128,7 +128,7 @@
                     <Insets />
                   </VBox.margin>
                 </ScrollPane>
-                        <Pagination fx:id="paginator" maxHeight="1.7976931348623157E308" maxPageIndicatorCount="9" pageCount="1">
+                        <Pagination fx:id="paginator" disable="true" maxHeight="40.0" maxPageIndicatorCount="9" maxWidth="1.7976931348623157E308" minHeight="40.0" pageCount="1" prefHeight="40.0">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets></Pagination>

@@ -91,6 +91,7 @@ class AppController extends Logging {
     })
 
     //override the imageTilePane
+    debug("Replacing the default TilePane with a custom ImageTilePane")
     val newImageTilePane = new ImageTilePane()
     newImageTilePane.setHgap(this.imageTilePane.getHgap)
     newImageTilePane.setVgap(this.imageTilePane.getVgap)
@@ -103,6 +104,7 @@ class AppController extends Logging {
     //newImageTilePane.setPrefTileHeight(this.imageTilePane.getPrefTileHeight)
     //newImageTilePane.setPrefTileWidth(this.imageTilePane.getPrefTileWidth)
     newImageTilePane.setTileAlignment(this.imageTilePane.getTileAlignment)
+    debug("Assigning the the new ImageTilePane to the ScrollPane")
     this.scrollPane.setContent(newImageTilePane)
     this.imageTilePane = newImageTilePane
 
@@ -110,9 +112,12 @@ class AppController extends Logging {
     //val testImage = new Image()
     //testImage.setThumbnailPath("test.jpg")
     //testImage.setImagePath("test.jpg")
+    //val testImageList = new mutable.MutableList[Image]
     //for (i <- 1 to 100) {
-    //  imageTilePane.getChildren.add(ImageTileFactory.get(testImage))
+    //  testImageList += testImage
     //}
+    //setPagesContent(testImageList.toList)
+    //showPage(0)
     //val list = FXCollections.observableArrayList[String]()
     //for (i <- 1 to 100) {
     //  list.add(s"test-item ${i}")
@@ -181,7 +186,7 @@ class AppController extends Logging {
   @FXML
   def showAllImages(event: ActionEvent) = {
     resetPaginator()
-    imageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
+    getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val f: Future[List[Image]] = Future {
       engine.getImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
     }
@@ -194,6 +199,7 @@ class AppController extends Logging {
         Platform.runLater(new Runnable() {
           override def run() {
             setPagesContent(images)
+            showPage(0)
           }
         })
       case Failure(t) =>
@@ -219,10 +225,10 @@ class AppController extends Logging {
             for (similarImage <- similarImages) {
               debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
               tempImages += similarImage.rootImage
-              imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage, imageTilePane))
               similarImage.similarImages.foreach(image => tempImages += image)
             }
             setPagesContent(tempImages.toList)
+            showPage(0)
           }
         })
       case Failure(t) =>
@@ -253,19 +259,23 @@ class AppController extends Logging {
     val startIndex = pageIndex * itemsPerPage
     val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else startIndex + itemsPerPage
     //clear and populate the scrollpane
-    imageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
+    getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val images = this.currentImages.slice(startIndex, endIndex)
     Platform.runLater(new Runnable() {
       override def run() {
         for (image <- images) {
           debug(s"Adding image ${image.toString} to app")
-          imageTilePane.getChildren.add(ImageTileFactory.get(image, imageTilePane))
+          getImageTilePane.getChildren.add(ImageTileFactory.get(image, getImageTilePane))
         }
       }
     })
   }
 
   //endregion
+
+  def getImageTilePane :TilePane = {
+    this.imageTilePane
+  }
 
   //todo: include a templating engine for rendering information
 
