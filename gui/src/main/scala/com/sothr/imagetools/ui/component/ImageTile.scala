@@ -2,8 +2,8 @@ package com.sothr.imagetools.ui.component
 
 import java.io.FileInputStream
 import javafx.event.EventHandler
-import javafx.geometry.Pos
-import javafx.scene.control.{Tooltip, Label}
+import javafx.geometry.{Orientation, Insets, Pos}
+import javafx.scene.control.{Separator, Tooltip, Label}
 import javafx.scene.image.{ImageView}
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.VBox
@@ -16,31 +16,52 @@ import resource._
  *
  * Created by drew on 8/22/14.
  */
-class ImageTile(thumbnailWidth: Integer, image: com.sothr.imagetools.engine.image.Image) extends VBox with Logging {
-  val imageData: com.sothr.imagetools.engine.image.Image = image
-  val preferedTileSize = (thumbnailWidth + 32).toDouble
+class ImageTile(thumbnailWidth: Integer,
+                image: com.sothr.imagetools.engine.image.Image,
+                imageTilePane: ImageTilePane) extends VBox with Logging {
+  val thisTile = this
+  val imageData = image
+  val preferedTileWidth = (thumbnailWidth + 8).toDouble
+  val preferedTileHeight = (thumbnailWidth + 32).toDouble
   //set tile size
-  this.setPrefSize(preferedTileSize, preferedTileSize)
-  this.setMinSize(preferedTileSize, preferedTileSize)
-  this.setMaxSize(preferedTileSize, preferedTileSize)
+  this.setPrefSize(preferedTileWidth, preferedTileHeight)
+  this.setMinSize(preferedTileWidth, preferedTileHeight)
+  this.setMaxSize(preferedTileWidth, preferedTileHeight)
 
-  this.setAlignment(Pos.TOP_CENTER)
+  //set padding on the tiles
+  //this.setPadding(new Insets(10.0d,0.0d,10.0d,0.0d))
+
+  this.setAlignment(Pos.CENTER)
   this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler[MouseEvent] {
     override def handle(event: MouseEvent): Unit = {
-      if (event.isPrimaryButtonDown) {
-        //double click
-        if (event.getClickCount == 2) {
-          // Look into http://stackoverflow.com/questions/228477/how-do-i-programmatically-determine-operating-system-in-java
-          // for proper multi-platform opening support
-          //Desktop.getDesktop.open(new File(image.getImagePath))
-        } else {
+      if (event.isShiftDown) {
+        //multiple selection
+        imageTilePane.addImageSelected(thisTile)
+      }
+      else {
+        if (event.isPrimaryButtonDown) {
+          imageTilePane.imageSelected(thisTile)
+          //double click
+          if (event.getClickCount == 2) {
+            // Look into http://stackoverflow.com/questions/228477/how-do-i-programmatically-determine-operating-system-in-java
+            // for proper multi-platform opening support
+            //Desktop.getDesktop.open(new File(image.getImagePath))
+          } else {
 
+          }
+        } else if (event.isSecondaryButtonDown) {
+          //right click context menu
         }
-      } else if (event.isSecondaryButtonDown) {
-        //right click context menu
       }
     }
   })
+
+  //Separator
+  val separator = new Separator()
+  separator.setOrientation(Orientation.HORIZONTAL)
+  separator.setMaxHeight(5.0d)
+  separator.setVisible(false)
+  this.getChildren.add(separator)
 
   // Image
   val genImageView = new ImageView()
@@ -63,6 +84,9 @@ class ImageTile(thumbnailWidth: Integer, image: com.sothr.imagetools.engine.imag
   val imageLabel = new Label()
   imageLabel.setText(s"${image.getHeight}x${image.getWidth}")
   imageLabel.setWrapText(true)
+  imageLabel.setMaxHeight(32d)
+  imageLabel.setMaxWidth(preferedTileWidth-2)
+  imageLabel.setAlignment(Pos.BOTTOM_CENTER)
 
   //Tooltip
   val tooltip = new Tooltip()

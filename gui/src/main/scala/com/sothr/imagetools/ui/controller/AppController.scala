@@ -100,8 +100,8 @@ class AppController extends Logging {
     newImageTilePane.setMaxWidth(this.imageTilePane.getMaxWidth)
     newImageTilePane.setPrefColumns(this.imageTilePane.getPrefColumns)
     newImageTilePane.setPrefRows(this.imageTilePane.getPrefRows)
-    newImageTilePane.setPrefTileHeight(this.imageTilePane.getPrefTileHeight)
-    newImageTilePane.setPrefTileWidth(this.imageTilePane.getPrefTileWidth)
+    //newImageTilePane.setPrefTileHeight(this.imageTilePane.getPrefTileHeight)
+    //newImageTilePane.setPrefTileWidth(this.imageTilePane.getPrefTileWidth)
     newImageTilePane.setTileAlignment(this.imageTilePane.getTileAlignment)
     this.scrollPane.setContent(newImageTilePane)
     this.imageTilePane = newImageTilePane
@@ -219,7 +219,7 @@ class AppController extends Logging {
             for (similarImage <- similarImages) {
               debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
               tempImages += similarImage.rootImage
-              imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage))
+              imageTilePane.getChildren.add(ImageTileFactory.get(similarImage.rootImage, imageTilePane))
               similarImage.similarImages.foreach(image => tempImages += image)
             }
             setPagesContent(tempImages.toList)
@@ -259,7 +259,7 @@ class AppController extends Logging {
       override def run() {
         for (image <- images) {
           debug(s"Adding image ${image.toString} to app")
-          imageTilePane.getChildren.add(ImageTileFactory.get(image))
+          imageTilePane.getChildren.add(ImageTileFactory.get(image, imageTilePane))
         }
       }
     })

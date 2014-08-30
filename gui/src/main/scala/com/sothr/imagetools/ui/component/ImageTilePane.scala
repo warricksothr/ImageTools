@@ -3,7 +3,8 @@ package com.sothr.imagetools.ui.component
 import java.util
 import javafx.collections.{ModifiableObservableListBase, ObservableList}
 import javafx.scene.control.MultipleSelectionModel
-import javafx.scene.layout.TilePane
+import javafx.scene.layout._
+import javafx.scene.paint.{Color, Paint}
 
 /**
  * Custom Tile Pane with a multi selection model
@@ -12,6 +13,14 @@ import javafx.scene.layout.TilePane
  */
 class ImageTilePane extends TilePane {
   val selectionModel = new ImageTilePaneSelectionModel(this)
+
+  def imageSelected(imageTile: ImageTile) = {
+    this.selectionModel.clearAndSelect(this.getChildren.indexOf(imageTile))
+  }
+
+  def addImageSelected(imageTile: ImageTile) = {
+    this.selectionModel.select(this.getChildren.indexOf(imageTile))
+  }
 }
 
 /**
@@ -36,32 +45,43 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   }
 
   override def selectIndices(index: Int, indices: Int*): Unit = {
+    clearSelectionFormatting
     this.selectedIndexes.clear()
+    setSelectionFormatting(index)
     this.selectedIndexes.add(index)
     for (i <- indices) {
+      setSelectionFormatting(i)
       this.selectedIndexes.add(i)
     }
   }
 
   override def selectAll(): Unit = {
+    clearSelectionFormatting
     this.selectedIndexes.clear()
     for (index <- 0 until this.parentTilePane.getChildren.size()) {
+      setSelectionFormatting(index)
       this.selectedIndexes.add(index)
     }
   }
 
   override def selectFirst(): Unit = {
+    clearSelectionFormatting
     this.selectedIndexes.clear()
+    setSelectionFormatting(0)
     this.selectedIndexes.add(0)
   }
 
   override def selectLast(): Unit = {
+    clearSelectionFormatting
     this.selectedIndexes.clear()
+    setSelectionFormatting(this.parentTilePane.getChildren.size()-1)
     this.selectedIndexes.add(this.parentTilePane.getChildren.size()-1)
   }
 
   override def clearAndSelect(index: Int): Unit = {
+    clearSelectionFormatting
     this.selectedIndexes.clear()
+    setSelectionFormatting(index)
     this.selectedIndexes.add(index)
   }
 
@@ -70,6 +90,7 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   }
 
   override def clearSelection(): Unit = {
+    clearSelectionFormatting
     this.selectedIndexes.clear()
   }
 
@@ -90,13 +111,15 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   }
 
   override def select(index: Int): Unit = {
-    this.selectedIndexes.clear()
+    setSelectionFormatting(index)
     this.selectedIndexes.add(index)
   }
 
   override def select(obj: ImageTile): Unit = {
     if (this.parentTilePane.getChildren.contains(obj)) {
+      clearSelectionFormatting
       this.selectedIndexes.clear()
+      setSelectionFormatting(obj)
       this.selectedIndexes.add(this.parentTilePane.getChildren.indexOf(obj))
     }
   }
@@ -108,6 +131,25 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   override def isSelected(index: Int): Boolean = {
     this.selectedIndexes.contains(index)
   }
+
+  private def clearSelectionFormatting = {
+    val iterator = this.parentTilePane.getChildren.iterator()
+    while (iterator.hasNext) {
+      //remove the selection styling
+      val imageTile: VBox = iterator.next().asInstanceOf[VBox]
+      imageTile.setBorder(Border.EMPTY)
+    }
+  }
+
+  private def setSelectionFormatting(index: Int): Unit = {
+    setSelectionFormatting(this.parentTilePane.getChildren.get(index).asInstanceOf[ImageTile])
+  }
+
+  private def setSelectionFormatting(imageTile: ImageTile): Unit = {
+    val borderStroke = new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderStroke.THIN)
+    imageTile.asInstanceOf[VBox].setBorder(new Border(borderStroke))
+  }
+
 }
 
 class ArrayObservableList[E] extends ModifiableObservableListBase[E] {

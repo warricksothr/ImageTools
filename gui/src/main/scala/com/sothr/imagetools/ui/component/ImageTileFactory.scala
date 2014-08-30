@@ -1,6 +1,7 @@
 package com.sothr.imagetools.ui.component
 
 import javafx.geometry.Insets
+import javafx.scene.layout.TilePane
 
 import com.sothr.imagetools.engine.util.PropertiesService
 import grizzled.slf4j.Logging
@@ -12,9 +13,9 @@ import grizzled.slf4j.Logging
  */
 object ImageTileFactory extends Logging {
 
-  def get(image: com.sothr.imagetools.engine.image.Image): ImageTile = {
+  def get(image: com.sothr.imagetools.engine.image.Image, pane: TilePane): ImageTile = {
     val thumbnailWidth = PropertiesService.get("app.thumbnail.size","128").toInt
-    val imageTile = new ImageTile(thumbnailWidth, image)
+    val imageTile = new ImageTile(thumbnailWidth, image, pane.asInstanceOf[ImageTilePane])
     //set padding
     imageTile.setPadding(new Insets(2, 2, 2, 2))
 
