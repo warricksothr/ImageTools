@@ -15,6 +15,7 @@ object FileUtil extends Logging {
     PropertiesService.OS.toLowerCase match {
       // Open file on windows
       case os if os.startsWith("windows") => Desktop.getDesktop.open(file)
+      case os if os.startsWith("linux") => Runtime.getRuntime.exec(s"xdg-open ${file.getAbsolutePath}")
       case default => error(s"Do not know how to open editor for OS: ${PropertiesService.OS}, ${PropertiesService.OS_VERSION}, ${PropertiesService.OS_ARCH}")
     }
   }
