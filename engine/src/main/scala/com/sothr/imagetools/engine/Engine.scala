@@ -3,7 +3,7 @@ package com.sothr.imagetools.engine
 import java.io.File
 
 import akka.actor._
-import com.sothr.imagetools.engine.image.{ImageService, Image, ImageFilter, SimilarImages}
+import com.sothr.imagetools.engine.image.{Image, ImageFilter, ImageService, SimilarImages}
 import com.sothr.imagetools.engine.util.DirectoryFilter
 import grizzled.slf4j.Logging
 

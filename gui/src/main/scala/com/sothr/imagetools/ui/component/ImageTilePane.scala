@@ -5,19 +5,18 @@ import javafx.application.Platform
 import javafx.collections.{ModifiableObservableListBase, ObservableList}
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.geometry.Side
-import javafx.scene.control.{MenuItem, ContextMenu, MultipleSelectionModel}
+import javafx.scene.Node
+import javafx.scene.control.{ContextMenu, MenuItem, MultipleSelectionModel}
 import javafx.scene.input.ContextMenuEvent
 import javafx.scene.layout._
 import javafx.scene.paint.Color
-import javafx.scene.Node
-
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 
 import com.sothr.imagetools.engine.AppConfig
 import com.sothr.imagetools.ui.controller.AppController
 import grizzled.slf4j.Logging
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
 import scala.util.{Failure, Success}
 
 /**

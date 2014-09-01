@@ -3,7 +3,7 @@ package com.sothr.imagetools.engine.util
 import java.io.{File, FileOutputStream, PrintStream}
 import java.util.Properties
 
-import com.typesafe.config.{ConfigRenderOptions, Config, ConfigFactory}
+import com.typesafe.config.{Config, ConfigFactory, ConfigRenderOptions}
 import grizzled.slf4j.Logging
 
 /*

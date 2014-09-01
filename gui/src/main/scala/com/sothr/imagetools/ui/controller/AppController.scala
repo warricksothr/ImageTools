@@ -15,9 +15,9 @@ import javafx.util.Callback
 
 import akka.actor._
 import com.sothr.imagetools.engine._
-import com.sothr.imagetools.engine.image.{Image, SimilarImages}
+import com.sothr.imagetools.engine.image.Image
 import com.sothr.imagetools.engine.util.{PropertiesService, ResourceLoader}
-import com.sothr.imagetools.ui.component.{ImageTilePane, ImageTileFactory}
+import com.sothr.imagetools.ui.component.{ImageTileFactory, ImageTilePane}
 import grizzled.slf4j.Logging
 import org.markdown4j.Markdown4jProcessor
 
