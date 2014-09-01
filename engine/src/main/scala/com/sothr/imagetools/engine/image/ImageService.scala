@@ -11,6 +11,7 @@ import com.sothr.imagetools.engine.util.{PropertiesService, PropertyEnum}
 import grizzled.slf4j.Logging
 import net.coobird.thumbnailator.Thumbnails
 import net.sf.ehcache.Element
+import org.hibernate.HibernateException
 
 object ImageService extends Logging {
 
@@ -73,10 +74,26 @@ object ImageService extends Logging {
         return saveImage(image)
       }
     } catch {
-      case ioe: IOException => error(s"Error processing ${file.getAbsolutePath}", ioe)
-      case ex: Exception => error(s"Error processing ${file.getAbsolutePath}", ex)
+      case ioe: IOException => error(s"Error processing ${file.getAbsolutePath}... ${ioe.getMessage}")
+      case ex: Exception => error(s"Error processing ${file.getAbsolutePath}... ${ex.getMessage}", ex)
     }
     null
+  }
+
+  def deleteImage(image: Image) = {
+    debug(s"Attempting to delete all traces of image: ${image.getImagePath}")
+    try {
+      val imageFile = new File(image.imagePath)
+      //try to delete the file
+      imageFile.delete()
+      //purge the file from the database and cache
+      this.imageCache.remove(imageFile.getAbsolutePath)
+      this.imageDAO.delete(image)
+    } catch {
+      case se: SecurityException => error(s"Unable to delete file: ${image.getImagePath} due to a security exception", se)
+      case ise: IllegalStateException => error(s"Unable to delete file: ${image.getImagePath} due to an illegal state exception", ise)
+      case he: HibernateException => error(s"Unable to delete file: ${image.getImagePath} due to a hibernate exception", he)
+    }
   }
 
   def calculateThumbPath(md5: String): String = {

@@ -9,6 +9,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 import com.sothr.imagetools.engine.dao.HibernateUtil;
 import com.sothr.imagetools.engine.util.PropertiesService;
 import com.sothr.imagetools.engine.util.ResourceLoader;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.sf.ehcache.CacheManager;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,12 @@ public class AppConfig {
   public static void setPrimaryStage(Stage newPrimaryStage) {
     primaryStage = newPrimaryStage;
   }
+
+  public static FXMLLoader fxmlLoader = null;
+
+  public static FXMLLoader getFxmlLoader() { return fxmlLoader; }
+
+  public static void setFxmlLoader(FXMLLoader loader) { fxmlLoader = loader; }
 
   public static ActorSystem getAppActorSystem() {
     return appSystem;

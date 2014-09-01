@@ -34,4 +34,11 @@ class ImageDAO {
     session.getTransaction.commit()
   }
 
+  def delete(image: Image) = {
+    val session: Session = sessionFactory.getCurrentSession
+    session.getTransaction.begin()
+    session.delete(image)
+    session.getTransaction.commit()
+  }
+
 }

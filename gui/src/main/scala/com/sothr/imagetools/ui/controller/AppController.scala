@@ -224,7 +224,7 @@ class AppController extends Logging {
         tempImages += similarImage.rootImage
         similarImage.similarImages.foreach(image => tempImages += image)
       }
-      tempImages.toList.sortWith((x,y) => x.imagePath < y.imagePath)
+      tempImages.toList
     }
 
     f onComplete {

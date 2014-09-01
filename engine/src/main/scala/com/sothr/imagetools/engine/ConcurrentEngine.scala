@@ -19,6 +19,10 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
   val engineSimilarityController = system.actorOf(Props[ConcurrentEngineSimilarityController], name = "EngineSimilarityController")
   implicit val timeout = Timeout(30, TimeUnit.SECONDS)
 
+  override def setSearchedListener(listenerRef: ActorRef) = {
+
+  }
+
   override def setProcessedListener(listenerRef: ActorRef) = {
     engineProcessingController ! SetNewListener(listenerRef)
   }

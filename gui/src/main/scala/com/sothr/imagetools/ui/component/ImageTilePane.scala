@@ -1,6 +1,7 @@
 package com.sothr.imagetools.ui.component
 
 import java.util
+import javafx.application.Platform
 import javafx.collections.{ModifiableObservableListBase, ObservableList}
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.geometry.Side
@@ -10,7 +11,14 @@ import javafx.scene.layout._
 import javafx.scene.paint.Color
 import javafx.scene.Node
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
+import com.sothr.imagetools.engine.AppConfig
+import com.sothr.imagetools.ui.controller.AppController
 import grizzled.slf4j.Logging
+
+import scala.util.{Failure, Success}
 
 /**
  * Custom Tile Pane with a multi selection model
@@ -18,13 +26,7 @@ import grizzled.slf4j.Logging
  * Created by drew on 8/29/14.
  */
 class ImageTilePane extends TilePane with Logging {
-  val selectionModel = new ImageTilePaneSelectionModel(this)
-
-  //this.setOnContextMenuRequested(new EventHandler[ContextMenuEvent] {
-  //  override def handle(event: ContextMenuEvent): Unit = {
-  //    handleContextMenu(event)
-  //  }
-  //})
+  val selectionModel = new ImageTilePaneSelectionModel[ImageTile](this)
 
   def handleContextMenu(event: ContextMenuEvent) = {
     //Build and show a context menu
@@ -46,38 +48,28 @@ class ImageTilePane extends TilePane with Logging {
   def getSingleSelectionContextMenu : ContextMenu = {
     debug("Building single-selection context menu")
     val contextMenu = new ContextMenu()
-    val item1 = new MenuItem("Single Selection")
-    item1.setOnAction(new EventHandler[ActionEvent]() {
+    val delete = new MenuItem("Delete")
+    delete.setOnAction(new EventHandler[ActionEvent]() {
       def handle(e: ActionEvent) = {
-        debug("Single Selection")
+        debug("Requesting Single Delete")
+        deleteSelected()
       }
     })
-    val item2 = new MenuItem("BlahBlah")
-    item2.setOnAction(new EventHandler[ActionEvent]() {
-      def handle(e: ActionEvent) = {
-        debug("BlahBlah")
-      }
-    })
-    contextMenu.getItems.addAll(item1, item2)
+    contextMenu.getItems.addAll(delete)
     contextMenu
   }
 
   def getMulipleSelectionContextMenu : ContextMenu = {
     debug("Building multi-selection context menu")
     val contextMenu = new ContextMenu()
-    val item1 = new MenuItem("Multi Selection")
-    item1.setOnAction(new EventHandler[ActionEvent]() {
+    val delete = new MenuItem("Delete")
+    delete.setOnAction(new EventHandler[ActionEvent]() {
       def handle(e: ActionEvent) = {
-        debug("Multi Selection")
+        debug("Requesting Multiple Delete")
+        deleteSelected()
       }
     })
-    val item2 = new MenuItem("BlahBlah")
-    item2.setOnAction(new EventHandler[ActionEvent]() {
-      def handle(e: ActionEvent) = {
-        debug("BlahBlah")
-      }
-    })
-    contextMenu.getItems.addAll(item1, item2)
+    contextMenu.getItems.addAll(delete)
     contextMenu
   }
 
@@ -97,6 +89,33 @@ class ImageTilePane extends TilePane with Logging {
     this.selectionModel.clearSelection()
   }
 
+  //request deletion of selected images
+  def deleteSelected() = {
+    val f: Future[Unit] = Future {
+      val selected = this.selectionModel.getSelectedItems
+      val iterator = selected.iterator()
+      while (iterator.hasNext) {
+        val item = iterator.next()
+        val imageTile = item.asInstanceOf[ImageTile]
+        val data = imageTile.imageData
+        val controller = AppConfig.getFxmlLoader.getController[AppController]()
+        controller.engine.deleteImage(data)
+
+      }
+      val pane = this
+      Platform.runLater(new Runnable() {
+        override def run(): Unit = {
+          //remove from the current panel
+          pane.getChildren.removeAll(selected)
+          clearSelection()
+        }
+      })
+    }
+    f onComplete {
+      case Success(a) => info("Successfully deleted files")
+      case Failure(f) => error("Failed to delete files", f)
+    }
+  }
 }
 
 /**

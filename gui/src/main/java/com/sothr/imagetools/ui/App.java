@@ -3,8 +3,10 @@ package com.sothr.imagetools.ui;
 import com.sothr.imagetools.engine.AppConfig;
 import com.sothr.imagetools.engine.errors.ImageToolsException;
 import com.sothr.imagetools.engine.util.ResourceLoader;
+import com.sothr.imagetools.ui.controller.AppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -52,7 +55,13 @@ public class App extends Application {
     //store the primary stage globally for reference in popups and the like
     AppConfig.setPrimaryStage(primaryStage);
     try {
-      Parent root = FXMLLoader.load(ResourceLoader.get().getResource(MAINGUI_FXML));
+      FXMLLoader loader = new FXMLLoader();
+      URL location = ResourceLoader.get().getResource(MAINGUI_FXML);
+      loader.setLocation(location);
+      loader.setBuilderFactory(new JavaFXBuilderFactory());
+      Parent root = loader.load(location.openStream());
+      //save the primary controller
+      AppConfig.setFxmlLoader(loader);
       primaryStage.setScene(new Scene(root));
       //config main scene
       primaryStage.setTitle("Image Tools");

@@ -2,8 +2,8 @@ package com.sothr.imagetools.engine
 
 import java.io.File
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
-import com.sothr.imagetools.engine.image.{Image, ImageFilter, SimilarImages}
+import akka.actor._
+import com.sothr.imagetools.engine.image.{ImageService, Image, ImageFilter, SimilarImages}
 import com.sothr.imagetools.engine.util.DirectoryFilter
 import grizzled.slf4j.Logging
 
@@ -18,6 +18,14 @@ abstract class Engine extends Logging {
   val system = ActorSystem("EngineActorSystem")
   val imageFilter: ImageFilter = new ImageFilter()
   val imageCache = AppConfig.cacheManager.getCache("images")
+
+  //file search listener
+  var searchedListener = system.actorOf(Props[DefaultLoggingEngineListener],
+    name = "SearchedEngineListener")
+
+  def setSearchedListener(listenerRef: ActorRef) = {
+    this.searchedListener = listenerRef
+  }
 
   def setProcessedListener(listenerType: ActorRef)
 
@@ -55,6 +63,16 @@ abstract class Engine extends Logging {
    * Get all similar images for a directory with hashes
    */
   def getSimilarImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[SimilarImages]
+
+  def deleteImage(image: Image): Unit = {
+    ImageService.deleteImage(image)
+  }
+
+  def deleteImages(images: List[Image]): Unit = {
+    for (image <- images) {
+      deleteImage(image)
+    }
+  }
 }
 
 case class SubmitMessage(message: String)
