@@ -38,6 +38,11 @@ object PropertiesService extends Logging {
   var pHashWeight = 0.0f
   var usePhash = false
 
+  //OS information
+  val OS = System.getProperty("os.name", "UNKNOWN")
+  val OS_VERSION = System.getProperty("os.version", "UNKNOWN")
+  val OS_ARCH = System.getProperty("os.arch", "UNKNOWN")
+
   /*
    * Load the properties file from the specified location
    */

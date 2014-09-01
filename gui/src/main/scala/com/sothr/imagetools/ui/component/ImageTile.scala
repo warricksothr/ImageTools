@@ -1,6 +1,7 @@
 package com.sothr.imagetools.ui.component
 
-import java.io.FileInputStream
+import java.awt.Desktop
+import java.io.{File, FileInputStream}
 import javafx.event.{EventType, EventHandler}
 import javafx.geometry.{Orientation, Insets, Pos}
 import javafx.scene.control.{Separator, Tooltip, Label}
@@ -8,6 +9,7 @@ import javafx.scene.image.{ImageView}
 import javafx.scene.input.{PickResult, ContextMenuEvent, MouseEvent}
 import javafx.scene.layout.VBox
 
+import com.sothr.imagetools.ui.util.FileUtil
 import grizzled.slf4j.Logging
 import resource._
 
@@ -37,6 +39,9 @@ class ImageTile(thumbnailWidth: Integer,
       if (event.isShiftDown) {
         //multiple selection
         imageTilePane.addImageSelected(thisTile)
+        //remove individual images with control
+      } else if (event.isControlDown) {
+        imageTilePane.removeImageSelected(thisTile)
       }
       else {
         if (event.isPrimaryButtonDown) {
@@ -45,13 +50,14 @@ class ImageTile(thumbnailWidth: Integer,
           if (event.getClickCount == 2) {
             // Look into http://stackoverflow.com/questions/228477/how-do-i-programmatically-determine-operating-system-in-java
             // for proper multi-platform opening support
-            //Desktop.getDesktop.open(new File(image.getImagePath))
+            FileUtil.openInEditor(new File(image.getImagePath))
           } else {
 
           }
         } else if (event.isSecondaryButtonDown) {
           //right click context menu
           debug("Requesting Context Menu")
+          imageTilePane.addImageSelected(thisTile)
           val contextMenuEvent = new ContextMenuEvent(
             thisTile,
             thisTile,

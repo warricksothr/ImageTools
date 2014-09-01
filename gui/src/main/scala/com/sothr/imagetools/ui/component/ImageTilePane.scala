@@ -88,6 +88,15 @@ class ImageTilePane extends TilePane with Logging {
   def addImageSelected(imageTile: ImageTile) = {
     this.selectionModel.select(this.getChildren.indexOf(imageTile))
   }
+
+  def removeImageSelected(imageTile: ImageTile) = {
+    this.selectionModel.clearSelection(this.getChildren.indexOf(imageTile))
+  }
+
+  def clearSelection() = {
+    this.selectionModel.clearSelection()
+  }
+
 }
 
 /**
@@ -153,7 +162,11 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   }
 
   override def clearSelection(index: Int): Unit = {
-    this.selectedIndexes.remove(index)
+    val i = this.selectedIndexes.indexOf(index)
+    if (i >= 0) {
+      clearSelectionFormatting(index)
+      this.selectedIndexes.remove(i)
+    }
   }
 
   override def clearSelection(): Unit = {
@@ -178,8 +191,11 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   }
 
   override def select(index: Int): Unit = {
-    setSelectionFormatting(index)
-    this.selectedIndexes.add(index)
+    //can only select once
+    if (! this.selectedIndexes.contains(index)) {
+      setSelectionFormatting(index)
+      this.selectedIndexes.add(index)
+    }
   }
 
   override def select(obj: ImageTile): Unit = {
@@ -199,6 +215,11 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     this.selectedIndexes.contains(index)
   }
 
+  private def clearSelectionFormatting(index: Int) = {
+    val tile = this.parentTilePane.getChildren.get(index).asInstanceOf[VBox]
+    tile.setBorder(Border.EMPTY)
+  }
+
   private def clearSelectionFormatting() = {
     val iterator = this.parentTilePane.getChildren.iterator()
     while (iterator.hasNext) {
@@ -212,7 +233,7 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     setSelectionFormatting(this.parentTilePane.getChildren.get(index).asInstanceOf[ImageTile])
   }
 
-  private def setSelectionFormatting(imageTile: ImageTile): Unit = {
+  private def setSelectionFormatting(imageTile: ImageTile) = {
     val borderStroke = new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderStroke.THIN)
     imageTile.asInstanceOf[VBox].setBorder(new Border(borderStroke))
   }

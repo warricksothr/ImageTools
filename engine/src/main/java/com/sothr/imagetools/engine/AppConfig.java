@@ -94,6 +94,7 @@ public class AppConfig {
     String message = fromFile ? "From File" : "From Defaults";
     logger.info(String.format("Configured Logger %s", message));
     logger.info(String.format("Detected Version: %s of Image Tools", PropertiesService.getVersion().toString()));
+    logger.info(String.format("Running on %s, %s, %s",PropertiesService.OS(), PropertiesService.OS_VERSION(),PropertiesService.OS_ARCH()));
   }
 
   //Only configure logging from the default file once

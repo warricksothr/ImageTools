@@ -80,6 +80,9 @@ class AppController extends Logging {
       PropertiesService.set("app.ui.thumbsPerPage", "100")
     }
 
+    //setup the paginator
+    //font size doesn't increase the size of the buttons
+    //paginator.setStyle("-fx-font-size:13;")
     // configure the page factory
     paginator.setPageFactory(new Callback[Integer, Node]() {
       override def call(pageIndex: Integer): Node = {
@@ -188,7 +191,8 @@ class AppController extends Logging {
     resetPaginator()
     getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val f: Future[List[Image]] = Future {
-      engine.getImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
+      val images = engine.getImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
+      images.sortWith((x,y) => x.imagePath < y.imagePath)
     }
 
     f onComplete {
@@ -212,22 +216,23 @@ class AppController extends Logging {
     resetPaginator()
     imageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
 
-    val f: Future[List[SimilarImages]] = Future {
-      engine.getSimilarImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
+    val f: Future[List[Image]] = Future {
+      val similarImages = engine.getSimilarImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
+      val tempImages = new mutable.MutableList[Image]()
+      for (similarImage <- similarImages) {
+        debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
+        tempImages += similarImage.rootImage
+        similarImage.similarImages.foreach(image => tempImages += image)
+      }
+      tempImages.toList.sortWith((x,y) => x.imagePath < y.imagePath)
     }
 
     f onComplete {
-      case Success(similarImages) =>
-        info(s"Displaying ${similarImages.length} similar images")
+      case Success(images) =>
+        info(s"Displaying ${images.length} similar images")
         Platform.runLater(new Runnable() {
           override def run() {
-            val tempImages = new mutable.MutableList[Image]()
-            for (similarImage <- similarImages) {
-              debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
-              tempImages += similarImage.rootImage
-              similarImage.similarImages.foreach(image => tempImages += image)
-            }
-            setPagesContent(tempImages.toList)
+            setPagesContent(images)
             showPage(0)
           }
         })
@@ -246,7 +251,7 @@ class AppController extends Logging {
   }
 
   def setPagesContent(images: List[Image]) = {
-    this.currentImages = images.sortWith((x,y) => x.imagePath < y.imagePath)
+    this.currentImages = images
     //set the appropriate size for the pagination
     val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
     val pageNum = Math.ceil(this.currentImages.size.toFloat / itemsPerPage).toInt
@@ -258,6 +263,8 @@ class AppController extends Logging {
     val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
     val startIndex = pageIndex * itemsPerPage
     val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else startIndex + itemsPerPage
+    //clear any selections
+    getImageTilePane.asInstanceOf[ImageTilePane].clearSelection()
     //clear and populate the scrollpane
     getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val images = this.currentImages.slice(startIndex, endIndex)

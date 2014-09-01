@@ -2,6 +2,7 @@
 
 <!--suppress ALL -->
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
@@ -128,9 +129,9 @@
                     <Insets />
                   </VBox.margin>
                 </ScrollPane>
-                        <Pagination fx:id="paginator" disable="true" maxHeight="40.0" maxPageIndicatorCount="9" maxWidth="1.7976931348623157E308" minHeight="40.0" pageCount="1" prefHeight="40.0">
+                        <Pagination fx:id="paginator" disable="true" maxHeight="40.0" maxPageIndicatorCount="20" maxWidth="1.7976931348623157E308" minHeight="40.0" pageCount="1" prefHeight="40.0">
                            <opaqueInsets>
-                              <Insets />
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </opaqueInsets></Pagination>
               </children>
             </VBox>
