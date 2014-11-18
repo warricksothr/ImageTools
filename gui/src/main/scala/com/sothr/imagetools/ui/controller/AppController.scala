@@ -174,16 +174,31 @@ class AppController extends Logging {
     val chooser = new DirectoryChooser()
     chooser.setTitle("ImageTools Browser")
 
-    val defaultDirectory = new File(currentDirectory)
-    chooser.setInitialDirectory(defaultDirectory)
-    val window = this.rootPane.getScene.getWindow
-    val selectedDirectory = chooser.showDialog(window)
-    info(s"Selected Directory: ${selectedDirectory.getAbsolutePath}")
-    selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
+    try {
+      val defaultDirectory = new File(currentDirectory)
+      chooser.setInitialDirectory(defaultDirectory)
+      val window = this.rootPane.getScene.getWindow
+      val selectedDirectory = chooser.showDialog(window)
+      info(s"Selected Directory: ${selectedDirectory.getAbsolutePath}")
+      selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
 
-    currentDirectory = selectedDirectory.getAbsolutePath
-    PropertiesService.set("app.ui.lastPath", selectedDirectory.getAbsolutePath)
-    this.currentDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
+      currentDirectory = selectedDirectory.getAbsolutePath
+      PropertiesService.set("app.ui.lastPath", selectedDirectory.getAbsolutePath)
+      this.currentDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
+    } catch {
+      // fall back on the default because the directory we tried probably didn't exist
+      case iae: IllegalArgumentException =>
+        logger.error("The old directory no longer exists", iae)
+        chooser.setInitialDirectory(null)
+        val window = this.rootPane.getScene.getWindow
+        val selectedDirectory = chooser.showDialog(window)
+        info(s"Selected Directory: ${selectedDirectory.getAbsolutePath}")
+        selectedDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
+
+        currentDirectory = selectedDirectory.getAbsolutePath
+        PropertiesService.set("app.ui.lastPath", selectedDirectory.getAbsolutePath)
+        this.currentDirectoryLabel.setText(selectedDirectory.getAbsolutePath)
+    }
   }
 
   @FXML
