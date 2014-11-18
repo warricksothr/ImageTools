@@ -72,14 +72,6 @@ class Version(val versionString: String) extends Logging {
     }
   }
 
-  def parsableToString(): String = {
-    s"$major.$minor.$patch-$buildTag-$buildNumber-$buildHash"
-  }
-
-  override def toString: String = {
-    s"$major.$minor.$patch-$buildTag build:$buildNumber code:$buildHash"
-  }
-
   override def hashCode(): Int = {
     val prime: Int = 37
     val result: Int = 255
@@ -88,5 +80,13 @@ class Version(val versionString: String) extends Logging {
     hash += patch
     hash += buildTag.hashCode
     prime * result + hash
+  }
+
+  def parsableToString(): String = {
+    s"$major.$minor.$patch-$buildTag-$buildNumber-$buildHash"
+  }
+
+  override def toString: String = {
+    s"$major.$minor.$patch-$buildTag build:$buildNumber code:$buildHash"
   }
 }

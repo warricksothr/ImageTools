@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -44,6 +44,7 @@
     <lib.hibernate.ehcache.version>2.6.6</lib.hibernate.ehcache.version>
     <lib.markdown4j.version>2.2-cj-1.0</lib.markdown4j.version>
     <lib.scala-arm.version>1.4</lib.scala-arm.version>
+    <lib.twelvemonkeys.imageio.version>3.0</lib.twelvemonkeys.imageio.version>
   </properties>
 
   <dependencyManagement>
@@ -174,6 +175,11 @@
         <groupId>com.jsuereth</groupId>
         <artifactId>scala-arm_${scala.binary.version}</artifactId>
         <version>${lib.scala-arm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.twelvemonkeys.imageio</groupId>
+        <artifactId>imageio-jpeg</artifactId>
+        <version>${lib.twelvemonkeys.imageio.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

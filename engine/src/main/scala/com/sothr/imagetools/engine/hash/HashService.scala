@@ -117,6 +117,12 @@ object HashService extends Logging {
     if (distance <= tolerence) true else false
   }
 
+  def areImageHashesSimilar(imageHash1: ImageHashDTO, imageHash2: ImageHashDTO): Boolean = {
+    val weightedHammingMean = getWeightedHashSimilarity(imageHash1, imageHash2)
+    val weightedToleranceMean = getWeightedHashTolerence
+    if (weightedHammingMean <= weightedToleranceMean) true else false
+  }
+
   def getWeightedHashSimilarity(imageHash1: ImageHashDTO, imageHash2: ImageHashDTO): Float = {
     //ahash
     val aHashTolerance = PropertiesService.aHashTolerance
@@ -194,12 +200,6 @@ object HashService extends Logging {
     val weightedTolerance = weightedToleranceTotal / methodsTotal
     //debug(s"Calculated Weighted Tolerance: $weightedTolerance")
     weightedTolerance
-  }
-
-  def areImageHashesSimilar(imageHash1: ImageHashDTO, imageHash2: ImageHashDTO): Boolean = {
-    val weightedHammingMean = getWeightedHashSimilarity(imageHash1, imageHash2)
-    val weightedToleranceMean = getWeightedHashTolerence
-    if (weightedHammingMean <= weightedToleranceMean) true else false
   }
 
 }

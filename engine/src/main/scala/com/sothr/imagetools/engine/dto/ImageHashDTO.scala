@@ -8,11 +8,11 @@ import grizzled.slf4j.Logging
 @Table(name = "ImageHash")
 class ImageHashDTO(var ahash: Long, var dhash: Long, var phash: Long, var md5: String) extends Serializable with Logging {
 
-  def this() = this(0l, 0l, 0l, "")
-
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   var id: Int = _
+
+  def this() = this(0l, 0l, 0l, "")
 
   def getId: Int = id
 

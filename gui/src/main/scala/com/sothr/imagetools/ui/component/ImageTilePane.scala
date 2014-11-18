@@ -35,16 +35,16 @@ class ImageTilePane extends TilePane with Logging {
       if (numSelected == 1) {
         val contextMenu = getSingleSelectionContextMenu
         debug("Showing context menu")
-        contextMenu.show(event.getTarget.asInstanceOf[Node],Side.RIGHT,0d,0d)
+        contextMenu.show(event.getTarget.asInstanceOf[Node], Side.RIGHT, 0d, 0d)
       } else {
         val contextMenu = getMulipleSelectionContextMenu
         debug("Showing context menu")
-        contextMenu.show(event.getTarget.asInstanceOf[Node],Side.RIGHT,0d,0d)
+        contextMenu.show(event.getTarget.asInstanceOf[Node], Side.RIGHT, 0d, 0d)
       }
     }
   }
 
-  def getSingleSelectionContextMenu : ContextMenu = {
+  def getSingleSelectionContextMenu: ContextMenu = {
     debug("Building single-selection context menu")
     val contextMenu = new ContextMenu()
     val delete = new MenuItem("Delete")
@@ -58,7 +58,7 @@ class ImageTilePane extends TilePane with Logging {
     contextMenu
   }
 
-  def getMulipleSelectionContextMenu : ContextMenu = {
+  def getMulipleSelectionContextMenu: ContextMenu = {
     debug("Building multi-selection context menu")
     val contextMenu = new ContextMenu()
     val delete = new MenuItem("Delete")
@@ -165,11 +165,29 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     this.selectedIndexes.add(0)
   }
 
+  private def clearSelectionFormatting() = {
+    val iterator = this.parentTilePane.getChildren.iterator()
+    while (iterator.hasNext) {
+      //remove the selection styling
+      val imageTile: VBox = iterator.next().asInstanceOf[VBox]
+      imageTile.setBorder(Border.EMPTY)
+    }
+  }
+
+  private def setSelectionFormatting(index: Int): Unit = {
+    setSelectionFormatting(this.parentTilePane.getChildren.get(index).asInstanceOf[ImageTile])
+  }
+
+  private def setSelectionFormatting(imageTile: ImageTile) = {
+    val borderStroke = new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)
+    imageTile.asInstanceOf[VBox].setBorder(new Border(borderStroke))
+  }
+
   override def selectLast(): Unit = {
     clearSelectionFormatting
     this.selectedIndexes.clear()
-    setSelectionFormatting(this.parentTilePane.getChildren.size()-1)
-    this.selectedIndexes.add(this.parentTilePane.getChildren.size()-1)
+    setSelectionFormatting(this.parentTilePane.getChildren.size() - 1)
+    this.selectedIndexes.add(this.parentTilePane.getChildren.size() - 1)
   }
 
   override def clearAndSelect(index: Int): Unit = {
@@ -185,6 +203,11 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
       clearSelectionFormatting(index)
       this.selectedIndexes.remove(i)
     }
+  }
+
+  private def clearSelectionFormatting(index: Int) = {
+    val tile = this.parentTilePane.getChildren.get(index).asInstanceOf[VBox]
+    tile.setBorder(Border.EMPTY)
   }
 
   override def clearSelection(): Unit = {
@@ -203,14 +226,14 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
   override def selectNext(): Unit = {
     if (this.selectedIndexes.size == 1) {
       val currentIndex = this.selectedIndexes.get(0)
-      val nextIndex = if (currentIndex >= this.parentTilePane.getChildren.size-1) this.parentTilePane.getChildren.size-1 else currentIndex + 1
+      val nextIndex = if (currentIndex >= this.parentTilePane.getChildren.size - 1) this.parentTilePane.getChildren.size - 1 else currentIndex + 1
       this.selectedIndexes.set(0, nextIndex)
     }
   }
 
   override def select(index: Int): Unit = {
     //can only select once
-    if (! this.selectedIndexes.contains(index)) {
+    if (!this.selectedIndexes.contains(index)) {
       setSelectionFormatting(index)
       this.selectedIndexes.add(index)
     }
@@ -233,29 +256,6 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     this.selectedIndexes.contains(index)
   }
 
-  private def clearSelectionFormatting(index: Int) = {
-    val tile = this.parentTilePane.getChildren.get(index).asInstanceOf[VBox]
-    tile.setBorder(Border.EMPTY)
-  }
-
-  private def clearSelectionFormatting() = {
-    val iterator = this.parentTilePane.getChildren.iterator()
-    while (iterator.hasNext) {
-      //remove the selection styling
-      val imageTile: VBox = iterator.next().asInstanceOf[VBox]
-      imageTile.setBorder(Border.EMPTY)
-    }
-  }
-
-  private def setSelectionFormatting(index: Int): Unit = {
-    setSelectionFormatting(this.parentTilePane.getChildren.get(index).asInstanceOf[ImageTile])
-  }
-
-  private def setSelectionFormatting(imageTile: ImageTile) = {
-    val borderStroke = new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderStroke.THIN)
-    imageTile.asInstanceOf[VBox].setBorder(new Border(borderStroke))
-  }
-
 }
 
 class ArrayObservableList[E] extends ModifiableObservableListBase[E] {
@@ -270,15 +270,15 @@ class ArrayObservableList[E] extends ModifiableObservableListBase[E] {
     delegate.size
   }
 
-  def doAdd (index: Int, element: E) = {
+  def doAdd(index: Int, element: E) = {
     delegate.add(index, element)
   }
 
-  def doSet (index: Int, element: E): E = {
+  def doSet(index: Int, element: E): E = {
     delegate.set(index, element)
   }
 
-  def doRemove (index: Int): E = {
+  def doRemove(index: Int): E = {
     delegate.remove(index)
   }
 

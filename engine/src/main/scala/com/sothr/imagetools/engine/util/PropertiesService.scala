@@ -11,17 +11,14 @@ import grizzled.slf4j.Logging
  */
 object PropertiesService extends Logging {
 
-  private var defaultConf: Config = null
-  private var userConf: Config = null
+  //OS information
+  val OS = System.getProperty("os.name", "UNKNOWN")
+  val OS_VERSION = System.getProperty("os.version", "UNKNOWN")
+  val OS_ARCH = System.getProperty("os.arch", "UNKNOWN")
   private val newUserConf: Properties = new Properties()
-  private var version: Version = null
   private val configRenderOptions = ConfigRenderOptions.concise().setFormatted(true)
-
-  def getVersion: Version = this.version
-
   //specific highly used properties
   var TimingEnabled: Boolean = false
-
   //ahash
   var aHashPrecision = 0
   var aHashTolerance = 0
@@ -37,11 +34,11 @@ object PropertiesService extends Logging {
   var pHashTolerance = 0
   var pHashWeight = 0.0f
   var usePhash = false
+  private var defaultConf: Config = null
+  private var userConf: Config = null
+  private var version: Version = null
 
-  //OS information
-  val OS = System.getProperty("os.name", "UNKNOWN")
-  val OS_VERSION = System.getProperty("os.version", "UNKNOWN")
-  val OS_ARCH = System.getProperty("os.arch", "UNKNOWN")
+  def getVersion: Version = this.version
 
   /*
    * Load the properties file from the specified location
@@ -79,38 +76,6 @@ object PropertiesService extends Logging {
     info("Loaded Special Properties")
   }
 
-  private def cleanAndPrepareNewUserProperties(): Properties = {
-    //insert special keys here
-    newUserConf.setProperty(PropertyEnum.PreviousVersion.toString, version.parsableToString())
-    //remove special keys here
-    newUserConf.remove(PropertyEnum.Version.toString)
-    newUserConf
-  }
-
-  private def getCleanedMergedUserConf: Config = {
-    ConfigFactory.parseProperties(cleanAndPrepareNewUserProperties()) withFallback userConf
-  }
-
-  def saveConf(location: String) = {
-    info(s"Saving user properties to $location")
-    val out: PrintStream = new PrintStream(new FileOutputStream(location, false))
-    val userConfToSave = getCleanedMergedUserConf
-    //print to the output stream
-    out.print(userConfToSave.root().render(configRenderOptions))
-    out.flush()
-    out.close()
-  }
-
-  def has(key: String): Boolean = {
-    var result = false
-    if (newUserConf.containsKey(key)
-      || userConf.hasPath(key)
-      || defaultConf.hasPath(key)) {
-      result = true
-    }
-    result
-  }
-
   def get(key: String, defaultValue: String = null): String = {
     var result: String = defaultValue
     //check the latest properties
@@ -124,6 +89,38 @@ object PropertiesService extends Logging {
     //check the default properties
     else if (defaultConf.hasPath(key)) {
       result = defaultConf.getString(key)
+    }
+    result
+  }
+
+  def saveConf(location: String) = {
+    info(s"Saving user properties to $location")
+    val out: PrintStream = new PrintStream(new FileOutputStream(location, false))
+    val userConfToSave = getCleanedMergedUserConf
+    //print to the output stream
+    out.print(userConfToSave.root().render(configRenderOptions))
+    out.flush()
+    out.close()
+  }
+
+  private def getCleanedMergedUserConf: Config = {
+    ConfigFactory.parseProperties(cleanAndPrepareNewUserProperties()) withFallback userConf
+  }
+
+  private def cleanAndPrepareNewUserProperties(): Properties = {
+    //insert special keys here
+    newUserConf.setProperty(PropertyEnum.PreviousVersion.toString, version.parsableToString())
+    //remove special keys here
+    newUserConf.remove(PropertyEnum.Version.toString)
+    newUserConf
+  }
+
+  def has(key: String): Boolean = {
+    var result = false
+    if (newUserConf.containsKey(key)
+      || userConf.hasPath(key)
+      || defaultConf.hasPath(key)) {
+      result = true
     }
     result
   }

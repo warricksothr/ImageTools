@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -119,6 +119,10 @@
       <groupId>com.jsuereth</groupId>
       <artifactId>scala-arm_${scala.binary.version}</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.twelvemonkeys.imageio</groupId>
+      <artifactId>imageio-jpeg</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -192,10 +196,12 @@
                 <copy todir="${basedir}/src/test/resources/hibernate">
                   <fileset dir="${basedir}/src/main/resources/hibernate" includes="**/*"/>
                 </copy>
-                <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE" overwrite="true"/>
+                <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE"
+                      overwrite="true"/>
                 <copy file="${project.build.directory}/version.info" toFile="${basedir}/../version.info"
                       overwrite="true"/>
-                <copy file="${project.build.directory}/README.md" toFile="${basedir}/../README.md" overwrite="true"/>
+                <copy file="${project.build.directory}/README.md" toFile="${basedir}/../README.md"
+                      overwrite="true"/>
               </tasks>
             </configuration>
             <goals>

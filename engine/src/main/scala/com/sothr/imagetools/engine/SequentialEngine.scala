@@ -29,26 +29,6 @@ class SequentialEngine extends Engine with Logging {
     this.similarityListener = listenerRef
   }
 
-  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {
-    debug(s"Looking for images in directory: $directoryPath")
-    val images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
-    val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
-    val directory: File = new File(directoryPath)
-    var count = 0
-    for (file <- imageFiles) {
-      count += 1
-      if (count % 25 == 0) {
-        //info(s"Processed ${count}/${imageFiles.size}")
-        processedListener ! ScannedFileCount(count, imageFiles.size)
-      }
-      val image = ImageService.getImage(file)
-      if (image != null) {
-        images += image
-      }
-    }
-    images.toList
-  }
-
   def getSimilarImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
     val images = getImagesForDirectory(directoryPath, recursive, recursiveDepth)
@@ -87,5 +67,25 @@ class SequentialEngine extends Engine with Logging {
     }
     info(s"Finished processing ${images.size} images. Found $similarCount similar images")
     allSimilarImages.toList
+  }
+
+  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {
+    debug(s"Looking for images in directory: $directoryPath")
+    val images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
+    val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
+    val directory: File = new File(directoryPath)
+    var count = 0
+    for (file <- imageFiles) {
+      count += 1
+      if (count % 25 == 0) {
+        //info(s"Processed ${count}/${imageFiles.size}")
+        processedListener ! ScannedFileCount(count, imageFiles.size)
+      }
+      val image = ImageService.getImage(file)
+      if (image != null) {
+        images += image
+      }
+    }
+    images.toList
   }
 }

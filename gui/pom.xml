@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -92,9 +92,12 @@
             <phase>process-resources</phase>
             <configuration>
               <tasks>
-                <copy file="${project.build.directory}/version.info" toFile="${basedir}/version.info" overwrite="true"/>
-                <copy file="${project.build.directory}/name.info" toFile="${basedir}/name.info" overwrite="true"/>
-                <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE" overwrite="true"/>
+                <copy file="${project.build.directory}/version.info" toFile="${basedir}/version.info"
+                      overwrite="true"/>
+                <copy file="${project.build.directory}/name.info" toFile="${basedir}/name.info"
+                      overwrite="true"/>
+                <copy file="${project.build.directory}/LICENSE" toFile="${basedir}/LICENSE"
+                      overwrite="true"/>
                 <chmod file="${project.build.directory}/startGUI.sh" perm="755"/>
               </tasks>
             </configuration>

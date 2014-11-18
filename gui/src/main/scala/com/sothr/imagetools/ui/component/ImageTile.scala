@@ -100,7 +100,7 @@ class ImageTile(thumbnailWidth: Integer,
   imageLabel.setText(s"${image.getHeight}x${image.getWidth}")
   imageLabel.setWrapText(true)
   imageLabel.setMaxHeight(32d)
-  imageLabel.setMaxWidth(preferedTileWidth-2)
+  imageLabel.setMaxWidth(preferedTileWidth - 2)
   imageLabel.setAlignment(Pos.BOTTOM_CENTER)
 
   //Tooltip

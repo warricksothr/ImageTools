@@ -18,24 +18,20 @@ import java.io.File;
 
 public class AppConfig {
 
-  private static Logger logger;
-  public static CacheManager cacheManager;
-
   // Logging defaults
   private static final String LOGSETTINGSFILE = "./logback.xml";
-  private static Boolean configuredLogging = false;
-
   // Properties defaults
   private static final String DEFAULTPROPERTIESFILE = "application.conf";
   private static final String USERPROPERTIESFILE = "user.conf";
-  private static Boolean loadedProperties = false;
-
-  // Cache defaults
-  private static Boolean configuredCache = false;
-
   // General Akka Actor System
   private static final ActorSystem appSystem = ActorSystem.create("ITActorSystem");
-
+  public static CacheManager cacheManager;
+  public static FXMLLoader fxmlLoader = null;
+  private static Logger logger;
+  private static Boolean configuredLogging = false;
+  private static Boolean loadedProperties = false;
+  // Cache defaults
+  private static Boolean configuredCache = false;
   // The Main App
   private static Stage primaryStage = null;
 
@@ -47,11 +43,13 @@ public class AppConfig {
     primaryStage = newPrimaryStage;
   }
 
-  public static FXMLLoader fxmlLoader = null;
+  public static FXMLLoader getFxmlLoader() {
+    return fxmlLoader;
+  }
 
-  public static FXMLLoader getFxmlLoader() { return fxmlLoader; }
-
-  public static void setFxmlLoader(FXMLLoader loader) { fxmlLoader = loader; }
+  public static void setFxmlLoader(FXMLLoader loader) {
+    fxmlLoader = loader;
+  }
 
   public static ActorSystem getAppActorSystem() {
     return appSystem;
@@ -101,7 +99,7 @@ public class AppConfig {
     String message = fromFile ? "From File" : "From Defaults";
     logger.info(String.format("Configured Logger %s", message));
     logger.info(String.format("Detected Version: %s of Image Tools", PropertiesService.getVersion().toString()));
-    logger.info(String.format("Running on %s, %s, %s",PropertiesService.OS(), PropertiesService.OS_VERSION(),PropertiesService.OS_ARCH()));
+    logger.info(String.format("Running on %s, %s, %s", PropertiesService.OS(), PropertiesService.OS_VERSION(), PropertiesService.OS_ARCH()));
   }
 
   //Only configure logging from the default file once

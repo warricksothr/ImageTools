@@ -31,37 +31,6 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     engineSimilarityController ! SetNewListener(listenerRef)
   }
 
-  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {
-    debug(s"Looking for images in directory: $directoryPath")
-    val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
-    val images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
-    // make sure the engine is listening
-    engineProcessingController ! EngineStart
-    for (file <- imageFiles) {
-      engineProcessingController ! EngineProcessFile(file)
-    }
-    engineProcessingController ! EngineNoMoreFiles
-    var doneProcessing = false
-    while (!doneProcessing) {
-      val f = engineProcessingController ? EngineIsProcessingFinished
-      val result = Await.result(f, timeout.duration).asInstanceOf[Boolean]
-      result match {
-        case true =>
-          doneProcessing = true
-          debug("Processing Complete")
-        case false =>
-          debug("Still Processing")
-          //sleep thread
-          Thread.sleep(5000L)
-        //val future = Future { blocking(Thread.sleep(5000L)); "done" }
-      }
-    }
-    val f = engineProcessingController ? EngineGetProcessingResults
-    val result = Await.result(f, timeout.duration).asInstanceOf[List[Image]]
-    images ++= result
-    images.toList
-  }
-
   //needs to be rebuilt
   def getSimilarImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[SimilarImages] = {
     debug(s"Looking for similar images in directory: $directoryPath")
@@ -116,6 +85,37 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     info(s"Finished processing ${images.size} images. Found $similarCount similar images")
     cleanedSimilarImages.toList
   }
+
+  def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {
+    debug(s"Looking for images in directory: $directoryPath")
+    val imageFiles = getAllImageFiles(directoryPath, recursive, recursiveDepth)
+    val images: mutable.MutableList[Image] = new mutable.MutableList[Image]()
+    // make sure the engine is listening
+    engineProcessingController ! EngineStart
+    for (file <- imageFiles) {
+      engineProcessingController ! EngineProcessFile(file)
+    }
+    engineProcessingController ! EngineNoMoreFiles
+    var doneProcessing = false
+    while (!doneProcessing) {
+      val f = engineProcessingController ? EngineIsProcessingFinished
+      val result = Await.result(f, timeout.duration).asInstanceOf[Boolean]
+      result match {
+        case true =>
+          doneProcessing = true
+          debug("Processing Complete")
+        case false =>
+          debug("Still Processing")
+          //sleep thread
+          Thread.sleep(5000L)
+        //val future = Future { blocking(Thread.sleep(5000L)); "done" }
+      }
+    }
+    val f = engineProcessingController ? EngineGetProcessingResults
+    val result = Await.result(f, timeout.duration).asInstanceOf[List[Image]]
+    images ++= result
+    images.toList
+  }
 }
 
 
@@ -158,13 +158,6 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
   var listener = context.actorOf(Props[DefaultLoggingEngineListener],
     name = "ProcessedEngineListener")
 
-  def setListener(newListener: ActorRef) = {
-    //remove the old listener
-    this.listener ! PoisonPill
-    //setup the new listener
-    this.listener = newListener
-  }
-
   override def preStart() = {
     log.info("Staring the controller for processing images")
     log.info("Using {} actors to process images", numOfRouters)
@@ -182,9 +175,11 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
     case _ => log.info("received unknown message")
   }
 
-  override def postStop() = {
-    super.postStop()
+  def setListener(newListener: ActorRef) = {
+    //remove the old listener
     this.listener ! PoisonPill
+    //setup the new listener
+    this.listener = newListener
   }
 
   def startEngine() = {
@@ -250,6 +245,11 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
         throw e
     }
   }
+
+  override def postStop() = {
+    super.postStop()
+    this.listener ! PoisonPill
+  }
 }
 
 class ConcurrentEngineProcessingActor extends Actor with ActorLogging {
@@ -313,13 +313,6 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
   var listener = context.actorOf(Props[DefaultLoggingEngineListener],
     name = "SimilarityEngineListener")
 
-  def setListener(newListener: ActorRef) = {
-    //remove the old listener
-    this.listener ! PoisonPill
-    //setup the new listener
-    this.listener = newListener
-  }
-
   override def preStart() = {
     log.info("Staring the controller for processing similarities between images")
     log.info("Using {} actors to process image similarities", numOfRouters)
@@ -337,9 +330,11 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
     case _ => log.info("received unknown message")
   }
 
-  override def postStop() = {
-    super.postStop()
+  def setListener(newListener: ActorRef) = {
+    //remove the old listener
     this.listener ! PoisonPill
+    //setup the new listener
+    this.listener = newListener
   }
 
   def startEngine() = {
@@ -411,6 +406,11 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
         sender ! akka.actor.Status.Failure(e)
         throw e
     }
+  }
+
+  override def postStop() = {
+    super.postStop()
+    this.listener ! PoisonPill
   }
 }
 

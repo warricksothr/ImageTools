@@ -17,6 +17,10 @@ object HibernateUtil extends Logging {
   private val sessionFactory: SessionFactory = buildSessionFactory()
   private var serviceRegistry: ServiceRegistry = null
 
+  def getSessionFactory: SessionFactory = {
+    sessionFactory
+  }
+
   private def buildSessionFactory(): SessionFactory = {
     try {
       // Create the SessionFactory from hibernate.cfg.xml
@@ -32,10 +36,6 @@ object HibernateUtil extends Logging {
         error("Initial SessionFactory creation failed.", ex)
         throw new ExceptionInInitializerError(ex)
     }
-  }
-
-  def getSessionFactory: SessionFactory = {
-    sessionFactory
   }
 
 

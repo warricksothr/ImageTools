@@ -18,10 +18,9 @@ import scala.collection.immutable.List;
  */
 class AppCLI {
 
-  private static Logger logger;
-
   private static final String HEADER = "Process images and search for duplicates and similar images heuristically";
   private static final String FOOTER = "Please report issues to...";
+  private static Logger logger;
 
   public static void main(String[] args) {
     try {

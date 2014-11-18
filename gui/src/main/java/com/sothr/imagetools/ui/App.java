@@ -12,8 +12,11 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -21,9 +24,8 @@ import java.util.List;
  */
 public class App extends Application {
 
-  private static Logger logger;
-
   private static final String MAINGUI_FXML = "fxml/mainapp/MainApp.fxml";
+  private static Logger logger;
 
   public static void main(String[] args) {
     AppConfig.configureApp();
@@ -54,6 +56,12 @@ public class App extends Application {
     //store the primary stage globally for reference in popups and the like
     AppConfig.setPrimaryStage(primaryStage);
     try {
+      //Confirm we have the plugin for JPEG color fixes
+      Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
+      while (readers.hasNext()) {
+        logger.info("Image Reader Plugin: [{}] Available", new Object[]{readers.next()});
+      }
+
       FXMLLoader loader = new FXMLLoader();
       URL location = ResourceLoader.get().getResource(MAINGUI_FXML);
       loader.setLocation(location);

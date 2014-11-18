@@ -24,7 +24,8 @@
     <property name="hibernate.current_session_context_class">thread</property>
 
     <!-- Enable the second-level cache  -->
-    <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+    <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory
+    </property>
     <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     </property>
     <property name="hibernate.cache.use_second_level_cache">true</property>

@@ -33,26 +33,22 @@ import scala.util.{Failure, Success}
  */
 class AppController extends Logging {
 
+  // Engine
+  val engine: Engine = new ConcurrentEngine()
   //Define controls
   @FXML var rootPane: AnchorPane = null
   @FXML var rootMenuBar: MenuBar = null
   @FXML var scrollPane: ScrollPane = null
   @FXML var imageTilePane: TilePane = null
   @FXML var tagListView: ListView[String] = null
-
   // Labels
   @FXML var selectedDirectoryLabel: Label = null
   @FXML var currentDirectoryLabel: Label = null
   @FXML var progressLabel: Label = null
-
   // Others
   @FXML var progressBar: ProgressBar = null
   @FXML var paginator: Pagination = null
   @FXML var doRecursiveProcessing: CheckBox = null
-
-  // Engine
-  val engine: Engine = new ConcurrentEngine()
-
   // Current State
   var currentDirectory: String = "."
   var currentImages: List[Image] = List[Image]()
@@ -135,6 +131,27 @@ class AppController extends Logging {
     showExternalHTMLUtilityDialog("http://www.sothr.com")
   }
 
+  def showExternalHTMLUtilityDialog(url: String) = {
+    val dialog: Stage = new Stage()
+    dialog.initStyle(StageStyle.UTILITY)
+    val parent: Group = new Group()
+
+    //setup the HTML view
+    val htmlView = new WebView
+    htmlView.getEngine.load(url)
+    //htmlView.setMinWidth(width)
+    //htmlView.setMinHeight(height)
+    //htmlView.setPrefWidth(width)
+    //htmlView.setPrefHeight(height)
+    parent.getChildren.add(htmlView)
+
+    val scene: Scene = new Scene(parent)
+    dialog.setScene(scene)
+    dialog.setResizable(false)
+    dialog.setTitle(htmlView.getEngine.getTitle)
+    dialog.show()
+  }
+
   @FXML
   def aboutAction(event: ActionEvent) = {
     debug("Displaying about screen")
@@ -158,6 +175,45 @@ class AppController extends Logging {
     debug("Showing About Dialog")
   }
 
+  //endregion
+
+  //region buttons
+
+  //todo: show a dialog that is rendered from markdown content
+  def showMarkdownUtilityDialog(title: String, markdown: String, width: Double = 800.0, height: Double = 600.0) = {
+    val htmlBody = new Markdown4jProcessor().process(markdown)
+    showHTMLUtilityDialog(title, htmlBody, width, height)
+  }
+
+  /**
+   * Render HTML content to a utility dialog. No input or output, just raw rendered content through a webkit engine.
+   *
+   * @param title Title of the dialog
+   * @param htmlBody Body to render
+   * @param width Desired width of the dialog
+   * @param height Desired height of the dialog
+   */
+  def showHTMLUtilityDialog(title: String, htmlBody: String, width: Double = 800.0, height: Double = 600.0) = {
+    val dialog: Stage = new Stage()
+    dialog.initStyle(StageStyle.UTILITY)
+    val parent: Group = new Group()
+
+    //setup the HTML view
+    val htmlView = new WebView
+    htmlView.getEngine.loadContent(htmlBody)
+    htmlView.setMinWidth(width)
+    htmlView.setMinHeight(height)
+    htmlView.setPrefWidth(width)
+    htmlView.setPrefHeight(height)
+    parent.getChildren.add(htmlView)
+
+    val scene: Scene = new Scene(parent)
+    dialog.setScene(scene)
+    dialog.setResizable(false)
+    dialog.setTitle(title)
+    dialog.show()
+  }
+
   @FXML
   def closeAction(event: ActionEvent) = {
     debug("Closing application from the menu bar")
@@ -167,7 +223,7 @@ class AppController extends Logging {
 
   //endregion
 
-  //region buttons
+  //region pagination
 
   @FXML
   def browseFolders(event: ActionEvent) = {
@@ -207,7 +263,7 @@ class AppController extends Logging {
     getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
     val f: Future[List[Image]] = Future {
       val images = engine.getImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
-      images.sortWith((x,y) => x.imagePath < y.imagePath)
+      images.sortWith((x, y) => x.imagePath < y.imagePath)
     }
 
     f onComplete {
@@ -258,12 +314,12 @@ class AppController extends Logging {
 
   //endregion
 
-  //region pagination
-
   def resetPaginator() = {
     this.paginator.setDisable(true)
     this.paginator.setPageCount(1)
   }
+
+  //todo: include a templating engine for rendering information
 
   def setPagesContent(images: List[Image]) = {
     this.currentImages = images
@@ -293,68 +349,8 @@ class AppController extends Logging {
     })
   }
 
-  //endregion
-
-  def getImageTilePane :TilePane = {
+  def getImageTilePane: TilePane = {
     this.imageTilePane
-  }
-
-  //todo: include a templating engine for rendering information
-
-  //todo: show a dialog that is rendered from markdown content
-  def showMarkdownUtilityDialog(title: String, markdown: String, width: Double = 800.0, height: Double = 600.0) = {
-    val htmlBody = new Markdown4jProcessor().process(markdown)
-    showHTMLUtilityDialog(title, htmlBody, width, height)
-  }
-
-  /**
-   * Render HTML content to a utility dialog. No input or output, just raw rendered content through a webkit engine.
-   *
-   * @param title Title of the dialog
-   * @param htmlBody Body to render
-   * @param width Desired width of the dialog
-   * @param height Desired height of the dialog
-   */
-  def showHTMLUtilityDialog(title: String, htmlBody: String, width: Double = 800.0, height: Double = 600.0) = {
-    val dialog: Stage = new Stage()
-    dialog.initStyle(StageStyle.UTILITY)
-    val parent: Group = new Group()
-
-    //setup the HTML view
-    val htmlView = new WebView
-    htmlView.getEngine.loadContent(htmlBody)
-    htmlView.setMinWidth(width)
-    htmlView.setMinHeight(height)
-    htmlView.setPrefWidth(width)
-    htmlView.setPrefHeight(height)
-    parent.getChildren.add(htmlView)
-
-    val scene: Scene = new Scene(parent)
-    dialog.setScene(scene)
-    dialog.setResizable(false)
-    dialog.setTitle(title)
-    dialog.show()
-  }
-
-  def showExternalHTMLUtilityDialog(url: String) = {
-    val dialog: Stage = new Stage()
-    dialog.initStyle(StageStyle.UTILITY)
-    val parent: Group = new Group()
-
-    //setup the HTML view
-    val htmlView = new WebView
-    htmlView.getEngine.load(url)
-    //htmlView.setMinWidth(width)
-    //htmlView.setMinHeight(height)
-    //htmlView.setPrefWidth(width)
-    //htmlView.setPrefHeight(height)
-    parent.getChildren.add(htmlView)
-
-    val scene: Scene = new Scene(parent)
-    dialog.setScene(scene)
-    dialog.setResizable(false)
-    dialog.setTitle(htmlView.getEngine.getTitle)
-    dialog.show()
   }
 
   /**
@@ -432,7 +428,7 @@ class GUIEngineListener extends EngineListener with ActorLogging {
           progressLabel.setText(s"Processed ${command.count}/${command.total}")
         }
         log.debug("Processed {}/{}", command.count, command.total)
-        progressBar.setProgress(command.count.toFloat/command.total)
+        progressBar.setProgress(command.count.toFloat / command.total)
       }
     })
   }
@@ -447,7 +443,7 @@ class GUIEngineListener extends EngineListener with ActorLogging {
           progressLabel.setText(s"Scanned ${command.count}/${command.total} For Similarities")
         }
         log.debug("Scanned {}/{} For Similarities", command.count, command.total)
-        progressBar.setProgress(command.count.toFloat/command.total)
+        progressBar.setProgress(command.count.toFloat / command.total)
       }
     })
   }

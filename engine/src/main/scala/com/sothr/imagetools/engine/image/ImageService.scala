@@ -18,6 +18,32 @@ object ImageService extends Logging {
   val imageCache = AppConfig.cacheManager.getCache("images")
   private val imageDAO = new ImageDAO()
 
+  def getImage(file: File): Image = {
+    try {
+      val image = lookupImage(file)
+      if (image != null) {
+        debug(s"${file.getAbsolutePath} was already processed")
+        return image
+      } else {
+        debug(s"Processing image: ${file.getAbsolutePath}")
+        val bufferedImage = ImageIO.read(file)
+        val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
+        var thumbnailPath = lookupThumbnailPath(hashes.md5)
+        if (thumbnailPath == null) thumbnailPath = getThumbnail(bufferedImage, hashes.md5)
+        val imageSize = {
+          (bufferedImage.getWidth, bufferedImage.getHeight)
+        }
+        val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
+        debug(s"Created image: $image")
+        return saveImage(image)
+      }
+    } catch {
+      case ioe: IOException => error(s"Error processing ${file.getAbsolutePath}... ${ioe.getMessage}")
+      case ex: Exception => error(s"Error processing ${file.getAbsolutePath}... ${ex.getMessage}", ex)
+    }
+    null
+  }
+
   private def lookupImage(file: File): Image = {
     var image: Image = null
     var found = false
@@ -54,30 +80,55 @@ object ImageService extends Logging {
     image
   }
 
-  def getImage(file: File): Image = {
-    try {
-      val image = lookupImage(file)
-      if (image != null) {
-        debug(s"${file.getAbsolutePath} was already processed")
-        return image
-      } else {
-        debug(s"Processing image: ${file.getAbsolutePath}")
-        val bufferedImage = ImageIO.read(file)
-        val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
-        var thumbnailPath = lookupThumbnailPath(hashes.md5)
-        if (thumbnailPath == null) thumbnailPath = getThumbnail(bufferedImage, hashes.md5)
-        val imageSize = {
-          (bufferedImage.getWidth, bufferedImage.getHeight)
-        }
-        val image = new Image(file.getAbsolutePath, thumbnailPath, imageSize, hashes)
-        debug(s"Created image: $image")
-        return saveImage(image)
-      }
-    } catch {
-      case ioe: IOException => error(s"Error processing ${file.getAbsolutePath}... ${ioe.getMessage}")
-      case ex: Exception => error(s"Error processing ${file.getAbsolutePath}... ${ex.getMessage}", ex)
+  def lookupThumbnailPath(md5: String): String = {
+    var thumbPath: String = null
+    if (md5 != null) {
+      //check for the actual file
+      val checkPath = calculateThumbPath(md5)
+      if (new File(checkPath).exists) thumbPath = checkPath
+    } else {
+      error("Null md5 passed in")
     }
-    null
+    thumbPath
+  }
+
+  def calculateThumbPath(md5: String): String = {
+    //break the path down into 4 char parts
+    val subPath = md5.substring(0, 3)
+    var path: String = s"${PropertiesService.get(PropertyEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertyEnum.ThumbnailSize.toString)}/$subPath/"
+    try {
+      val dir = new File(path)
+      if (!dir.exists()) dir.mkdirs()
+    } catch {
+      case ioe: IOException => error(s"Unable to create dirs for path: \'$path\'", ioe)
+    }
+    path += md5 + ".jpg"
+    path
+  }
+
+  def getThumbnail(image: BufferedImage, md5: String): String = {
+    //create thumbnail
+    val thumb = resize(image, PropertiesService.get(PropertyEnum.ThumbnailSize.toString).toInt, forced = false)
+    //calculate path
+    val path = calculateThumbPath(md5)
+    // save thumbnail to path
+    try {
+      ImageIO.write(thumb, "png", new File(path))
+      debug(s"Wrote thumbnail to $path")
+    } catch {
+      case ioe: IOException => error(s"Unable to save thumbnail to $path", ioe)
+    }
+    // return path
+    path
+  }
+
+  def resize(image: BufferedImage, size: Int, forced: Boolean = false): BufferedImage = {
+    //debug(s"Resizing an image to size: ${size}x${size} forced: $forced")
+    if (forced) {
+      Thumbnails.of(image).forceSize(size, size).asBufferedImage
+    } else {
+      Thumbnails.of(image).size(size, size).asBufferedImage
+    }
   }
 
   def deleteImage(image: Image) = {
@@ -96,86 +147,11 @@ object ImageService extends Logging {
     }
   }
 
-  def calculateThumbPath(md5: String): String = {
-    //break the path down into 4 char parts
-    val subPath = md5.substring(0, 3)
-    var path: String = s"${PropertiesService.get(PropertyEnum.ThumbnailDirectory.toString)}${PropertiesService.get(PropertyEnum.ThumbnailSize.toString)}/$subPath/"
-    try {
-      val dir = new File(path)
-      if (!dir.exists()) dir.mkdirs()
-    } catch {
-      case ioe: IOException => error(s"Unable to create dirs for path: \'$path\'", ioe)
-    }
-    path += md5 + ".jpg"
-    path
-  }
-
-  def lookupThumbnailPath(md5: String): String = {
-    var thumbPath: String = null
-    if (md5 != null) {
-      //check for the actual file
-      val checkPath = calculateThumbPath(md5)
-      if (new File(checkPath).exists) thumbPath = checkPath
-    } else {
-      error("Null md5 passed in")
-    }
-    thumbPath
-  }
-
-  def getThumbnail(image: BufferedImage, md5: String): String = {
-    //create thumbnail
-    val thumb = resize(image, PropertiesService.get(PropertyEnum.ThumbnailSize.toString).toInt, forced = false)
-    //calculate path
-    val path = calculateThumbPath(md5)
-    // save thumbnail to path
-    try {
-      ImageIO.write(thumb, "jpg", new File(path))
-      debug(s"Wrote thumbnail to $path")
-    } catch {
-      case ioe: IOException => error(s"Unable to save thumbnail to $path", ioe)
-    }
-    // return path
-    path
-  }
-
   /**
    * Get the raw data for an image
    */
   def getImageData(image: BufferedImage): Array[Array[Int]] = {
     convertTo2DWithoutUsingGetRGB(image)
-  }
-
-  /**
-   * Quickly convert an image to grayscale
-   *
-   * @param image image to convert to greyscale
-   * @return
-   */
-  def convertToGray(image: BufferedImage): BufferedImage = {
-    //debug("Converting an image to grayscale")
-    val grayImage = new BufferedImage(image.getWidth, image.getHeight, BufferedImage.TYPE_BYTE_GRAY)
-
-    //create a color conversion operation
-    val op = new ColorConvertOp(
-      image.getColorModel.getColorSpace,
-      grayImage.getColorModel.getColorSpace, null)
-
-    //convert the image to grey
-    val result = op.filter(image, grayImage)
-
-    //val g = image.getGraphics
-    //g.drawImage(image,0,0,null)
-    //g.dispose()
-    result
-  }
-
-  def resize(image: BufferedImage, size: Int, forced: Boolean = false): BufferedImage = {
-    //debug(s"Resizing an image to size: ${size}x${size} forced: $forced")
-    if (forced) {
-      Thumbnails.of(image).forceSize(size, size).asBufferedImage
-    } else {
-      Thumbnails.of(image).size(size, size).asBufferedImage
-    }
   }
 
   /**
@@ -254,6 +230,30 @@ object ImageService extends Logging {
         }
       }
     }
+    result
+  }
+
+  /**
+   * Quickly convert an image to grayscale
+   *
+   * @param image image to convert to greyscale
+   * @return
+   */
+  def convertToGray(image: BufferedImage): BufferedImage = {
+    //debug("Converting an image to grayscale")
+    val grayImage = new BufferedImage(image.getWidth, image.getHeight, BufferedImage.TYPE_BYTE_GRAY)
+
+    //create a color conversion operation
+    val op = new ColorConvertOp(
+      image.getColorModel.getColorSpace,
+      grayImage.getColorModel.getColorSpace, null)
+
+    //convert the image to grey
+    val result = op.filter(image, grayImage)
+
+    //val g = image.getGraphics
+    //g.drawImage(image,0,0,null)
+    //g.dispose()
     result
   }
 }

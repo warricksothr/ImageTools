@@ -10,18 +10,21 @@ import grizzled.slf4j.Logging
 @Table(name = "Image")
 class Image(val image: String, val thumbnail: String, val size: (Int, Int), val imageHashes: ImageHashDTO = null) extends Serializable with Logging {
 
-  def this() = this("", "", (0, 0), null)
-
   @Id
   var imagePath: String = image
-
-  def getImagePath: String = imagePath
-
-  def setImagePath(path: String) = {
-    imagePath = path
-  }
-
   var thumbnailPath: String = thumbnail
+  var width: Int = size._1
+  var height: Int = size._2
+  var hashes: ImageHashDTO = imageHashes
+  @transient
+  var imageSize: (Int, Int) = {
+    new Tuple2(width, height)
+  }
+  @transient
+  var imageName: String = ""
+  var imageType: ImageType = ImageType.SingleFrameImage
+
+  def this() = this("", "", (0, 0), null)
 
   def getThumbnailPath: String = thumbnailPath
 
@@ -29,15 +32,11 @@ class Image(val image: String, val thumbnail: String, val size: (Int, Int), val 
     thumbnailPath = path
   }
 
-  var width: Int = size._1
-
   def getWidth: Int = width
 
   def setWidth(size: Int) = {
     width = size
   }
-
-  var height: Int = size._2
 
   def getHeight: Int = height
 
@@ -45,29 +44,23 @@ class Image(val image: String, val thumbnail: String, val size: (Int, Int), val 
     height = size
   }
 
-  var hashes: ImageHashDTO = imageHashes
-
   def getHashes: ImageHashDTO = hashes
 
   def setHashes(newHashes: ImageHashDTO) = {
     hashes = newHashes
   }
 
-  @transient
-  var imageSize: (Int, Int) = {
-    new Tuple2(width, height)
-  }
-
-  @transient
-  var imageName: String = ""
-
-  var imageType: ImageType = ImageType.SingleFrameImage
-
   def getName: String = {
     if (this.imageName.length < 1) {
       this.imageName = this.getImagePath.split('/').last
     }
     this.imageName
+  }
+
+  def getImagePath: String = imagePath
+
+  def setImagePath(path: String) = {
+    imagePath = path
   }
 
   def isSimilarTo(otherImage: Image): Boolean = {
