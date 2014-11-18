@@ -3,7 +3,6 @@ package com.sothr.imagetools.ui;
 import com.sothr.imagetools.engine.AppConfig;
 import com.sothr.imagetools.engine.errors.ImageToolsException;
 import com.sothr.imagetools.engine.util.ResourceLoader;
-import com.sothr.imagetools.ui.controller.AppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;

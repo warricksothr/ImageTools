@@ -1,12 +1,11 @@
 package com.sothr.imagetools.ui.component
 
-import java.awt.Desktop
 import java.io.{File, FileInputStream}
-import javafx.event.{EventType, EventHandler}
-import javafx.geometry.{Orientation, Insets, Pos}
-import javafx.scene.control.{Separator, Tooltip, Label}
-import javafx.scene.image.{ImageView}
-import javafx.scene.input.{PickResult, ContextMenuEvent, MouseEvent}
+import javafx.event.EventHandler
+import javafx.geometry.{Orientation, Pos}
+import javafx.scene.control.{Label, Separator, Tooltip}
+import javafx.scene.image.ImageView
+import javafx.scene.input.{ContextMenuEvent, MouseEvent, PickResult}
 import javafx.scene.layout.VBox
 
 import com.sothr.imagetools.ui.util.FileUtil
