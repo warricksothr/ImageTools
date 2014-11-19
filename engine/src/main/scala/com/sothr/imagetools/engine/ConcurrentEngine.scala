@@ -20,7 +20,7 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
   implicit val timeout = Timeout(30, TimeUnit.SECONDS)
 
   override def setSearchedListener(listenerRef: ActorRef) = {
-
+    this.searchedListener = listenerRef;
   }
 
   override def setProcessedListener(listenerRef: ActorRef) = {
@@ -61,29 +61,15 @@ class ConcurrentEngine extends Engine with grizzled.slf4j.Logging {
     }
     val f = engineSimilarityController ? EngineGetSimilarityResults
     val result = Await.result(f, timeout.duration).asInstanceOf[List[SimilarImages]]
-    //process the result into a list we want in cleanedSimilarImages
-    var count = 0
-    val cleanedSimilarImages = new mutable.MutableList[SimilarImages]()
-    val ignoreSet = new mutable.HashSet[Image]()
-    for (similarImages <- result) {
-      count += 1
-      if (count % 25 == 0 || count == result.length) debug(s"Cleaning similar image $count/${result.length} ${result.length - count} left to clean")
-      if (!ignoreSet.contains(similarImages.rootImage)) {
-        cleanedSimilarImages += similarImages
-        ignoreSet += similarImages.rootImage
-        for (image <- similarImages.similarImages) {
-          ignoreSet += image
-        }
-      }
-    }
 
+    val cleanedSimilarImages = this.processSimilarities(result)
     var similarCount = 0
     for (similarImage <- cleanedSimilarImages) {
       similarCount += 1 + similarImage.similarImages.size
     }
 
     info(s"Finished processing ${images.size} images. Found $similarCount similar images")
-    cleanedSimilarImages.toList
+    cleanedSimilarImages
   }
 
   def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {

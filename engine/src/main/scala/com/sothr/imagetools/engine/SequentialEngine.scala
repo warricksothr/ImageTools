@@ -66,7 +66,7 @@ class SequentialEngine extends Engine with Logging {
       }
     }
     info(s"Finished processing ${images.size} images. Found $similarCount similar images")
-    allSimilarImages.toList
+    this.processSimilarities(allSimilarImages.toList)
   }
 
   def getImagesForDirectory(directoryPath: String, recursive: Boolean = false, recursiveDepth: Int = 500): List[Image] = {

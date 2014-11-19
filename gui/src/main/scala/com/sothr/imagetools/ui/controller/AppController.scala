@@ -66,6 +66,7 @@ class AppController extends Logging {
     // configure the listener
     guiListener ! SetupListener(progressBar, progressLabel)
     // tell the engine to use our listener
+    this.engine.setSearchedListener(guiListener)
     this.engine.setProcessedListener(guiListener)
     this.engine.setSimilarityListener(guiListener)
     // Initialize the progress label
@@ -282,6 +283,47 @@ class AppController extends Logging {
     }
   }
 
+  def resetPaginator() = {
+    this.paginator.setDisable(true)
+    this.paginator.setPageCount(1)
+  }
+
+  //endregion
+
+  def setPagesContent(images: List[Image]) = {
+    this.currentImages = images
+    //set the appropriate size for the pagination
+    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
+    val pageNum = Math.ceil(this.currentImages.size.toFloat / itemsPerPage).toInt
+    this.paginator.setPageCount(pageNum)
+    this.paginator.setDisable(false)
+  }
+
+  //todo: include a templating engine for rendering information
+
+  def showPage(pageIndex: Integer) = {
+    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
+    val startIndex = pageIndex * itemsPerPage
+    val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else startIndex + itemsPerPage
+    //clear any selections
+    getImageTilePane.asInstanceOf[ImageTilePane].clearSelection()
+    //clear and populate the scrollpane
+    getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
+    val images = this.currentImages.slice(startIndex, endIndex)
+    Platform.runLater(new Runnable() {
+      override def run() {
+        for (image <- images) {
+          debug(s"Adding image ${image.toString} to app")
+          getImageTilePane.getChildren.add(ImageTileFactory.get(image, getImageTilePane))
+        }
+      }
+    })
+  }
+
+  def getImageTilePane: TilePane = {
+    this.imageTilePane
+  }
+
   @FXML
   def showSimilarImages(event: ActionEvent) = {
     resetPaginator()
@@ -310,47 +352,6 @@ class AppController extends Logging {
       case Failure(t) =>
         error("An Error Occurred", t)
     }
-  }
-
-  //endregion
-
-  def resetPaginator() = {
-    this.paginator.setDisable(true)
-    this.paginator.setPageCount(1)
-  }
-
-  //todo: include a templating engine for rendering information
-
-  def setPagesContent(images: List[Image]) = {
-    this.currentImages = images
-    //set the appropriate size for the pagination
-    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
-    val pageNum = Math.ceil(this.currentImages.size.toFloat / itemsPerPage).toInt
-    this.paginator.setPageCount(pageNum)
-    this.paginator.setDisable(false)
-  }
-
-  def showPage(pageIndex: Integer) = {
-    val itemsPerPage = PropertiesService.get("app.ui.thumbsPerPage", "100").toInt
-    val startIndex = pageIndex * itemsPerPage
-    val endIndex = if ((startIndex + itemsPerPage) > this.currentImages.size) this.currentImages.length else startIndex + itemsPerPage
-    //clear any selections
-    getImageTilePane.asInstanceOf[ImageTilePane].clearSelection()
-    //clear and populate the scrollpane
-    getImageTilePane.getChildren.setAll(new java.util.ArrayList[Node]())
-    val images = this.currentImages.slice(startIndex, endIndex)
-    Platform.runLater(new Runnable() {
-      override def run() {
-        for (image <- images) {
-          debug(s"Adding image ${image.toString} to app")
-          getImageTilePane.getChildren.add(ImageTileFactory.get(image, getImageTilePane))
-        }
-      }
-    })
-  }
-
-  def getImageTilePane: TilePane = {
-    this.imageTilePane
   }
 
   /**

@@ -165,24 +165,6 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     this.selectedIndexes.add(0)
   }
 
-  private def clearSelectionFormatting() = {
-    val iterator = this.parentTilePane.getChildren.iterator()
-    while (iterator.hasNext) {
-      //remove the selection styling
-      val imageTile: VBox = iterator.next().asInstanceOf[VBox]
-      imageTile.setBorder(Border.EMPTY)
-    }
-  }
-
-  private def setSelectionFormatting(index: Int): Unit = {
-    setSelectionFormatting(this.parentTilePane.getChildren.get(index).asInstanceOf[ImageTile])
-  }
-
-  private def setSelectionFormatting(imageTile: ImageTile) = {
-    val borderStroke = new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)
-    imageTile.asInstanceOf[VBox].setBorder(new Border(borderStroke))
-  }
-
   override def selectLast(): Unit = {
     clearSelectionFormatting
     this.selectedIndexes.clear()
@@ -239,12 +221,30 @@ class ImageTilePaneSelectionModel[ImageTile](parentTilePane: ImageTilePane) exte
     }
   }
 
+  private def setSelectionFormatting(index: Int): Unit = {
+    setSelectionFormatting(this.parentTilePane.getChildren.get(index).asInstanceOf[ImageTile])
+  }
+
+  private def setSelectionFormatting(imageTile: ImageTile) = {
+    val borderStroke = new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)
+    imageTile.asInstanceOf[VBox].setBorder(new Border(borderStroke))
+  }
+
   override def select(obj: ImageTile): Unit = {
     if (this.parentTilePane.getChildren.contains(obj)) {
       clearSelectionFormatting
       this.selectedIndexes.clear()
       setSelectionFormatting(obj)
       this.selectedIndexes.add(this.parentTilePane.getChildren.indexOf(obj))
+    }
+  }
+
+  private def clearSelectionFormatting() = {
+    val iterator = this.parentTilePane.getChildren.iterator()
+    while (iterator.hasNext) {
+      //remove the selection styling
+      val imageTile: VBox = iterator.next().asInstanceOf[VBox]
+      imageTile.setBorder(Border.EMPTY)
     }
   }
 

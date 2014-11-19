@@ -40,13 +40,16 @@ abstract class Engine extends Logging {
         val files = directory.listFiles(imageFilter)
         if (files != null) {
           fileList ++= files
-          info(s"Found ${files.length} files that are images in directory: $directoryPath")
+          debug(s"Found ${files.length} files that are images in directory: $directoryPath")
           if (recursive) {
             val directoryFilter = new DirectoryFilter
             val directories = directory.listFiles(directoryFilter)
             for (directory <- directories) {
               fileList ++= getAllImageFiles(directory.getAbsolutePath, recursive, recursiveDepth - 1)
+              this.searchedListener ! SubmitMessage(s"Found ${fileList.length} files to process")
             }
+          } else {
+            this.searchedListener ! SubmitMessage(s"Found ${fileList.length} files to process")
           }
         }
       }
@@ -72,6 +75,41 @@ abstract class Engine extends Logging {
     for (image <- images) {
       deleteImage(image)
     }
+  }
+
+  /**
+   * Go through the list of similarities and group them so that they represent actual similarities
+   *
+   * For example. A is similar to B and C is similar to B but A is was not considered similar to C. Therefore A B and C should be considered similar unless otherwise noted.
+   *
+   * @param similarList a list of detected similar images
+   * @return a grouped and combined list of similar images
+   */
+  def processSimilarities(similarList: List[SimilarImages]): List[SimilarImages] = {
+    //process the result into a list we want in cleanedSimilarImages
+    var count = 0
+    val cleanedSimilarImages = new mutable.MutableList[SimilarImages]()
+    val ignoreSet = new mutable.HashSet[Image]()
+    for (similarImages <- similarList) {
+      count += 1
+      if (count % 25 == 0 || count == similarList.length) debug(s"Cleaning similar image $count/${similarList.length} ${similarList.length - count} left to clean")
+      if (!ignoreSet.contains(similarImages.rootImage)) {
+        cleanedSimilarImages += similarImages
+        ignoreSet += similarImages.rootImage
+        for (image <- similarImages.similarImages) {
+          ignoreSet += image
+        }
+      }
+      //rewrite todo:
+      /*
+        Go through all the images. If a similar image for the image doesn't exist, create it. if it does,
+        add it to that similar image. The end result is that all images should be grouped according to
+        their similar images and images that are similar to them.
+       */
+    }
+
+    //return a non mutable cleaned list
+    cleanedSimilarImages.toList
   }
 }
 
