@@ -19,7 +19,7 @@ class EngineTest extends BaseTest {
     assertResult(1) {
       similarImages.length
     }
-    assertResult(2) {
+    assertResult(3) {
       similarImages(0).similarImages.size
     }
   }
@@ -37,7 +37,7 @@ class EngineTest extends BaseTest {
     assertResult(1) {
       similarImages.length
     }
-    assertResult(2) {
+    assertResult(3) {
       similarImages(0).similarImages.size
     }
   }

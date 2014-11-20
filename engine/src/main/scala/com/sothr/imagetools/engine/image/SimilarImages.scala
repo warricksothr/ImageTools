@@ -34,7 +34,6 @@ class SimilarImages(var similarImages: Set[Image]) extends Logging {
 
   def ordering() = {
     1 * similarImages.size
-    similarImages.groupBy(img => img.getImagePath)
   }
 
 }
