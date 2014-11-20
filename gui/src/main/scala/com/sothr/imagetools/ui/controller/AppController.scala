@@ -333,8 +333,7 @@ class AppController extends Logging {
       val similarImages = engine.getSimilarImagesForDirectory(currentDirectory, recursive = doRecursiveProcessing.isSelected)
       val tempImages = new mutable.MutableList[Image]()
       for (similarImage <- similarImages) {
-        debug(s"Adding similar images ${similarImage.rootImage.toString} to app")
-        tempImages += similarImage.rootImage
+        debug(s"Adding similar images ${similarImage.toString} to app")
         similarImage.similarImages.foreach(image => tempImages += image)
       }
       tempImages.toList

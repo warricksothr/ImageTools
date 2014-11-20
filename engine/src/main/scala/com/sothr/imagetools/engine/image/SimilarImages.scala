@@ -7,11 +7,11 @@ import grizzled.slf4j.Logging
  *
  * Created by drew on 1/26/14.
  */
-class SimilarImages(val rootImage: Image, val similarImages: List[Image]) extends Logging {
+class SimilarImages(var similarImages: Set[Image]) extends Logging {
 
   override def hashCode: Int = {
     val prime = 7
-    var result = prime * 1 + rootImage.hashCode
+    var result = prime * similarImages.size
     for (similarImage <- similarImages) {
       result = prime * result + similarImage.hashCode
     }
@@ -19,8 +19,7 @@ class SimilarImages(val rootImage: Image, val similarImages: List[Image]) extend
   }
 
   override def toString: String = {
-    s"""RootImage: ${rootImage.imagePath}
-    Similar Images:
+    s"""Similar Images:
     $getPrettySimilarImagesList""".stripMargin
   }
 
@@ -33,4 +32,13 @@ class SimilarImages(val rootImage: Image, val similarImages: List[Image]) extend
     sb.toString()
   }
 
+  def ordering() = {
+    1 * similarImages.size
+    similarImages.groupBy(img => img.getImagePath)
+  }
+
+}
+
+object SimilarImagesOrdering extends Ordering[SimilarImages] {
+  def compare(a:SimilarImages, b:SimilarImages) = a.ordering() compare b.ordering()
 }

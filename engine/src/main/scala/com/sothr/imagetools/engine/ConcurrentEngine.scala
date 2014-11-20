@@ -219,7 +219,7 @@ class ConcurrentEngineProcessingController extends Actor with ActorLogging {
    */
   def checkForResults() = {
     try {
-      listener ! SubmitMessage(s"Finished Processing $processed/$processed images")
+      listener ! SubmitMessage(s"Finished processing $processed/$processed images")
       processorsFinished = 0
       toProcess = 0
       processed = 0
@@ -367,7 +367,7 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
    */
   def checkIfProcessingIsFinished() = {
     try {
-      log.debug("Processors Finished {}/{}", processorsFinished, numOfRouters)
+      log.debug("Processors finished {}/{}", processorsFinished, numOfRouters)
       if (processorsFinished >= numOfRouters) sender ! true else sender ! false
     } catch {
       case e: Exception ⇒
@@ -381,7 +381,7 @@ class ConcurrentEngineSimilarityController extends Actor with ActorLogging {
    */
   def checkForResults() = {
     try {
-      listener ! SubmitMessage(s"Finished Scanning $processed/$processed images")
+      listener ! SubmitMessage(s"Finished scanning $processed/$processed images")
       processorsFinished = 0
       toProcess = 0
       processed = 0
@@ -422,8 +422,9 @@ class ConcurrentEngineSimilarityActor extends Actor with ActorLogging {
       }
       //only send a message if we find similar images
       if (similarImages.length >= 1) {
-        val similarImage = new SimilarImages(command.image1, similarImages.toList)
-        log.debug(s"Found ${similarImage.similarImages.length} similar images to ${similarImage.rootImage}")
+        similarImages += command.image1
+        val similarImage = new SimilarImages(similarImages.toSet)
+        log.debug(s"Found ${similarImage.similarImages.size} similar images to ${command.image1}")
         sender ! EngineCompareImagesComplete(similarImage)
       } else {
         log.debug(s"Found no similar images to ${command.image1}")

@@ -3,11 +3,13 @@ package com.sothr.imagetools.engine
 import java.io.File
 
 import akka.actor._
-import com.sothr.imagetools.engine.image.{Image, ImageFilter, ImageService, SimilarImages}
+import com.sothr.imagetools.engine.image._
 import com.sothr.imagetools.engine.util.DirectoryFilter
 import grizzled.slf4j.Logging
 
+import scala.collection.immutable.HashSet
 import scala.collection.mutable
+import scala.util.control.Breaks._
 
 /**
  * Engine definition
@@ -87,29 +89,55 @@ abstract class Engine extends Logging {
    */
   def processSimilarities(similarList: List[SimilarImages]): List[SimilarImages] = {
     //process the result into a list we want in cleanedSimilarImages
+    /*
+      Go through all the images. If a similar image for the image doesn't exist, create it. if it does,
+      add it to that similar image. The end result is that all images should be grouped according to
+      their similar images and images that are similar to them.
+     */
     var count = 0
+    // similar image mapping to map known images back to their similar set
+    val similarImageMap = new mutable.HashMap[Image, SimilarImages]()
+
+    // List of the actual similar image sets
     val cleanedSimilarImages = new mutable.MutableList[SimilarImages]()
-    val ignoreSet = new mutable.HashSet[Image]()
+
+    // loop over all of the similar image sets
     for (similarImages <- similarList) {
       count += 1
-      if (count % 25 == 0 || count == similarList.length) debug(s"Cleaning similar image $count/${similarList.length} ${similarList.length - count} left to clean")
-      if (!ignoreSet.contains(similarImages.rootImage)) {
-        cleanedSimilarImages += similarImages
-        ignoreSet += similarImages.rootImage
-        for (image <- similarImages.similarImages) {
-          ignoreSet += image
-        }
+      if (count % 25 == 0 || count == similarList.length) {
+        debug(s"Cleaning similar images. $count/${similarList.length} ${similarList.length - count} left to clean")
+        this.searchedListener ! SubmitMessage(s"Cleaning similar images. $count/${similarList.length}")
       }
-      //rewrite todo:
-      /*
-        Go through all the images. If a similar image for the image doesn't exist, create it. if it does,
-        add it to that similar image. The end result is that all images should be grouped according to
-        their similar images and images that are similar to them.
-       */
+      var foundSimilarity = false
+      var similarity:SimilarImages = null
+      breakable { for (similarImage <- similarImages.similarImages) {
+        if (similarImageMap.contains(similarImage)) {
+          similarity = similarImageMap(similarImage)
+          foundSimilarity = true
+          break()
+        }
+      } }
+
+      //if no similarity was found, one should be created
+      if (!foundSimilarity) {
+        similarity = new SimilarImages(new HashSet[Image])
+        // the created similarity is added to the cleaned list
+        cleanedSimilarImages += similarity
+      }
+
+      // all images should be added to this new similarity
+      similarity.similarImages = similarity.similarImages ++ similarImages.similarImages
+      similarImages.similarImages.foreach(img => similarImageMap.put(img, similarity))
     }
 
-    //return a non mutable cleaned list
-    cleanedSimilarImages.toList
+    //get a count of similar images found
+    var totalCount = 0
+    cleanedSimilarImages.foreach(img => totalCount += img.similarImages.size)
+    debug(s"Found $totalCount images with similarities")
+    this.searchedListener ! SubmitMessage(s"Found $totalCount images with similarities")
+
+    // Sort the similarImages by ?!?!?!? and return
+    cleanedSimilarImages.toList.sorted(SimilarImagesOrdering)
   }
 }
 

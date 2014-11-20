@@ -58,7 +58,8 @@ class SequentialEngine extends Engine with Logging {
           }
         }
         if (similarImages.length > 1) {
-          val similar = new SimilarImages(rootImage, similarImages.toList)
+          similarImages += rootImage
+          val similar = new SimilarImages(similarImages.toSet)
           debug(s"Found similar images: ${similar.toString}")
           allSimilarImages += similar
         }
