@@ -6,7 +6,7 @@ import grizzled.slf4j.Logging
 
 @Entity
 @Table(name = "ImageHash")
-class ImageHashDTO(var ahash: Long, var dhash: Long, var phash: Long, var md5: String) extends Serializable with Logging {
+class ImageHashDTO(var ahash: Long, var dhash: Long, var phash: Long, var fileHash: String) extends Serializable with Logging {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,14 +38,14 @@ class ImageHashDTO(var ahash: Long, var dhash: Long, var phash: Long, var md5: S
     phash = hash
   }
 
-  def getMd5: String = md5
+  def getFileHash: String = fileHash
 
-  def setMd5(hash: String) = {
-    md5 = hash
+  def setFileHash(hash: String) = {
+    fileHash = hash
   }
 
   def cloneHashes: ImageHashDTO = {
-    new ImageHashDTO(ahash, dhash, phash, md5)
+    new ImageHashDTO(ahash, dhash, phash, fileHash)
   }
 
   override def hashCode(): Int = {
@@ -57,6 +57,6 @@ class ImageHashDTO(var ahash: Long, var dhash: Long, var phash: Long, var md5: S
   }
 
   override def toString: String = {
-    s"MD5: $md5 ahash: $ahash dhash: $dhash phash: $phash"
+    s"fileHash: $fileHash ahash: $ahash dhash: $dhash phash: $phash"
   }
 }

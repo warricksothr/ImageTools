@@ -335,6 +335,64 @@ class HashServiceTest extends BaseTest {
     assert(hash == "b137131bd55896c747286e4d247b845e")
   }
 
+  def sha1TestCase(filePath: String): String = {
+    HashService.getSHA1(filePath)
+  }
+
+  test("Benchmark SHA1") {
+    info("Benchmarking SHA1")
+    info("SHA1 Large Image 3684x2736")
+    val time = new mutable.MutableList[Long]()
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime {
+        sha1TestCase(TestParams.LargeSampleImage1)
+      }
+    }
+    val largeMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for large was: $largeMean ms")
+    time.clear()
+    info("SHA1 Medium Image 1824x1368")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime {
+        sha1TestCase(TestParams.MediumSampleImage1)
+      }
+    }
+    val mediumMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for medium was: $mediumMean ms")
+    time.clear()
+    info("SHA1 Small Image 912x684")
+    for (runNum <- 0 until benchmarkRuns) {
+      time += getTime {
+        sha1TestCase(TestParams.SmallSampleImage1)
+      }
+    }
+    val smallMean = getMean(time.toArray[Long])
+    info(s"The mean time of ${time.size} tests for small was: $smallMean ms")
+    time.clear()
+    assert(true)
+  }
+
+  test("Calculate SHA1 Large Sample Image 1") {
+    debug("Starting 'Calculate SHA1 Large Sample Image 1' test")
+    val hash = HashService.getSHA1(TestParams.LargeSampleImage1)
+    debug(s"Testing that $hash = 4beb6f2d852b75a313863916a1803ebad13a3196")
+    assert(hash == "4beb6f2d852b75a313863916a1803ebad13a3196")
+  }
+
+  test("Calculate SHA1 Medium Sample Image 1") {
+    debug("Starting 'Calculate SHA1 Medium Sample Image 1' test")
+    val hash = HashService.getSHA1(TestParams.MediumSampleImage1)
+    debug(s"Testing that $hash = edc718ce8e3556a39592ffdc214d0f636529be9f")
+    assert(hash == "edc718ce8e3556a39592ffdc214d0f636529be9f")
+  }
+
+  test("Calculate SHA1 Small Sample Image 1") {
+    debug("Starting 'Calculate SHA1 Small Sample Image 1' test")
+    val hash = HashService.getSHA1(TestParams.SmallSampleImage1)
+    debug(s"Testing that $hash = 1a91d2b5327f0aad258419f76b87d4c0bc343443")
+    assert(hash == "1a91d2b5327f0aad258419f76b87d4c0bc343443")
+  }
+
   def imageHashTestWithCacheCase(filePath: String): ImageHashDTO = {
     val cache = AppConfig.cacheManager.getCache("images")
     var result: ImageHashDTO = null

@@ -28,8 +28,8 @@ object ImageService extends Logging {
         debug(s"Processing image: ${file.getAbsolutePath}")
         val bufferedImage = ImageIO.read(file)
         val hashes = HashService.getImageHashes(bufferedImage, file.getAbsolutePath)
-        var thumbnailPath = lookupThumbnailPath(hashes.md5)
-        if (thumbnailPath == null) thumbnailPath = getThumbnail(bufferedImage, hashes.md5)
+        var thumbnailPath = lookupThumbnailPath(hashes.getFileHash)
+        if (thumbnailPath == null) thumbnailPath = getThumbnail(bufferedImage, hashes.getFileHash)
         val imageSize = {
           (bufferedImage.getWidth, bufferedImage.getHeight)
         }

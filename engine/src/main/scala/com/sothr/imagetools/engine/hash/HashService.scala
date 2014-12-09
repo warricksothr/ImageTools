@@ -29,7 +29,7 @@ object HashService extends Logging {
     var ahash: Long = 0L
     var dhash: Long = 0L
     var phash: Long = 0L
-    val md5: String = getMD5(imagePath)
+    val sha1: String = getSHA1(imagePath)
 
     //Get Image Data
     val grayImage = ImageService.convertToGray(image)
@@ -44,7 +44,7 @@ object HashService extends Logging {
       phash = getPhash(grayImage, alreadyGray = true)
     }
 
-    val hashes = new ImageHashDTO(ahash, dhash, phash, md5)
+    val hashes = new ImageHashDTO(ahash, dhash, phash, sha1)
     debug(s"Generated hashes: $hashes")
 
     hashes
@@ -91,8 +91,13 @@ object HashService extends Logging {
 
   def getMD5(filePath: String): String = {
     managed(new FileInputStream(filePath)) acquireAndGet {
-      input =>
-        DigestUtils.md5Hex(input)
+      input => DigestUtils.md5Hex(input)
+    }
+  }
+
+  def getSHA1(filePath: String): String = {
+    managed(new FileInputStream(filePath)) acquireAndGet {
+      input => DigestUtils.sha1Hex(input)
     }
   }
 

@@ -51,7 +51,7 @@
       <MaxFileSize>500KB</MaxFileSize>
     </triggeringPolicy>
   </appender>
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="DL"/>
     <appender-ref ref="IL"/>
     <appender-ref ref="EL"/>

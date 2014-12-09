@@ -13,6 +13,6 @@
     <property name="ahash" column="ahash" type="long"/>
     <property name="dhash" column="dhash" type="long"/>
     <property name="phash" column="phash" type="long"/>
-    <property name="md5" column="md5" type="string"/>
+    <property name="fileHash" column="fileHash" type="string"/>
   </class>
 </hibernate-mapping>
