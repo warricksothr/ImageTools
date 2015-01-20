@@ -12,14 +12,22 @@ packageProject ()
     #Getting variables that are produced by the script
     NAME=$(head -1 ./name.info)
     PACKAGENAME=$NAME-$LOCAL_VERSION
-    PACKAGETAR=$PACKAGENAME.tar.gz
+    PACKAGETAR=$PACKAGENAME.tar
+    PACKAGEGZ=$PACKAGENAME.tgz
+    PACKAGEXZ=$PACKAGENAME.txz
     PACKAGEZIP=$PACKAGENAME.zip
     TARGET=$PWD/target
 
     #Packaging Jar Distributable
     cd target/release/
     echo "creating $PACKAGETAR in $TARGET"
-    tar -zcvf $RELEASE/$PACKAGETAR .
+    tar -cvf $RELEASE/$PACKAGETAR .
+    echo "creating $PACKAGEGZ in $TARGET"
+    gzip -c $RELEASE/$PACKAGETAR > $RELEASE/$PACKAGEGZ
+    echo "creating $PACKAGEXZ in $TARGET"
+    xz -c $RELEASE/$PACKAGETAR > $RELEASE/$PACKAGEXZ
+    #Remove the tar that was originally used to compress
+    rm $RELEASE/$PACKAGETAR
     echo "creating $PACKAGEZIP in $TARGET"
     zip -r $RELEASE/$PACKAGEZIP ./*
     #Removing prebuilt jar in target
@@ -40,6 +48,6 @@ if [ -d $RELEASE ]; then
 fi
 mkdir $RELEASE
 
-packageProject $VERSIONSTRING "./cli" $RELEASE
+#packageProject $VERSIONSTRING "./cli" $RELEASE
 packageProject $VERSIONSTRING "./gui" $RELEASE
 #packageProject $VERSIONSTRING "./daemon" $RELEASE
